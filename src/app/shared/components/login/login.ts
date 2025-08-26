@@ -1,4 +1,5 @@
-import { Router } from "@angular/router";
+import { AuthService } from './../../../auth/auth.service';
+import { Router, RouterModule } from "@angular/router";
 import { Component, inject, OnInit } from "@angular/core";
 import { UserService } from "../../../core/services/user.service";
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from "@angular/forms";
@@ -16,7 +17,8 @@ import { NzButtonModule } from "ng-zorro-antd/button";
     ReactiveFormsModule,
     NzFormModule,
     NzInputModule,
-    NzButtonModule
+    NzButtonModule,
+    RouterModule
   ]
 })
 export class LoginComponent implements OnInit {
@@ -25,7 +27,7 @@ export class LoginComponent implements OnInit {
 
   private fb = inject(FormBuilder);
   private userService = inject(UserService);
-  private router = inject(Router);
+  private authService = inject(AuthService);
 
   ngOnInit() {
     // Tạo form reactive
@@ -37,7 +39,7 @@ export class LoginComponent implements OnInit {
 
   login() {
     if (this.loginForm.invalid) {
-      console.warn('Vui lòng nhập tên người dùng và mật khẩu');
+      console.warn('Vui lòng nhập email và mật khẩu');
       return;
     }
 
@@ -47,23 +49,15 @@ export class LoginComponent implements OnInit {
         this.userService.changeData(res);
         console.log('Đăng nhập thành công:', res);
         if (res.token) {
-          localStorage.setItem('authToken', res.token);
+          this.authService.saveToken(res.token);
+          this.authService.redirectByRole();
         }
-        this.isLoading = false;
-        this.router.navigate(['/dashboard']); // điều hướng sau login   
+        this.isLoading = false;  
       },
       error: (err) => {
         console.error('Đăng nhập thất bại:', err);
         this.isLoading = false;
       }
     });
-  }
-
-  goToSignUp() {
-    this.router.navigate(['/sign-up']);
-  }
-
-  goToForgetPassword() {
-    this.router.navigate(['/forget-password']);
   }
 }

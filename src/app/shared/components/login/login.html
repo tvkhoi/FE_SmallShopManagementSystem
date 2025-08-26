@@ -21,7 +21,7 @@
         <nz-form-control [nzSpan]="24">
           <input nz-input type="password" id="password" formControlName="password" placeholder="********" />
           <div class="forget-pass">
-            <a (click)="goToForgetPassword()">Forget Password ?</a>
+            <a [routerLink]="['/forget-password']">Forget Password ?</a>
           </div>
         </nz-form-control>
       </nz-form-item>
@@ -36,7 +36,7 @@
       <!-- Sign Up -->
       <div class="sign-up">
         Don’t have an account?
-        <a (click)="goToSignUp()">Sign Up</a> here.
+        <a [routerLink]="['/sign-up']">Sign Up</a> here.
       </div>
     </form>
   </div>
