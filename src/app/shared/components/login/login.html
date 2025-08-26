@@ -1,0 +1,43 @@
+<div class="login-container">
+  <div class="login-card">
+    <form nz-form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
+      <div class="login-avatar">
+        <img
+          src="https://pluspng.com/img-png/user-png-icon-account-avatar-human-male-man-men-people-person-download-svg-download-png-edit-icon-512.png"
+          alt="user" class="user-image">
+      </div>
+
+      <!-- Email -->
+      <nz-form-item>
+        <nz-form-label [nzSpan]="24" nzFor="email">Email</nz-form-label>
+        <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập email hợp lệ!">
+          <input nz-input id="email" formControlName="email" placeholder="Email"  />
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Password -->
+      <nz-form-item>
+        <nz-form-label [nzSpan]="24" nzFor="password">Password</nz-form-label>
+        <nz-form-control [nzSpan]="24">
+          <input nz-input type="password" id="password" formControlName="password" placeholder="********" />
+          <div class="forget-pass">
+            <a (click)="goToForgetPassword()">Forget Password ?</a>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Login Button -->
+      <div class="text-center">
+        <button nz-button nzType="primary" class="login-btn" [nzBlock]="true" [disabled]="loginForm.invalid || isLoading">
+          {{ isLoading ? 'Loading...' : 'Login' }}
+        </button>
+      </div>
+
+      <!-- Sign Up -->
+      <div class="sign-up">
+        Don’t have an account?
+        <a (click)="goToSignUp()">Sign Up</a> here.
+      </div>
+    </form>
+  </div>
+</div>

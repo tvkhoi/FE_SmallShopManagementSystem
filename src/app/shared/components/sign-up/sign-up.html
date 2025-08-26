@@ -1,0 +1,64 @@
+<div class="login-container">
+  <div class="flex justify-center items-center min-h-screen">
+    <nz-card class="auth-card" nzTitle="Sign Up" [nzBordered]="true" [nzHoverable]="true">
+      <div class="text-center mb-3">
+        <nz-avatar 
+          nzSize="large" 
+          nzShape="circle" 
+          nzSrc="https://pluspng.com/img-png/user-png-icon-account-avatar-human-male-man-men-people-person-download-svg-download-png-edit-icon-512.png">
+        </nz-avatar>
+      </div>
+      <form nz-form [formGroup]="signUpForm" (ngSubmit)="signUp()">
+        
+        <!-- Name -->
+        <nz-form-item>
+          <nz-form-label [nzSpan]="24" nzRequired>Name</nz-form-label>
+          <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập tên của bạn!">
+            <input nz-input formControlName="username" placeholder="Enter name" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Email -->
+        <nz-form-item>
+          <nz-form-label [nzSpan]="24" nzRequired>Email</nz-form-label>
+          <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập email hợp lệ!">
+            <input nz-input formControlName="email" placeholder="Enter email" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Password -->
+        <nz-form-item>
+          <nz-form-label [nzSpan]="24" nzRequired>Password</nz-form-label>
+          <nz-form-control [nzSpan]="24" nzErrorTip="Mật khẩu phải có ít nhất 6 ký tự!">
+            <input nz-input type="password" formControlName="password" placeholder="********" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Confirm Password -->
+        <nz-form-item>
+          <nz-form-label [nzSpan]="24" nzRequired>Confirm Password</nz-form-label>
+          <nz-form-control [nzSpan]="24" [nzErrorTip]="confirmTpl">
+            <input nz-input type="password" formControlName="c_password" placeholder="********" />
+            <ng-template #confirmTpl let-control>
+              <ng-container *ngIf="control.hasError('required')">Please confirm password!</ng-container>
+              <ng-container *ngIf="signUpForm.hasError('notSame')">Passwords do not match!</ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Button -->
+        <div class="mt-3">
+          <button nz-button nzType="primary" nzBlock [disabled]="signUpForm.invalid">
+            {{isLoading ? 'Signing Up...' : 'Sign Up'}}
+          </button>
+        </div>
+
+        <!-- Redirect -->
+        <div class="text-center mt-3">
+          Already have an account?
+          <a [routerLink]="['/login']">Login</a> here.
+        </div>
+      </form>
+    </nz-card>
+  </div>
+</div>

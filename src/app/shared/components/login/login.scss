@@ -1,0 +1,73 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #001529, #003a8c);
+
+  .login-card {
+    width: 350px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    .login-avatar {
+      text-align: center;
+      margin-bottom: 20px;
+
+      .user-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+      }
+    }
+
+    .forget-pass {
+      text-align: right;
+      margin-top: 5px;
+
+      a {
+        font-size: 12px;
+        color: #1890ff;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .sign-up {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+
+      a {
+        color: #1890ff;
+        font-weight: 600;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .login-btn {
+      margin-top: 15px;
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .login-container {
+    padding: 15px;
+
+    .login-card {
+      width: 100%;
+      padding: 20px;
+    }
+  }
+}

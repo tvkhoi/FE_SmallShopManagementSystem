@@ -1,0 +1,114 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #001529, #003a8c); 
+}
+
+.auth {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  .auth-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    padding: 40px 32px;
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+
+    .auth-avatar {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+
+      .user-image {
+        height: 90px;
+        width: 90px;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+        background: #fff;
+        object-fit: cover;
+      }
+    }
+
+    // Label
+    label,
+    nz-form-label {
+      color: #222;
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    // Input
+    input,
+    input[nz-input] {
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 15px;
+      border: 1px solid #d9d9d9;
+      outline: none;
+      background: #fff;
+      color: #333;
+      margin-bottom: 16px;
+      transition: box-shadow 0.2s, border-color 0.2s;
+
+      &:focus {
+        border-color: #1890ff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      }
+    }
+
+    // Button
+    button,
+    button[nz-button] {
+      background: #1890ff;
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 16px;
+      padding: 12px;
+      margin-top: 10px;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(24, 144, 255, 0.3);
+      transition: background 0.3s;
+
+      &:hover {
+        background: #0050b3;
+      }
+
+      &:disabled {
+        background: #d9d9d9;
+        cursor: not-allowed;
+      }
+    }
+
+    // Link dưới form
+    .sign-up,
+    .forget-pass {
+      color: #555;
+      text-align: center;
+      margin-top: 16px;
+      font-size: 14px;
+
+      a {
+        color: #1890ff;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+        &:hover {
+          color: #0050b3;
+        }
+      }
+    }
+  }
+}
