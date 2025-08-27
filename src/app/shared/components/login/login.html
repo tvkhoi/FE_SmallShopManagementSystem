@@ -11,7 +11,7 @@
       <nz-form-item>
         <nz-form-label [nzSpan]="24" nzFor="email">Email</nz-form-label>
         <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập email hợp lệ!">
-          <input nz-input id="email" formControlName="email" placeholder="Email"  />
+          <input nz-input id="email" formControlName="email" placeholder="Email" />
         </nz-form-control>
       </nz-form-item>
 
@@ -28,7 +28,8 @@
 
       <!-- Login Button -->
       <div class="text-center">
-        <button nz-button nzType="primary" class="login-btn" [nzBlock]="true" [disabled]="loginForm.invalid || isLoading">
+        <button nz-button nzType="primary" class="login-btn" [nzBlock]="true"
+          [disabled]="loginForm.invalid || isLoading">
           {{ isLoading ? 'Loading...' : 'Login' }}
         </button>
       </div>

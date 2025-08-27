@@ -9,6 +9,7 @@ import {NzAvatarModule }from 'ng-zorro-antd/avatar';
 import { UserService } from '../../../core/services/user.service';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 
 @Component({
@@ -33,6 +34,7 @@ export class SignUpComponent implements OnInit {
   private fb: FormBuilder = inject(FormBuilder);
   private userService: UserService = inject(UserService);
   private router: Router = inject(Router);
+  private message = inject(NzMessageService);
 
   ngOnInit(): void {
     this.signUpForm = this.fb.group(
@@ -70,12 +72,23 @@ export class SignUpComponent implements OnInit {
     .subscribe({
       next: (res: any) => {
         console.log('Đăng ký thành công:', res);
+        this.message.success('Đăng ký thành công');
+      },
+      complete: () => {
+        this.isLoading = false;
         // sau khi đăng ký thành công => điều hướng sang login
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.error('Đăng ký thất bại:', err);
+      console.error('Đăng ký thất bại, chi tiết error:', err);
+      this.message.error('Đăng ký thất bại');
+      if (err.status) {
+        console.error('HTTP Status:', err.status);
       }
+      if (err.error) {
+        console.error('Backend trả error:', err.error);
+      }
+    }
     });
   }
 

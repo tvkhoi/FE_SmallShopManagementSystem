@@ -18,10 +18,10 @@ export class UserService {
   }
 
   signUp(userData: { username: string; email: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, userData);
+    return this.http.post(`${this.apiUrl}/register`, userData, { responseType: 'text' });
   }
 
   login(userData: { username: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, userData);
+    return this.http.post(`${this.apiUrl}/login`, userData, { responseType: 'json' });
   }
 }
