@@ -95,6 +95,12 @@
           display: none; // Ẩn sidebar
         }
 
+        .admin-content {
+        margin-top: 60px;
+        padding: 24px;
+        background: #f9fafb;
+        overflow-y: auto;
+      }
         .admin-header {
           .mobile-menu {
             display: flex; // Hiện menu ngang

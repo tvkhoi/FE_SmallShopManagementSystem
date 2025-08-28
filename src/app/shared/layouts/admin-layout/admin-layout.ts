@@ -5,6 +5,8 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { filter } from 'rxjs';
+import { AuthService } from '../../../auth/auth.service';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-admin-layout',
@@ -21,6 +23,8 @@ import { filter } from 'rxjs';
 })
 export class AdminLayout implements OnInit {
   private router = inject(Router);
+  private authService = inject(AuthService);
+  private messageService = inject(NzMessageService);
 
   isCollapsed = false;
   sidebarOpen = false;
@@ -49,5 +53,10 @@ export class AdminLayout implements OnInit {
 
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
+  }
+  logout() {
+    this.authService.clearToken();
+    this.router.navigate(['/login']);
+    this.messageService.success('Đăng xuất thành công');
   }
 }

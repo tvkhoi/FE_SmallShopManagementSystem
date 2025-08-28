@@ -10,7 +10,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, canActivate: [loginGuard] },
   { path: 'sign-up', component: SignUpComponent, canActivate: [loginGuard] },
-  { path: 'admin/dashboard',
+  { path: 'admin',
           component: AdminLayout,
           canActivate: [authGuard] ,
           data: {roles: ['Admin']},
