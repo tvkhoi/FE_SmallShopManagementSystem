@@ -1,0 +1,107 @@
+:host {
+  ::ng-deep {
+    .admin-layout {
+      height: 100vh;
+
+      /* Sidebar */
+      .ant-layout-sider {
+        background: #1f2937 !important;
+        transition: all 0.3s ease;
+        z-index: 1000;
+
+        .logo {
+          padding: 16px;
+          font-size: 18px;
+          font-weight: bold;
+          text-align: center;
+          border-bottom: 1px solid #374151;
+          color: #fff;
+        }
+
+        .ant-menu {
+          background: transparent !important;
+          border-right: none;
+
+          .ant-menu-item {
+            font-size: 15px;
+            padding-left: 20px !important;
+
+            &-selected {
+              background: #2563eb !important;
+              color: #fff !important;
+            }
+          }
+        }
+      }
+
+      /* Header */
+      .admin-header {
+        background: #111827 !important;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        height: 56px;
+        position: relative;
+
+        .breadcrumb {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .right {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        /* Mobile menu mặc định ẩn */
+        .mobile-menu {
+          display: none;
+          position: absolute;
+          bottom: -56px;
+          left: 0;
+          width: 100%;
+          background: #1f2937;
+          border-top: 1px solid #374151;
+
+          .ant-menu-item {
+            justify-content: center;
+          }
+        }
+      }
+
+      /* Content */
+      .admin-content {
+        padding: 24px;
+        background: #f9fafb;
+        overflow-y: auto;
+      }
+
+      /* Footer */
+      .admin-footer {
+        background: #f3f4f6;
+        text-align: center;
+        padding: 12px 0;
+        font-size: 14px;
+        color: #6b7280;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .ant-layout-sider {
+          display: none; // Ẩn sidebar
+        }
+
+        .admin-header {
+          .mobile-menu {
+            display: flex; // Hiện menu ngang
+            color: #FFF;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+<nz-layout class="admin-layout">
+  <!-- Sidebar -->
+  <nz-sider
+    nzCollapsible
+    [nzCollapsed]="isCollapsed"
+    [nzWidth]="220"
+    class="admin-sider"
+    [class.open]="sidebarOpen"
+  >
+    <div class="logo">Admin Panel</div>
+    <ul nz-menu nzTheme="dark" nzMode="inline">
+      <li nz-menu-item routerLink="/admin/dashboard" routerLinkActive="ant-menu-item-selected">
+        <span nz-icon nzType="dashboard"></span>
+        <span>Dashboard</span>
+      </li>
+      <li nz-menu-item routerLink="/admin/users" routerLinkActive="ant-menu-item-selected">
+        <span nz-icon nzType="user"></span>
+        <span>Users</span>
+      </li>
+      <li nz-menu-item routerLink="/admin/settings" routerLinkActive="ant-menu-item-selected">
+        <span nz-icon nzType="setting"></span>
+        <span>Settings</span>
+      </li>
+    </ul>
+  </nz-sider>
+
+  <!-- Main Layout -->
+  <nz-layout>
+    <!-- Header -->
+    <nz-header class="admin-header">
+      <div class="left">
+        <div class="breadcrumb flex items-center space-x-2">
+          <span nz-icon [nzType]="currentIcon"></span>
+          <span class="page-title">{{ currentTitle }}</span>
+        </div>
+      </div>
+      <div class="right">
+        <span class="greeting">Hello, Admin</span>
+        <button nz-button nzType="primary" nzDanger>Logout</button>
+      </div>
+
+      <!-- Mobile Menu (hiện khi màn <768px) -->
+      <ul nz-menu nzMode="horizontal" class="mobile-menu">
+        <li nz-menu-item routerLink="/admin/dashboard" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="dashboard"></span>
+          Dashboard
+        </li>
+        <li nz-menu-item routerLink="/admin/users" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="user"></span>
+          Users
+        </li>
+        <li nz-menu-item routerLink="/admin/settings" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="setting"></span>
+          Settings
+        </li>
+      </ul>
+    </nz-header>
+
+    <!-- Content -->
+    <nz-content class="admin-content">
+      <router-outlet></router-outlet>
+    </nz-content>
+
+    <!-- Footer -->
+    <nz-footer class="admin-footer">© 2025 Admin Panel</nz-footer>
+  </nz-layout>
+</nz-layout>

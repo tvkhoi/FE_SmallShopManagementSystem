@@ -4,11 +4,20 @@ import { LoginComponent } from './shared/components/login/login';
 import { SignUpComponent } from './shared/components/sign-up/sign-up';
 import { authGuard } from './core/guards/auth.guard';
 import { loginGuard } from './core/guards/login.guard';
+import { AdminLayout } from './shared/layouts/admin-layout/admin-layout';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, canActivate: [loginGuard] },
   { path: 'sign-up', component: SignUpComponent, canActivate: [loginGuard] },
-  { path: 'admin/dashboard', component: Dashboard, canActivate: [authGuard] , data: {roles: ['Admin']}}
+  { path: 'admin/dashboard',
+          component: AdminLayout,
+          canActivate: [authGuard] ,
+          data: {roles: ['Admin']},
+          children: [
+            { path: 'dashboard', component: Dashboard },
+            { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+          ]
+}
 
 ];
