@@ -1,0 +1,40 @@
+<div class="users-container">
+    <div class="users-header">
+        <h2>Users</h2>
+        <div class="user-header__actions">
+            <button nz-button nzType="default" (click)="importUsers()">Import</button>
+            <button nz-button nzType="default" (click)="exportUsers()">Export</button>
+            <button nz-button nzType="primary" (click)="newUser()">New user</button>
+        </div>
+    </div>
+    <div class="search-bar">
+        <nz-input-group [nzSuffix]="suffixIcon">
+            <input type="text" nz-input placeholder="Search" [(ngModel)]="searchQuery"
+                (ngModelChange)="filterUsers()" />
+        </nz-input-group>
+        <ng-template #suffixIcon><i nz-icon nzType="search"></i></ng-template>
+    </div>
+
+    <nz-table #userTable [nzData]="users.slice((currentPage - 1) * pageSize, currentPage * pageSize)" nzSize="small"
+        [nzScroll]="{ x: 'max-content', y: 'calc(100vh - 400px)' }" class="user-table">
+        <thead>
+            <tr>
+                <th nzShowSort nzSortKey="action" data-label="Actions">Actions</th>
+                <th nzShowSort nzSortKey="username" data-label="User Name">User Name</th>
+                <th nzShowSort nzSortKey="email" data-label="Email Address">Email Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let user of userTable.data">
+                <td data-label="Actions"><button nz-button nzType="link">Actions</button></td>
+                <td data-label="User Name">{{ user.username }}</td>
+                <td data-label="Email Address">{{ user.email }}</td>
+            </tr>
+        </tbody>
+    </nz-table>
+    <div class="pagination-container">
+        <span>25 total</span>
+        <nz-pagination [nzTotal]="totalItems" [(nzPageIndex)]="currentPage" [nzPageSize]="pageSize"
+            (nzPageIndexChange)="onPageChange($event)" nzShowSizeChanger="false"></nz-pagination>
+    </div>
+</div>

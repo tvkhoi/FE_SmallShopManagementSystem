@@ -6,6 +6,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { loginGuard } from './core/guards/login.guard';
 import { AdminLayout } from './shared/layouts/admin-layout/admin-layout';
 import { Auditlog } from './features/admin/auditlog/auditlog';
+import { UsersComponent } from './features/admin/users/users';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -18,6 +19,7 @@ export const routes: Routes = [
           children: [
             { path: 'dashboard', component: Dashboard },
             { path: 'audit_log', component: Auditlog },
+            { path: 'users', component: UsersComponent },
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
           ]
 }

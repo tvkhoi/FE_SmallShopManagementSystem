@@ -1,0 +1,270 @@
+.users-container {
+  padding: 24px;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  .users-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .user-header__actions {
+      display: flex;
+      gap: 8px;
+
+      button {
+        height: 32px;
+        padding: 0 12px;
+        background-color: #4a4a4a;
+        border: 1px solid #666;
+        color: #fff;
+
+        &:hover {
+          background-color: #5a5a5a;
+        }
+      }
+    }
+  }
+
+  .search-bar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    align-items: center;
+
+    nz-input-group {
+      flex: 1;
+
+      .ant-input {
+        background: #2d2d2d;
+        color: #e0e0e0;
+        border: 1px solid #4d4d4d;
+      }
+
+      .ant-input-suffix {
+        color: #999;
+      }
+    }
+
+    button {
+      height: 32px;
+      padding: 0 12px;
+      background-color: #4a4a4a;
+      border: 1px solid #666;
+      color: #fff;
+
+      &:hover {
+        background-color: #5a5a5a;
+      }
+    }
+  }
+
+  .user-table {
+    background: #2d2d2d;
+    border-radius: 4px;
+    overflow: auto;
+
+    th {
+      background: #3d3d3d;
+      color: #ffffff;
+      font-weight: 500;
+      padding: 12px;
+      border-bottom: 1px solid #4d4d4d;
+      text-align: left;
+      white-space: nowrap; // Prevent text wrapping in headers
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #4d4d4d;
+      color: #e0e0e0;
+      text-align: left;
+      word-break: break-word; // Allow long text to break
+
+      button {
+        color: #1890ff;
+        padding: 0;
+        height: auto;
+        line-height: 1;
+        background: transparent;
+        border: none;
+
+        &:hover {
+          background: transparent;
+          text-decoration: underline;
+        }
+      }
+    }
+
+    tr:hover {
+      background: #3d3d3d;
+    }
+  }
+
+  .pagination-container {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #2d2d2d;
+    border-radius: 4px;
+
+    span {
+      font-size: 14px;
+      color: #999;
+    }
+
+    nz-pagination {
+      margin: 0;
+
+      .ant-pagination-item {
+        background: #3d3d3d;
+        border: 1px solid #4d4d4d;
+        color: #e0e0e0;
+      }
+
+      .ant-pagination-item-active {
+        background: #1890ff;
+        border-color: #1890ff;
+        color: #fff;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .users-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+
+      .user-header__actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    .search-bar {
+      flex-direction: column;
+      gap: 12px;
+
+      nz-input-group {
+        width: 100%;
+      }
+    }
+
+    .user-table {
+  background: #2d2d2d;
+  border-radius: 4px;
+  overflow: auto; // Enable scrolling for both axes
+  min-width: 600px; // Minimum width to trigger horizontal scroll if content exceeds
+
+  th {
+    background: #3d3d3d;
+    color: #ffffff;
+    font-weight: 500;
+    padding: 12px;
+    border-bottom: 1px solid #4d4d4d;
+    text-align: left;
+    white-space: nowrap; // Prevent header text from wrapping
+    min-width: 100px; // Ensure headers have a minimum width
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #4d4d4d;
+    color: #e0e0e0;
+    text-align: left;
+    white-space: nowrap; // Prevent text wrapping in cells
+    overflow: hidden; // Hide overflow content
+    text-overflow: ellipsis; // Add ellipsis for truncated text
+
+    button {
+      color: #1890ff;
+      padding: 0;
+      height: auto;
+      line-height: 1;
+      background: transparent;
+      border: none;
+
+      &:hover {
+        background: transparent;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  tr:hover {
+    background: #3d3d3d;
+  }
+
+  // Responsive design for mobile
+  @media (max-width: 768px) {
+    th {
+      display: none;
+    }
+
+    td {
+      display: block;
+      text-align: right;
+      padding: 12px 16px 12px 40%;
+      position: relative;
+      min-height: 48px;
+      white-space: normal; // Allow text to wrap on mobile for readability
+      overflow: visible; // Show full content on mobile
+      text-overflow: clip; // Remove ellipsis on mobile
+
+      &:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 12px;
+        width: 35%;
+        font-weight: 500;
+        text-align: left;
+        color: #ffffff;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      &:first-child {
+        padding-left: 12px;
+        button {
+          margin-left: -100%;
+        }
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    tr {
+      margin-bottom: 8px;
+      border: 1px solid #4d4d4d;
+      border-radius: 4px;
+      display: block;
+      padding: 8px;
+    }
+  }
+}
+
+    .pagination-container {
+      flex-direction: column;
+      gap: 12px;
+      text-align: center;
+    }
+  }
+}
