@@ -1,0 +1,118 @@
+<div class="audit-log-container">
+  <h2>Audit logs</h2>
+
+  <!-- Bộ lọc -->
+<div class="filter-section">
+  <div nz-row [nzGutter]="16">
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+      <nz-date-picker [(ngModel)]="startDate" nzPlaceHolder="Start date"></nz-date-picker>
+    </div>
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+      <nz-date-picker [(ngModel)]="endDate" nzPlaceHolder="End date"></nz-date-picker>
+    </div>
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+      <input nz-input placeholder="User name" [(ngModel)]="userName" />
+    </div>
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+      <input nz-input placeholder="URL" [(ngModel)]="url" />
+    </div>
+  </div>
+
+  <div nz-row [nzGutter]="16" class="mt-2">
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+      <nz-input-number [(ngModel)]="minDuration" nzPlaceHolder="Min Duration"></nz-input-number>
+    </div>
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+      <nz-input-number [(ngModel)]="maxDuration" nzPlaceHolder="Max Duration"></nz-input-number>
+    </div>
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+      <nz-select [(ngModel)]="httpMethod" nzPlaceHolder="HTTP method" style="width: 100%">
+        <nz-option nzValue="" nzLabel="-"></nz-option>
+        <nz-option nzValue="GET" nzLabel="GET"></nz-option>
+        <nz-option nzValue="POST" nzLabel="POST"></nz-option>
+      </nz-select>
+    </div>
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+      <nz-select [(ngModel)]="httpStatusCode" nzPlaceHolder="HTTP status code" style="width: 100%">
+        <nz-option nzValue="" nzLabel="-"></nz-option>
+        <nz-option nzValue="200" nzLabel="200"></nz-option>
+        <nz-option nzValue="404" nzLabel="404"></nz-option>
+      </nz-select>
+    </div>
+  </div>
+
+  <div nz-row [nzGutter]="16" class="mt-2">
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+      <input nz-input placeholder="Application name" [(ngModel)]="applicationName" />
+    </div>
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+      <input nz-input placeholder="Client IP Address" [(ngModel)]="clientIp" />
+    </div>
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+      <input nz-input placeholder="Correlation Id" [(ngModel)]="correlationId" />
+    </div>
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+      <nz-select [(ngModel)]="hasException" nzPlaceHolder="Has exception" style="width: 100%">
+        <nz-option nzValue="" nzLabel="-"></nz-option>
+        <nz-option nzValue="true" nzLabel="Yes"></nz-option>
+        <nz-option nzValue="false" nzLabel="No"></nz-option>
+      </nz-select>
+    </div>
+  </div>
+
+  <div nz-row [nzJustify]="'end'" class="mt-3">
+    <button nz-button nzType="primary" (click)="filterLogs()" [nzLoading]="loading" class="mr-2">
+      Refresh
+    </button>
+    <button nz-button nzType="default" (click)="exportToExcel()" [nzLoading]="loading">
+      Export to Excel
+    </button>
+  </div>
+</div>
+
+
+  <!-- Bảng audit logs -->
+  <nz-table
+    #auditTable
+    [nzData]="auditLogs.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+    nzSize="small"
+    [nzScroll]="{ x: '100%', y: 'calc(100vh - 400px)' }"
+    class="audit-table"
+    [nzLoading]="loading"
+  >
+    <thead>
+      <tr>
+        <th nzShowSort nzSortKey="action">Actions</th>
+        <th nzShowSort nzSortKey="status">HTTP Request</th>
+        <th nzShowSort nzSortKey="user">User</th>
+        <th nzShowSort nzSortKey="ip">IP Address</th>
+        <th nzShowSort nzSortKey="date">Date</th>
+        <th nzShowSort nzSortKey="duration">Duration</th>
+        <th nzShowSort nzSortKey="app">Application Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let log of auditTable.data">
+        <td><a nz-button nzType="link">Detail</a></td>
+        <td>{{ log.status }} {{ log.action }}</td>
+        <td>{{ log.user }}</td>
+        <td>{{ log.ip }}</td>
+        <td>{{ log.date }}</td>
+        <td>{{ log.duration }}</td>
+        <td>{{ log.app }}</td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <!-- Phân trang -->
+  <div class="pagination-container">
+    <nz-pagination
+      [nzTotal]="totalItems"
+      [(nzPageIndex)]="currentPage"
+      [nzPageSize]="pageSize"
+      (nzPageIndexChange)="onPageChange($event)"
+      nzShowSizeChanger="true"
+      [nzPageSizeOptions]="[5, 10, 20]"
+    ></nz-pagination>
+  </div>
+</div>

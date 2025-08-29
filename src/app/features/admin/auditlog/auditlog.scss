@@ -1,0 +1,158 @@
+.audit-log-container {
+  padding: 24px;
+  background: #181825; // nền tối hơn một chút cho dịu mắt
+  color: #e0e0e0;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .entity-changes-link {
+    color: #a855f7;
+    margin-bottom: 20px;
+    display: inline-block;
+    font-size: 14px;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #c084fc;
+      text-decoration: underline;
+    }
+  }
+
+  /* Thanh filter */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+
+    nz-date-picker,
+    nz-select,
+    input,
+    button {
+      height: 40px;
+    }
+
+    input,
+    nz-date-picker,
+    nz-select {
+      background: #222235;
+      border-radius: 6px;
+      border: 1px solid #2f2f44;
+      color: #e0e0e0;
+      transition: border 0.2s ease;
+
+      &:hover,
+      &:focus {
+        border-color: #a855f7;
+      }
+    }
+
+    button {
+      border-radius: 6px;
+      font-weight: 500;
+      padding: 0 18px;
+    }
+  }
+
+  /* Bảng log */
+  .audit-table {
+    background: #202031;
+    border-radius: 10px;
+    overflow-x: auto;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+
+    th {
+      background: #2a2a40;
+      color: #fff;
+      font-weight: 600;
+      padding: 14px;
+      border-bottom: 2px solid #34344d;
+      text-align: left;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #2e2e46;
+      color: #d1d1d1;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: rgba(168, 85, 247, 0.08); // tím nhạt hover
+      }
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    a {
+      color: #3b82f6;
+      font-weight: 500;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #60a5fa;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 992px) {
+    .filter-bar {
+      flex-direction: column;
+      align-items: stretch;
+
+      nz-date-picker,
+      nz-select,
+      input,
+      button {
+        width: 100%;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .audit-table {
+      th {
+        display: none;
+      }
+
+      tr {
+        display: block;
+        margin-bottom: 14px;
+        border: 1px solid #2e2e46;
+        border-radius: 6px;
+        background: #252538;
+        overflow: hidden;
+      }
+
+      td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 14px;
+        border: none;
+        border-bottom: 1px solid #2f2f46;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:before {
+          content: attr(data-label);
+          font-weight: 600;
+          color: #ffffff;
+        }
+      }
+    }
+  }
+}

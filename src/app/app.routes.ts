@@ -5,6 +5,7 @@ import { SignUpComponent } from './shared/components/sign-up/sign-up';
 import { authGuard } from './core/guards/auth.guard';
 import { loginGuard } from './core/guards/login.guard';
 import { AdminLayout } from './shared/layouts/admin-layout/admin-layout';
+import { Auditlog } from './features/admin/auditlog/auditlog';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -16,6 +17,7 @@ export const routes: Routes = [
           data: {roles: ['Admin']},
           children: [
             { path: 'dashboard', component: Dashboard },
+            { path: 'audit_log', component: Auditlog },
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
           ]
 }
