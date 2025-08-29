@@ -35,7 +35,8 @@ export class AdminLayout implements OnInit {
   private routeMap: { [key: string]: { title: string; icon: string } } = {
     '/admin/dashboard': { title: 'Dashboard', icon: 'dashboard' },
     '/admin/users': { title: 'Users', icon: 'user' },
-    '/admin/settings': { title: 'Settings', icon: 'setting' }
+    '/admin/roles': { title: 'Roles', icon: 'role' },
+    '/admin/audit_log': { title: 'Audit Log', icon: 'audit' }
   };
 
   ngOnInit(): void {
