@@ -1,0 +1,64 @@
+<div class="roles-container">
+    <div class="roles-header">
+        <nz-row>
+            <nz-col nzSpan="12">
+                <h2>Roles</h2>
+            </nz-col>
+            <nz-col nzSpan="12" style="text-align: right;">
+                <button nz-button nzType="primary" (click)="showModal()">New Role</button>
+            </nz-col>
+        </nz-row>
+        <nz-modal [(nzVisible)]="isVisible" nzTitle="New Role" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
+            [nzOkLoading]="isConfirmLoading">
+            <div *nzModalContent>
+                <label for="roleName">Role Name:</label>
+                <input nz-input placeholder="Role Name" />
+                <nz-checkbox-group [style.width.%]="100">
+                    <nz-row>
+                        <nz-col nzSpan="24">
+                            <label nz-checkbox nzValue="A">Customer</label>
+                        </nz-col>
+                        <nz-col nzSpan="24">
+                            <label nz-checkbox nzValue="B">Public</label>
+                        </nz-col>
+                    </nz-row>
+                </nz-checkbox-group>
+            </div>
+            <div *nzModalFooter>
+                <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
+                <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">Save</button>
+            </div>
+        </nz-modal>
+    </div>
+    <div class="roles-search">
+        <input nz-input placeholder="Search roles..." [(ngModel)]="searchQuery" (ngModelChange)="filterRoles()" />
+        <button nz-button nzType="default">Search</button>
+    </div>
+    <nz-table #roleTable [nzData]="roles" [nzFrontPagination]="false">
+        <thead>
+            <tr>
+                <th nzWidth="15%" data-label="Actions">ACTIONS</th>
+                <th nzWidth="60%" data-label="Role Name">ROLE NAME</th>
+                <th nzWidth="25%" data-label="User Count">USER COUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let role of roles">
+                <td data-label="Actions">
+                    <nz-select ngModel="lucy">
+                        <nz-option nzValue="jack" nzLabel="Jack"></nz-option>
+                        <nz-option nzValue="lucy" nzLabel="Lucy"></nz-option>
+                        <nz-option nzValue="disabled" nzLabel="Disabled" nzDisabled></nz-option>
+                    </nz-select>
+                </td>
+                <td data-label="Role Name">{{ role.name }}</td>
+                <td data-label="User Count">{{ role.userCount }}</td>
+            </tr>
+        </tbody>
+    </nz-table>
+    <div class="pagination-container">
+        <span>Total: {{ totalItems }}</span>
+        <nz-pagination [nzTotal]="totalItems" [(nzPageIndex)]="currentPage" [nzPageSize]="pageSize"
+            (nzPageIndexChange)="onPageChange($event)" nzShowSizeChanger="false"></nz-pagination>
+    </div>
+</div>
