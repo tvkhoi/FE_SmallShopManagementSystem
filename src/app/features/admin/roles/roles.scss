@@ -1,10 +1,42 @@
 .roles-container {
-    .roles-search {
-        display: flex;
-        align-items: center;
+  .roles-search {
+    display: flex;
+    align-items: center;
 
-        input {
-            margin-right: 8px;
-        }
+    input {
+      margin-right: 8px;
     }
+  }
+
+  .roles-header {
+    .error-msg {
+      color: red;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .permissions-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #f0f0f0;
+      padding: 8px;
+      border-radius: 4px;
+
+    }
+
+
+  }
+
+  .action-dropdown {
+    border: none;
+    color: white;
+    padding: 4px 8px;
+    background-color: #40A9FF;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: darken(#40A9FF, 10%);
+    }
+  }
+
 }

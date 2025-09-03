@@ -8,33 +8,55 @@
                 <button nz-button nzType="primary" (click)="showModal()">New Role</button>
             </nz-col>
         </nz-row>
-        <nz-modal [(nzVisible)]="isVisible" nzTitle="New Role" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
-            [nzOkLoading]="isConfirmLoading">
+
+        <!-- Modal thêm Role -->
+        <nz-modal [(nzVisible)]="isVisible" nzTitle="New Role" (nzOnCancel)="handleCancel()"
+            [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooter">
             <div *nzModalContent>
-                <label for="roleName">Role Name:</label>
-                <input nz-input placeholder="Role Name" />
-                <nz-checkbox-group [style.width.%]="100">
-                    <nz-row>
-                        <nz-col nzSpan="24">
-                            <label nz-checkbox nzValue="A">Customer</label>
-                        </nz-col>
-                        <nz-col nzSpan="24">
-                            <label nz-checkbox nzValue="B">Public</label>
-                        </nz-col>
-                    </nz-row>
-                </nz-checkbox-group>
-            </div>
-            <div *nzModalFooter>
-                <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
-                <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">Save</button>
+                <!-- Form tạo role -->
+                <form nz-form>
+                    <!-- Role Name Input -->
+                    <nz-form-item>
+                        <nz-form-label [nzRequired]="true" nzFor="roleName">Role Name</nz-form-label>
+                        <nz-form-control [nzErrorTip]="'Tên vai trò là bắt buộc'" [nzValidateStatus]="roleNameInput">
+                            <input nz-input id="roleName" [(ngModel)]="roleName" name="roleName"
+                                #roleNameInput="ngModel" required placeholder="Enter role name" />
+                        </nz-form-control>
+                    </nz-form-item>
+
+                    <!-- Permissions Tree -->
+                    <h4>Permissions</h4>
+                    <nz-form-item>
+                        <nz-form-control [nzErrorTip]="'Vui lòng chọn ít nhất một quyền'" [nzValidateStatus]="permissionsCtrl">
+                            <nz-tree [nzData]="treeData" nzCheckable nzShowExpand nzShowLine nzCheckStrictly  (nzCheckboxChange)="onCheck($event)">
+                            </nz-tree>
+
+                            <!-- Hidden input để gom validation -->
+                            <input type="hidden" [ngModel]="selectedPermissions.length > 0 ? 'valid' : ''"
+                                name="permissionsCtrl" #permissionsCtrl="ngModel" required />
+                        </nz-form-control>
+                    </nz-form-item>
+                </form>
             </div>
         </nz-modal>
+
+        <!-- Footer Template -->
+        <ng-template #modalFooter>
+            <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
+            <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">
+                Save
+            </button>
+        </ng-template>
     </div>
+
+    <!-- Search box -->
     <div class="roles-search">
         <input nz-input placeholder="Search roles..." [(ngModel)]="searchQuery" (ngModelChange)="filterRoles()" />
         <button nz-button nzType="default">Search</button>
     </div>
-    <nz-table #roleTable [nzData]="roles" [nzFrontPagination]="false">
+
+    <!-- Table roles -->
+    <nz-table #roleTable [nzData]="pagedRoles" [nzFrontPagination]="false">
         <thead>
             <tr>
                 <th nzWidth="15%" data-label="Actions">ACTIONS</th>
@@ -43,19 +65,25 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let role of roles">
+            <tr *ngFor="let role of pagedRoles">
                 <td data-label="Actions">
-                    <nz-select ngModel="lucy">
-                        <nz-option nzValue="jack" nzLabel="Jack"></nz-option>
-                        <nz-option nzValue="lucy" nzLabel="Lucy"></nz-option>
-                        <nz-option nzValue="disabled" nzLabel="Disabled" nzDisabled></nz-option>
-                    </nz-select>
+                    <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu"><nz-icon nzType="setting"
+                            nzTheme="outline" style="font-size: 16px; padding-right: 5px;" />Action</a>
+                    <nz-dropdown-menu #menu="nzDropdownMenu">
+                        <ul nz-menu>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="editRole(role)">Edit</button></li>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="deleteRole(role)">Delete</button>
+                            </li>
+                        </ul>
+                    </nz-dropdown-menu>
                 </td>
                 <td data-label="Role Name">{{ role.name }}</td>
                 <td data-label="User Count">{{ role.userCount }}</td>
             </tr>
         </tbody>
     </nz-table>
+
+    <!-- Pagination -->
     <div class="pagination-container">
         <span>Total: {{ totalItems }}</span>
         <nz-pagination [nzTotal]="totalItems" [(nzPageIndex)]="currentPage" [nzPageSize]="pageSize"
