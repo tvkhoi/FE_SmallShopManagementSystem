@@ -1,5 +1,5 @@
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { Component, inject, ChangeDetectorRef, NgZone, OnInit } from '@angular/core';
+import { Component, inject, ChangeDetectorRef, NgZone, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -14,7 +14,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzTreeModule, NzFormatEmitEvent } from 'ng-zorro-antd/tree';
+import { NzFormatEmitEvent, NzTreeModule } from 'ng-zorro-antd/tree';
 
 // Services
 import { PermissionService } from '../../../core/services/permission.service';
@@ -76,6 +76,7 @@ export class RolesComponent implements OnInit {
   submitted = false;
 
   roleName = '';
+  editingRoleId: number | null = null;
 
   totalItems = 0;
   pageSize = 10;
@@ -144,8 +145,17 @@ export class RolesComponent implements OnInit {
     this.isVisible = true;
     this.submitted = false;
     this.roleName = '';
-    // Reset tree checked states if needed
+    this.resetTreeChecked();
   }
+
+  private resetTreeChecked(): void {
+  this.treeData = this.treeData.map(module => ({
+    ...module,
+    checked: false,
+    children: module.children?.map(c => ({ ...c, checked: false })) || []
+  }));
+  this.cdr.detectChanges();
+}
 
   handleOk(): void {
     this.submitted = true;
@@ -202,56 +212,51 @@ export class RolesComponent implements OnInit {
     this.submitted = false;
   }
 
-  // onCheck(event: NzFormatEmitEvent): void {
-  //   // Update checked state in treeData based on event
-  //   const checkedKeys = event.keys as string[];
-  //   this.treeData = this.updateTreeChecked(this.treeData, checkedKeys);
-  // }
+onCheck(event: NzFormatEmitEvent): void {
+  this.treeData = [...this.treeData]; 
+  this.cdr.detectChanges();
+}
 
-  onCheck(event: NzFormatEmitEvent): void {
-  const checkedKeys = event.keys as string[];
-
-  // Check/uncheck children manually
-  this.treeData = this.treeData.map(node => {
-    if (checkedKeys.includes(node.key)) {
-      // Nếu node cha được check, check tất cả con
-      const children = node.children?.map(c => ({ ...c, checked: true }));
-      return { ...node, checked: true, children };
-    } else {
-      // Ngược lại, giữ con theo keys
-      const children = node.children?.map(c => ({ ...c, checked: checkedKeys.includes(c.key) }));
-      return { ...node, checked: false, children };
+private updateTreeChecked(nodes: TreeNode[], checkedKeys: string[]): TreeNode[] {
+  return nodes.map(node => {
+    const updatedNode = { ...node, checked: checkedKeys.includes(node.key) };
+    if (node.children) {
+      updatedNode.children = this.updateTreeChecked(node.children, checkedKeys);
     }
+    return updatedNode;
   });
 }
 
+// Chỉ lấy quyền (leaf nodes hoặc cả cha nếu muốn)
+get selectedPermissions(): Permission[] {
+  const selected: Permission[] = [];
 
-  private updateTreeChecked(nodes: TreeNode[], checkedKeys: string[]): TreeNode[] {
-    return nodes.map(node => {
-      const updatedNode = { ...node, checked: checkedKeys.includes(node.key) };
-      if (node.children) {
-        updatedNode.children = this.updateTreeChecked(node.children, checkedKeys);
-      }
-      return updatedNode;
-    });
-  }
-
-  get selectedPermissions(): Permission[] {
-    const selected: Permission[] = [];
-    this.treeData.forEach((moduleNode) => {
-      moduleNode.children?.forEach((permNode) => {
-        if (permNode.checked) {
+  const traverse = (nodes: TreeNode[], parentModule?: string) => {
+    nodes.forEach(node => {
+      if (node.checked) {
+        // Nếu là leaf node => quyền
+        if (node.isLeaf) {
           selected.push({
-            id: permNode.id!,
-            name: permNode.title!, // Adjust if name should be used instead
-            module: moduleNode.key,
-            description: permNode.title!
+            id: node.id!,
+            name: node.title!,
+            module: parentModule || '',
+            description: node.title!
           });
+        } else {
+          // Nếu muốn lấy cả node cha thì có thể push vào đây
+          // selected.push({ id: 0, name: node.title, module: node.key, description: node.title });
         }
-      });
+      }
+      if (node.children) {
+        traverse(node.children, node.key);
+      }
     });
-    return selected;
-  }
+  };
+
+  traverse(this.treeData);
+  return selected;
+}
+
 
   // Sửa role
   editRole(role: Role): void {
