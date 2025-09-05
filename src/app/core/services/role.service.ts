@@ -33,7 +33,8 @@ export class RoleService {
 
   // ====== Permissions for Role ======
 
-  getPermissionsOfRole(roleId: number): Observable<any> {
+  getPermissionsByRole(roleId: number): Observable<any> {
+    console.log('Fetching permissions for roleId:', this.http.get<any>(`${this.apiUrl}/${roleId}/permissions`));
     return this.http.get<any>(`${this.apiUrl}/${roleId}/permissions`);
   }
 

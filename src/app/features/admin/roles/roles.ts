@@ -1,7 +1,8 @@
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { Component, inject, ChangeDetectorRef, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, ChangeDetectorRef, NgZone, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Subject, switchMap, takeUntil } from 'rxjs';
 
 // Ant Design Modules
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -22,7 +23,7 @@ import { RoleService } from '../../../core/services/role.service';
 
 // ================== Interfaces ==================
 interface Role {
-  roleId: number;
+  id: number;
   name: string;
   userCount: number;
 }
@@ -32,6 +33,12 @@ interface Permission {
   name: string;
   module: string;
   description: string;
+  granted?: boolean;
+}
+
+interface RolePermissionsResponse {
+  roleId: number;
+  permissions: Permission[];
 }
 
 interface TreeNode {
@@ -42,7 +49,7 @@ interface TreeNode {
   checked?: boolean;
   expanded?: boolean;
   disabled?: boolean;
-  id?: number; // For leaf nodes (permissions)
+  id?: number;
 }
 
 // ================== Component ==================
@@ -67,9 +74,10 @@ interface TreeNode {
   templateUrl: './roles.html',
   styleUrls: ['./roles.scss'],
 })
-export class RolesComponent implements OnInit {
+export class RolesComponent implements OnInit, OnDestroy {
   roles: Role[] = [];
   treeData: TreeNode[] = [];
+  originalPermissions: { id: number; granted: boolean }[] = [];
 
   isVisible = false;
   isConfirmLoading = false;
@@ -81,8 +89,9 @@ export class RolesComponent implements OnInit {
   totalItems = 0;
   pageSize = 10;
   currentPage = 1;
-
   searchQuery = '';
+
+  private destroy$ = new Subject<void>();
 
   private permissionService = inject(PermissionService);
   private roleService = inject(RoleService);
@@ -95,177 +104,230 @@ export class RolesComponent implements OnInit {
     this.loadRoles();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // ================== Load dữ liệu ==================
   private loadPermissions(): void {
-    this.permissionService.getPermissions().subscribe({
-      next: () => {
-        this.permissionService.userData$.subscribe({
-          next: (data: Permission[]) => {
-            this.zone.run(() => {
-              // Group permissions into tree structure
-              const modules = [...new Set(data.map(p => p.module))];
-              this.treeData = modules.map(module => {
-                const modulePerms = data.filter(p => p.module === module);
-                return {
-                  key: module,
-                  title: module,
-                  expanded: true,
-                  children: modulePerms.map(perm => ({
-                    key: `${module}-${perm.id}`,
-                    title: perm.description,
-                    isLeaf: true,
-                    checked: false,
-                    id: perm.id
-                  }))
-                };
-              });
-              this.cdr.detectChanges();
+    this.permissionService
+      .getPermissions()
+      .pipe(
+        switchMap(() => this.permissionService.userData$),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (data: Permission[]) => {
+          this.zone.run(() => {
+            const modules = [...new Set(data.map((p) => p.module))];
+            this.treeData = modules.map((module) => {
+              const modulePerms = data.filter((p) => p.module === module);
+              return {
+                key: module,
+                title: module,
+                expanded: true,
+                children: modulePerms.map((perm) => ({
+                  key: `${module}-${perm.id}`,
+                  title: perm.description,
+                  isLeaf: true,
+                  checked: false,
+                  id: perm.id,
+                })),
+              };
             });
-          },
-          error: (error) => console.error('Lỗi khi load permissions:', error),
-        });
-      },
-      error: (error) => console.error('Lỗi khi gọi API permissions:', error),
-    });
+            this.cdr.detectChanges();
+          });
+        },
+        error: (error) => console.error('Lỗi khi load permissions:', error),
+      });
   }
 
   private loadRoles(): void {
-    this.roleService.getAllRoles().subscribe({
-      next: (data) => {
-        this.zone.run(() => {
-          this.roles = data;
-          this.totalItems = data.length;
-          this.cdr.detectChanges();
-        });
-      },
-      error: (error) => console.error('Lỗi khi load roles:', error),
-    });
+    this.roleService
+      .getAllRoles()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.zone.run(() => {
+            this.roles = data;
+            this.totalItems = data.length;
+            this.cdr.detectChanges();
+          });
+        },
+        error: (error) => console.error('Lỗi khi load roles:', error),
+      });
   }
 
+  // ================== Modal ==================
   showModal(): void {
     this.isVisible = true;
     this.submitted = false;
     this.roleName = '';
+    this.editingRoleId = null;
     this.resetTreeChecked();
   }
 
   private resetTreeChecked(): void {
-  this.treeData = this.treeData.map(module => ({
-    ...module,
-    checked: false,
-    children: module.children?.map(c => ({ ...c, checked: false })) || []
-  }));
+    this.treeData = this.treeData.map((module) => ({
+      ...module,
+      checked: false,
+      children: module.children?.map((c) => ({ ...c, checked: false })) || [],
+    }));
+    this.cdr.detectChanges();
+  }
+
+  // ================== Lưu role ==================
+  handleOk(): void {
+  this.submitted = true;
+  if (!this.roleName) return;
+
+  this.isConfirmLoading = true;
   this.cdr.detectChanges();
+
+  const saveRole$ =
+    this.editingRoleId === null
+      ? this.roleService.createRole({ name: this.roleName })
+      : this.roleService.updateRole(this.editingRoleId, { name: this.roleName });
+
+  saveRole$.pipe(takeUntil(this.destroy$)).subscribe({
+    next: (res: any) => {
+      const roleId = this.editingRoleId ?? res.roleId;
+
+      // Build Map từ originalPermissions
+      const originalMap = new Map<number, boolean>();
+      this.originalPermissions.forEach(p => originalMap.set(p.id, p.granted));
+
+      // Build payload chỉ gồm quyền thay đổi
+      const payload: {id: number, granted: boolean}[] = [];
+      this.treeData.forEach(module => {
+        module.children?.forEach(child => {
+          const checked = !!child.checked;
+          const original = originalMap.get(child.id!);
+          if (original === undefined || original !== checked) {
+            payload.push({ id: child.id!, granted: checked });
+          }
+        });
+      });
+
+      if (payload.length === 0) {
+        this.afterSaveSuccess('Vai trò đã được cập nhật (không thay đổi quyền)');
+        return;
+      }
+
+      this.roleService.assignPermissionsToRole(roleId, payload)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => this.afterSaveSuccess('Vai trò đã được cập nhật thành công'),
+          error: (err) => this.afterSaveError(err),
+        });
+    },
+    error: (err) => this.afterSaveError(err),
+  });
 }
 
-  handleOk(): void {
-    this.submitted = true;
 
-    if (!this.roleName || this.selectedPermissions.length === 0) {
-      return;
-    }
-
-    this.isConfirmLoading = true;
-    this.cdr.detectChanges();
-
+  private afterSaveSuccess(message: string): void {
     this.zone.run(() => {
-      this.roleService.createRole({ name: this.roleName }).subscribe({
-        next: (newRole) => {
-          const roleId = newRole.roleId;
+      this.isConfirmLoading = false;
+      this.isVisible = false;
+      this.loadRoles();
+      this.msg.success(message);
+      this.cdr.detectChanges();
+    });
+  }
 
-          const payload = this.selectedPermissions.map((p) => ({
-            id: p.id,
-            granted: true,
-          }));
-
-          this.roleService.assignPermissionsToRole(roleId, payload).subscribe({
-            next: () => {
-              this.zone.run(() => {
-                this.isConfirmLoading = false;
-                this.isVisible = false;
-                this.loadRoles();
-                this.msg.success('Vai trò đã được tạo và gán quyền thành công');
-                this.cdr.detectChanges();
-              });
-            },
-            error: (error) => {
-              this.zone.run(() => {
-                this.isConfirmLoading = false;
-                this.cdr.detectChanges();
-                console.error('Lỗi khi gán quyền:', error);
-              });
-            },
-          });
-        },
-        error: (error) => {
-          this.zone.run(() => {
-            this.isConfirmLoading = false;
-            this.cdr.detectChanges();
-            console.error('Lỗi khi tạo role:', error);
-          });
-        },
-      });
+  private afterSaveError(error: any): void {
+    this.zone.run(() => {
+      this.isConfirmLoading = false;
+      this.cdr.detectChanges();
+      console.error('Lỗi khi lưu role:', error);
     });
   }
 
   handleCancel(): void {
     this.isVisible = false;
     this.submitted = false;
+    this.editingRoleId = null;
   }
 
-onCheck(event: NzFormatEmitEvent): void {
-  this.treeData = [...this.treeData]; 
-  this.cdr.detectChanges();
-}
+  // ================== Tree ==================
+  onCheck(event: NzFormatEmitEvent): void {
+    this.treeData = [...this.treeData];
+    this.cdr.detectChanges();
+  }
 
-private updateTreeChecked(nodes: TreeNode[], checkedKeys: string[]): TreeNode[] {
-  return nodes.map(node => {
-    const updatedNode = { ...node, checked: checkedKeys.includes(node.key) };
-    if (node.children) {
-      updatedNode.children = this.updateTreeChecked(node.children, checkedKeys);
-    }
-    return updatedNode;
+  // ================== Sửa role ==================
+  editRole(role: Role): void {
+  this.isVisible = true;
+  this.submitted = false;
+  this.editingRoleId = role.id;
+  this.roleName = role.name;
+
+  this.permissionService.userData$.pipe(takeUntil(this.destroy$)).subscribe(allPermissions => {
+    this.roleService.getPermissionsByRole(role.id).pipe(takeUntil(this.destroy$)).subscribe((resp: RolePermissionsResponse) => {
+      
+      // Lưu tất cả quyền cũ
+      this.originalPermissions = resp.permissions.map(p => ({
+        id: p.id,
+        granted: p.granted ?? false
+      }));
+
+      const originalMap = new Map<number, boolean>();
+      this.originalPermissions.forEach(p => originalMap.set(p.id, p.granted));
+
+      const modules = [...new Set(allPermissions.map(p => p.module))];
+      this.treeData = modules.map(module => {
+        const modulePerms = allPermissions.filter(p => p.module === module);
+        return {
+          key: module,
+          title: module,
+          expanded: true,
+          // checked module = true nếu tất cả quyền module được granted
+          checked: modulePerms.every(p => originalMap.get(p.id) ?? false),
+          children: modulePerms.map(perm => ({
+            key: `${module}-${perm.id}`,
+            title: perm.description,
+            isLeaf: true,
+            id: perm.id,
+            checked: originalMap.get(perm.id) ?? false
+          }))
+        };
+      });
+
+      this.cdr.detectChanges();
+    });
   });
 }
 
-// Chỉ lấy quyền (leaf nodes hoặc cả cha nếu muốn)
-get selectedPermissions(): Permission[] {
-  const selected: Permission[] = [];
 
-  const traverse = (nodes: TreeNode[], parentModule?: string) => {
-    nodes.forEach(node => {
-      if (node.checked) {
-        // Nếu là leaf node => quyền
-        if (node.isLeaf) {
+  // ================== Xóa role ==================
+  deleteRole(role: Role): void {
+    console.log('Đang xóa role:', role.name);
+  }
+
+  // ================== Helper ==================
+  get selectedPermissions(): Permission[] {
+    const selected: Permission[] = [];
+
+    const traverse = (nodes: TreeNode[], parentModule?: string) => {
+      nodes.forEach((node) => {
+        if (node.checked && node.isLeaf) {
           selected.push({
             id: node.id!,
             name: node.title!,
             module: parentModule || '',
-            description: node.title!
+            description: node.title!,
           });
-        } else {
-          // Nếu muốn lấy cả node cha thì có thể push vào đây
-          // selected.push({ id: 0, name: node.title, module: node.key, description: node.title });
         }
-      }
-      if (node.children) {
-        traverse(node.children, node.key);
-      }
-    });
-  };
+        if (node.children) {
+          traverse(node.children, node.key);
+        }
+      });
+    };
 
-  traverse(this.treeData);
-  return selected;
-}
-
-
-  // Sửa role
-  editRole(role: Role): void {
-    console.log('Đang sửa role:', role.name);
-  }
-
-  // Xóa role
-  deleteRole(role: Role): void {
-    console.log('Đang xóa role:', role.name);
+    traverse(this.treeData);
+    return selected;
   }
 
   get pagedRoles(): Role[] {
