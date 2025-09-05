@@ -1,6 +1,6 @@
 .audit-log-container {
   padding: 24px;
-  background: #181825; // nền tối hơn một chút cho dịu mắt
+  background: #717177; // nền tối hơn một chút cho dịu mắt
   color: #e0e0e0;
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -81,7 +81,7 @@
     td {
       padding: 12px 14px;
       border-bottom: 1px solid #2e2e46;
-      color: #d1d1d1;
+      color: #0a0909;
       transition: background 0.2s ease;
 
       &:hover {
@@ -141,7 +141,7 @@
         align-items: center;
         padding: 10px 14px;
         border: none;
-        border-bottom: 1px solid #2f2f46;
+        border-bottom: 1px solid #030303;
 
         &:last-child {
           border-bottom: none;

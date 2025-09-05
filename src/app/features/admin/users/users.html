@@ -2,11 +2,57 @@
     <div class="users-header">
         <h2>Users</h2>
         <div class="user-header__actions">
-            <button nz-button nzType="default" (click)="importUsers()">Import</button>
-            <button nz-button nzType="default" (click)="exportUsers()">Export</button>
-            <button nz-button nzType="primary" (click)="newUser()">New user</button>
+            <button nz-button nzType="primary" (click)="showModal()">Add Permission User</button>
         </div>
     </div>
+
+    <!-- Modal gán quyền cho User -->
+    <nz-modal [(nzVisible)]="isVisible" nzTitle="Assign Permissions to User" (nzOnCancel)="handleCancel()"
+        [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooter">
+        <div *nzModalContent>
+            <form nz-form>
+                <nz-form-item>
+                    <nz-form-label [nzRequired]="true" nzFor="userId">User ID</nz-form-label>
+                    <nz-form-control [nzErrorTip]="'Vui lòng nhập User ID hợp lệ'">
+                        <input nz-input id="userId" [(ngModel)]="userId" name="userId" required
+                            placeholder="Enter user ID" type="number" />
+                    </nz-form-control>
+                </nz-form-item>
+
+                <h4>Permissions</h4>
+                <nz-form-item>
+                    <nz-form-control [nzErrorTip]="'Vui lòng chọn ít nhất một quyền'"
+                        [nzValidateStatus]="permissionsCtrl">
+                        <label nz-checkbox [(ngModel)]="allChecked" [ngModelOptions]="{standalone: true}"
+                            (ngModelChange)="toggleAllPermissions($event)">Select all</label>
+                        <div *ngFor="let module of treeData" style="margin: 8px 0;">
+                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                                <strong>{{ module.title }}</strong>
+                                <label nz-checkbox [ngModel]="isModuleAllChecked(module.key)"
+                                    [ngModelOptions]="{standalone: true}"
+                                    (ngModelChange)="toggleModulePermissions(module.key, $event)">Select all in
+                                    module</label>
+                            </div>
+                            <div style="padding-left: 16px;">
+                                <label nz-checkbox *ngFor="let perm of module.children" [(ngModel)]="perm.checked"
+                                    [ngModelOptions]="{standalone: true}" (ngModelChange)="updateAllCheckedState()"
+                                    style="display:block; margin:4px 0;">{{
+                                    perm.title }}</label>
+                            </div>
+                        </div>
+                        <input type="hidden" [ngModel]="selectedPermissions.length > 0 ? 'valid' : ''"
+                            name="permissionsCtrl" #permissionsCtrl="ngModel" required />
+                    </nz-form-control>
+                </nz-form-item>
+            </form>
+        </div>
+    </nz-modal>
+
+    <ng-template #modalFooter>
+        <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
+        <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">Save</button>
+    </ng-template>
+
     <div class="search-bar">
         <nz-input-group [nzSuffix]="suffixIcon">
             <input type="text" nz-input placeholder="Search" [(ngModel)]="searchQuery"
@@ -19,21 +65,31 @@
         [nzScroll]="{ x: 'max-content', y: 'calc(100vh - 400px)' }" class="user-table">
         <thead>
             <tr>
-                <th nzShowSort nzSortKey="action" data-label="Actions">Actions</th>
-                <th nzShowSort nzSortKey="username" data-label="User Name">User Name</th>
-                <th nzShowSort nzSortKey="email" data-label="Email Address">Email Address</th>
+                <th nzWidth="15%" data-label="Actions">ACTIONS</th>
+                <th nzWidth="35%" data-label="User Name">USER NAME</th>
+                <th nzWidth="50%" data-label="Email Address">EMAIL ADDRESS</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let user of userTable.data">
-                <td data-label="Actions"><button nz-button nzType="link">Actions</button></td>
+                <td data-label="Actions">
+                    <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu"><nz-icon nzType="setting"
+                            nzTheme="outline" style="font-size: 16px; padding-right: 5px;" />Action</a>
+                    <nz-dropdown-menu #menu="nzDropdownMenu">
+                        <ul nz-menu>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="editUser(user)">Edit</button></li>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="deleteUser(user)">Delete</button>
+                            </li>
+                        </ul>
+                    </nz-dropdown-menu>
+                </td>
                 <td data-label="User Name">{{ user.username }}</td>
                 <td data-label="Email Address">{{ user.email }}</td>
             </tr>
         </tbody>
     </nz-table>
     <div class="pagination-container">
-        <span>25 total</span>
+        <span>Total: {{ totalItems }}</span>
         <nz-pagination [nzTotal]="totalItems" [(nzPageIndex)]="currentPage" [nzPageSize]="pageSize"
             (nzPageIndexChange)="onPageChange($event)" nzShowSizeChanger="false"></nz-pagination>
     </div>

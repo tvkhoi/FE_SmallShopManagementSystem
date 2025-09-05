@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject, NgZone, ChangeDetectorRef, OnInit } from '@angular/core';
+import { SystemLogsService, SystemLogDto } from '../../../core/services/system-logs.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -25,7 +26,10 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
   templateUrl: './auditlog.html',
   styleUrls: ['./auditlog.scss']
 })
-export class Auditlog {
+export class Auditlog implements OnInit {
+  private logsService = inject(SystemLogsService);
+  private zone = inject(NgZone);
+  private cdr = inject(ChangeDetectorRef);
   // bộ lọc
   startDate: Date | null = null;
   endDate: Date | null = null;
@@ -40,44 +44,70 @@ export class Auditlog {
   hasException: string = '';
   applicationName: string = '';
 
-  // dữ liệu mẫu
-  auditLogs = [
-    { action: 'POST /connect/token', status: 200, user: 'admin', ip: '113.160.10.154', date: '8/29/2025 9:52 SA', duration: 27, app: 'Volo.AbpCommercia mo.HttpApi.Host' },
-    { action: 'POST /connect/token', status: 200, user: 'admin', ip: '113.160.10.154', date: '8/29/2025 9:37 SA', duration: 30, app: 'Volo.AbpCommercia mo.HttpApi.Host' },
-    { action: 'POST /connect/token', status: 200, user: 'admin', ip: '113.160.10.154', date: '8/29/2025 9:22 SA', duration: 27, app: 'Volo.AbpCommercia mo.HttpApi.Host' },
-    { action: 'POST /connect/token', status: 200, user: 'admin', ip: '113.160.10.154', date: '8/29/2025 9:07 SA', duration: 30, app: 'Volo.AbpCommercia mo.HttpApi.Host' }
-  ];
+  auditLogs: any[] = [];
 
   // phân trang
-  totalItems = this.auditLogs.length; 
-  pageSize = 5; 
-  currentPage = 1; 
+  totalItems = 0;
+  pageSize = 5;
+  currentPage = 1;
 
   // trạng thái loading
   loading = false;
 
-  filterLogs() {
+  ngOnInit(): void {
+    this.loadLogs();
+  }
+
+  private loadLogs(): void {
     this.loading = true;
-    console.log('Filtering logs with:', {
-      startDate: this.startDate,
-      endDate: this.endDate,
+    const filters: Record<string, string | number | boolean | undefined> = {
       userName: this.userName,
       url: this.url,
-      minDuration: this.minDuration,
-      maxDuration: this.maxDuration,
+      minDuration: this.minDuration ?? undefined,
+      maxDuration: this.maxDuration ?? undefined,
       httpMethod: this.httpMethod,
       httpStatusCode: this.httpStatusCode,
       clientIp: this.clientIp,
       correlationId: this.correlationId,
       hasException: this.hasException,
-      applicationName: this.applicationName
+      applicationName: this.applicationName,
+      startDate: this.startDate ? this.startDate.toISOString() : undefined,
+      endDate: this.endDate ? this.endDate.toISOString() : undefined
+    };
+    this.logsService.getLogs(filters).subscribe({
+      next: (data: SystemLogDto[]) => {
+        this.zone.run(() => {
+          // Map to current table format if needed
+          this.auditLogs = (data || []).map((x: SystemLogDto) => {
+            const dataStr = x.data ?? '';
+            const ip = dataStr.includes('IP: ')
+              ? (dataStr.split('\n')[0] || '').replace('IP: ', '')
+              : '';
+            return {
+              action: x.action,
+              status: 200,
+              user: x.userName,
+              ip,
+              date: x.createdAt,
+              duration: undefined,
+              app: undefined
+            };
+          });
+          this.totalItems = this.auditLogs.length;
+          this.loading = false;
+          this.cdr.detectChanges();
+        });
+      },
+      error: (e: unknown) => {
+        console.error('Lỗi tải SystemLogs:', e);
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
     });
+  }
 
-    // mô phỏng API call
-    setTimeout(() => {
-      this.loading = false;
-      console.log('Filter done');
-    }, 1000);
+  filterLogs() {
+    this.loadLogs();
   }
 
   exportToExcel() {

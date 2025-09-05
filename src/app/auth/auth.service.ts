@@ -1,8 +1,8 @@
 import { isPlatformBrowser } from '@angular/common';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
-import  { jwtDecode }  from 'jwt-decode';
-
+import { BehaviorSubject, Observable } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
 
 interface JwtPayload {
   nameid: string; // user.Id
@@ -15,11 +15,16 @@ interface JwtPayload {
 @Injectable({
   providedIn: 'root'
 })
-
 export class AuthService {
   private tokenKey = 'authToken';
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
+
+  private loggedIn$ = new BehaviorSubject<boolean>(this.isLoggedIn());
+
+  get isLoggedIn$(): Observable<boolean> {
+    return this.loggedIn$.asObservable();
+  }
 
   private isBrowser() {
     return isPlatformBrowser(this.platformId);
@@ -27,21 +32,27 @@ export class AuthService {
 
   // Lưu token sau khi login
   saveToken(token: string) {
-    localStorage.setItem(this.tokenKey, token);
+    if (this.isBrowser()) {
+      localStorage.setItem(this.tokenKey, token);
+      this.loggedIn$.next(true);
+    }
   }
 
   // Lấy token
   getToken(): string | null {
     if (this.isBrowser()) return localStorage.getItem(this.tokenKey);
-    return null; // SSR: không có token trong localStorage
+    return null;
   }
 
   // Xoá token khi logout
   clearToken() {
-    localStorage.removeItem(this.tokenKey);
+    if (this.isBrowser()) {
+      localStorage.removeItem(this.tokenKey);
+    }
+    this.loggedIn$.next(false);
   }
 
-  // Giải mã token để lấy payload
+  // Giải mã token
   getDecodedToken(): JwtPayload | null {
     const token = this.getToken();
     if (!token) return null;
@@ -53,42 +64,49 @@ export class AuthService {
     }
   }
 
-  // Lấy role/roles từ token
-   getRoles(): string[] {
+  // Lấy roles từ token
+  getRoles(): string[] {
     const decoded = this.getDecodedToken();
     if (!decoded) return [];
-
     const msRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-    if (msRole) return Array.isArray(msRole) ? msRole : [msRole];
-
-    return [];
+    return msRole ? (Array.isArray(msRole) ? msRole : [msRole]) : [];
   }
 
-// Kiểm tra đã login chưa
+  // Kiểm tra login
   isLoggedIn(): boolean {
     const decoded = this.getDecodedToken();
-    if (!decoded) return false;
-
-    const now = Date.now().valueOf() / 1000;
+    if (!decoded || !decoded.exp) return false;
+    const now = Math.floor(Date.now() / 1000);
     return decoded.exp > now;
   }
 
-  // Kiểm tra có role nào đó
+  // Kiểm tra role
   hasRole(role: string): boolean {
     return this.getRoles().includes(role);
   }
 
+  // Điều hướng theo role
   redirectByRole() {
     const roles = this.getRoles().map(r => r.toLowerCase());
 
-    if (roles.includes('admin')) {
-      this.router.navigate(['/admin/dashboard']);
-    } else if (roles.includes('customer')) {
-      this.router.navigate(['/customer/dashboard']);
-    } else if (roles.includes('seller')) {
-      this.router.navigate(['/seller/dashboard']);
-    } else {
-      this.router.navigate(['/login']);
+    const roleRoutes: { [key: string]: string } = {
+      admin: '/admin/dashboard',
+      customer: '/customer/dashboard',
+      seller: '/seller/dashboard',
+    };
+
+    for (const role of roles) {
+      if (roleRoutes[role]) {
+        this.router.navigate([roleRoutes[role]]);
+        return;
+      }
     }
+    this.router.navigate(['/login']);
+  }
+
+  // Logout tiện dụng
+  logout() {
+    this.clearToken();
+    this.router.navigate(['/login']);
   }
 }
