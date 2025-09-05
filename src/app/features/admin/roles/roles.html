@@ -2,77 +2,78 @@
     <div class="roles-header">
         <nz-row>
             <nz-col nzSpan="12">
-                <h2>Roles</h2>
+                <h2>Vai trò</h2>
             </nz-col>
             <nz-col nzSpan="12" style="text-align: right;">
-                <button nz-button nzType="primary" (click)="showModal()">New Role</button>
+                <button nz-button nzType="primary" (click)="showModal()">Tạo vai trò</button>
             </nz-col>
         </nz-row>
 
         <!-- Modal thêm Role -->
-        <nz-modal [(nzVisible)]="isVisible" nzTitle="New Role" (nzOnCancel)="handleCancel()"
-            [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooter">
+        <nz-modal [(nzVisible)]="isVisible" nzTitle="Tạo vai trò" (nzOnCancel)="handleCancel()"
+            [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooter" nzClassName="custom-role-modal">
             <div *nzModalContent>
                 <!-- Form tạo role -->
                 <form nz-form>
                     <!-- Role Name Input -->
                     <nz-form-item>
-                        <nz-form-label [nzRequired]="true" nzFor="roleName">Role Name</nz-form-label>
-                        <nz-form-control [nzErrorTip]="'Tên vai trò là bắt buộc'" [nzValidateStatus]="roleNameInput">
+                        <nz-form-label [nzRequired]="true" nzFor="roleName">Tên vai trò</nz-form-label>
+                        <nz-form-control [nzErrorTip]="'Tên vai trò là bắt buộc'" [nzValidateStatus]="roleNameInput" [nzErrorTip]="roleNameExists ? 'Tên vai trò đã tồn tại' : 'Tên vai trò là bắt buộc'">
                             <input nz-input id="roleName" [(ngModel)]="roleName" name="roleName"
-                                #roleNameInput="ngModel" required placeholder="Enter role name" />
+                                #roleNameInput="ngModel" required placeholder="Nhập tên vai trò" (ngModelChange)="checkRoleNameExists()"/>
                         </nz-form-control>
                     </nz-form-item>
 
                     <!-- Permissions Tree -->
-                    <h4>Permissions</h4>
+                    <!-- <h4>Permissions</h4>
                     <nz-form-item>
                         <nz-form-control [nzErrorTip]="'Vui lòng chọn ít nhất một quyền'" [nzValidateStatus]="permissionsCtrl">
                             <nz-tree [nzData]="treeData" nzCheckable (nzCheckboxChange)="onCheck($event)">
-                            </nz-tree>
+                            </nz-tree> -->
 
-                            <!-- Hidden input để gom validation -->
-                            <input type="hidden" [ngModel]="selectedPermissions.length > 0 ? 'valid' : ''"
+                    <!-- Hidden input để gom validation -->
+                    <!-- <input type="hidden" [ngModel]="selectedPermissions.length > 0 ? 'valid' : ''"
                                 name="permissionsCtrl" #permissionsCtrl="ngModel" required />
                         </nz-form-control>   
-                    </nz-form-item>
+                    </nz-form-item> -->
                 </form>
             </div>
         </nz-modal>
 
         <!-- Footer Template -->
         <ng-template #modalFooter>
-            <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
+            <button nz-button nzType="default" (click)="handleCancel()">Hủy</button>
             <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">
-                Save
+                Lưu
             </button>
         </ng-template>
     </div>
 
     <!-- Search box -->
     <div class="roles-search">
-        <input nz-input placeholder="Search roles..." [(ngModel)]="searchQuery" (ngModelChange)="filterRoles()" />
-        <button nz-button nzType="default">Search</button>
+        <input nz-input placeholder="Tìm kiếm vai trò..." [(ngModel)]="searchQuery" />
+        <button nz-button nzType="default" (click)="filterRoles()">Tìm kiếm</button>
     </div>
 
     <!-- Table roles -->
-    <nz-table #roleTable [nzData]="pagedRoles" [nzFrontPagination]="false">
+    <nz-table #roleTable [nzData]="pagedRoles" [nzFrontPagination]="false" ngClass="custom-table">
         <thead>
             <tr>
-                <th nzWidth="15%" data-label="Actions">ACTIONS</th>
-                <th nzWidth="60%" data-label="Role Name">ROLE NAME</th>
-                <th nzWidth="25%" data-label="User Count">USER COUNT</th>
+                <th nzWidth="15%" data-label="Actions">HÀNH ĐỘNG</th>
+                <th nzWidth="60%" data-label="Role Name">TÊN VAI TRÒ</th>
+                <th nzWidth="25%" data-label="User Count">SỐ NGƯỜI DÙNG</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let role of pagedRoles">
                 <td data-label="Actions">
                     <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu"><nz-icon nzType="setting"
-                            nzTheme="outline" style="font-size: 16px; padding-right: 5px;" />Action</a>
+                            nzTheme="outline" style="font-size: 16px; padding-right: 5px;" />Hành động</a>
                     <nz-dropdown-menu #menu="nzDropdownMenu">
                         <ul nz-menu>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="editRole(role)">Edit</button></li>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="deleteRole(role)">Delete</button>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="editRole(role)">Chỉnh sửa</button></li>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="deleteRole(role)">Gán quyền</button></li>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="deleteRole(role)">Xóa</button>
                             </li>
                         </ul>
                     </nz-dropdown-menu>

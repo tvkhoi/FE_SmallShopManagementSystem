@@ -3,10 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RoleService {
-  private apiUrl = 'https://localhost:7277/api/Role'; 
+  private apiUrl = 'https://localhost:7277/api/Role';
   private http = inject(HttpClient);
 
   // ====== Roles ======
@@ -34,11 +34,24 @@ export class RoleService {
   // ====== Permissions for Role ======
 
   getPermissionsByRole(roleId: number): Observable<any> {
-    console.log('Fetching permissions for roleId:', this.http.get<any>(`${this.apiUrl}/${roleId}/permissions`));
+    console.log(
+      'Fetching permissions for roleId:',
+      this.http.get<any>(`${this.apiUrl}/${roleId}/permissions`)
+    );
     return this.http.get<any>(`${this.apiUrl}/${roleId}/permissions`);
   }
 
-  assignPermissionsToRole(roleId: number, permissions: { id: number; granted: boolean }[]): Observable<any> {
+  assignPermissionsToRole(
+    roleId: number,
+    permissions: { id: number; granted: boolean }[]
+  ): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/${roleId}/assign-permissions`, { permissions });
+  }
+
+  // ====== Search Roles ======
+  searchRoles(keyword: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/search`, {
+      params: { keyword },
+    });
   }
 }

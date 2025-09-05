@@ -82,6 +82,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   isVisible = false;
   isConfirmLoading = false;
   submitted = false;
+  roleNameExists = false;
 
   roleName = '';
   editingRoleId: number | null = null;
@@ -177,55 +178,94 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  // ================== Lưu role ==================
+  //
+  //   handleOk(): void {
+  //   this.submitted = true;
+  //   if (!this.roleName) return;
+
+  //   this.isConfirmLoading = true;
+  //   this.cdr.detectChanges();
+
+  //   const saveRole$ =
+  //     this.editingRoleId === null
+  //       ? this.roleService.createRole({ name: this.roleName })
+  //       : this.roleService.updateRole(this.editingRoleId, { name: this.roleName });
+
+  //   saveRole$.pipe(takeUntil(this.destroy$)).subscribe({
+  //     next: (res: any) => {
+  //       const roleId = this.editingRoleId ?? res.roleId;
+
+  //       // Build Map từ originalPermissions
+  //       const originalMap = new Map<number, boolean>();
+  //       this.originalPermissions.forEach(p => originalMap.set(p.id, p.granted));
+
+  //       // Build payload chỉ gồm quyền thay đổi
+  //       const payload: {id: number, granted: boolean}[] = [];
+  //       this.treeData.forEach(module => {
+  //         module.children?.forEach(child => {
+  //           const checked = !!child.checked;
+  //           const original = originalMap.get(child.id!);
+  //           if (original === undefined || original !== checked) {
+  //             payload.push({ id: child.id!, granted: checked });
+  //           }
+  //         });
+  //       });
+
+  //       if (payload.length === 0) {
+  //         this.afterSaveSuccess('Vai trò đã được cập nhật (không thay đổi quyền)');
+  //         return;
+  //       }
+
+  //       this.roleService.assignPermissionsToRole(roleId, payload)
+  //         .pipe(takeUntil(this.destroy$))
+  //         .subscribe({
+  //           next: () => this.afterSaveSuccess('Vai trò đã được cập nhật thành công'),
+  //           error: (err) => this.afterSaveError(err),
+  //         });
+  //     },
+  //     error: (err) => this.afterSaveError(err),
+  //   });
+  // }
+
   handleOk(): void {
-  this.submitted = true;
-  if (!this.roleName) return;
+    this.submitted = true;
+    if (!this.roleName) return;
 
-  this.isConfirmLoading = true;
-  this.cdr.detectChanges();
+    this.isConfirmLoading = true;
+    this.cdr.detectChanges();
 
-  const saveRole$ =
-    this.editingRoleId === null
-      ? this.roleService.createRole({ name: this.roleName })
-      : this.roleService.updateRole(this.editingRoleId, { name: this.roleName });
+    if (this.editingRoleId === null) {
+      // Tạo mới role (chỉ tạo với name)
+      this.createNewRole();
+    } else {
+      // Cập nhật role
+      this.updateExistingRole();
+    }
+  }
 
-  saveRole$.pipe(takeUntil(this.destroy$)).subscribe({
-    next: (res: any) => {
-      const roleId = this.editingRoleId ?? res.roleId;
-
-      // Build Map từ originalPermissions
-      const originalMap = new Map<number, boolean>();
-      this.originalPermissions.forEach(p => originalMap.set(p.id, p.granted));
-
-      // Build payload chỉ gồm quyền thay đổi
-      const payload: {id: number, granted: boolean}[] = [];
-      this.treeData.forEach(module => {
-        module.children?.forEach(child => {
-          const checked = !!child.checked;
-          const original = originalMap.get(child.id!);
-          if (original === undefined || original !== checked) {
-            payload.push({ id: child.id!, granted: checked });
-          }
-        });
+  private createNewRole(): void {
+    this.roleService
+      .createRole({ name: this.roleName })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          this.afterSaveSuccess('Tạo vai trò mới thành công');
+        },
+        error: (err) => this.afterSaveError(err),
       });
+  }
 
-      if (payload.length === 0) {
-        this.afterSaveSuccess('Vai trò đã được cập nhật (không thay đổi quyền)');
-        return;
-      }
-
-      this.roleService.assignPermissionsToRole(roleId, payload)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => this.afterSaveSuccess('Vai trò đã được cập nhật thành công'),
-          error: (err) => this.afterSaveError(err),
-        });
-    },
-    error: (err) => this.afterSaveError(err),
-  });
-}
-
+  private updateExistingRole(): void {
+    this.roleService
+      .updateRole(this.editingRoleId!, { name: this.roleName })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          this.afterSaveSuccess('Cập nhật vai trò thành công');
+        },
+        error: (err) => this.afterSaveError(err),
+      });
+  }
 
   private afterSaveSuccess(message: string): void {
     this.zone.run(() => {
@@ -258,52 +298,109 @@ export class RolesComponent implements OnInit, OnDestroy {
   }
 
   // ================== Sửa role ==================
+  // editRole(role: Role): void {
+  //   this.isVisible = true;
+  //   this.submitted = false;
+  //   this.editingRoleId = role.id;
+  //   this.roleName = role.name;
+
+  //   this.permissionService.userData$.pipe(takeUntil(this.destroy$)).subscribe((allPermissions) => {
+  //     this.roleService
+  //       .getPermissionsByRole(role.id)
+  //       .pipe(takeUntil(this.destroy$))
+  //       .subscribe((resp: RolePermissionsResponse) => {
+  //         // Lưu tất cả quyền cũ
+  //         this.originalPermissions = resp.permissions.map((p) => ({
+  //           id: p.id,
+  //           granted: p.granted ?? false,
+  //         }));
+
+  //         const originalMap = new Map<number, boolean>();
+  //         this.originalPermissions.forEach((p) => originalMap.set(p.id, p.granted));
+
+  //         const modules = [...new Set(allPermissions.map((p) => p.module))];
+  //         this.treeData = modules.map((module) => {
+  //           const modulePerms = allPermissions.filter((p) => p.module === module);
+  //           return {
+  //             key: module,
+  //             title: module,
+  //             expanded: true,
+  //             // checked module = true nếu tất cả quyền module được granted
+  //             checked: modulePerms.every((p) => originalMap.get(p.id) ?? false),
+  //             children: modulePerms.map((perm) => ({
+  //               key: `${module}-${perm.id}`,
+  //               title: perm.description,
+  //               isLeaf: true,
+  //               id: perm.id,
+  //               checked: originalMap.get(perm.id) ?? false,
+  //             })),
+  //           };
+  //         });
+
+  //         this.cdr.detectChanges();
+  //       });
+  //   });
+  // }
+
   editRole(role: Role): void {
-  this.isVisible = true;
-  this.submitted = false;
-  this.editingRoleId = role.id;
-  this.roleName = role.name;
+    this.isVisible = true;
+    this.submitted = false;
+    this.editingRoleId = role.id;
+    this.roleName = role.name;
 
-  this.permissionService.userData$.pipe(takeUntil(this.destroy$)).subscribe(allPermissions => {
-    this.roleService.getPermissionsByRole(role.id).pipe(takeUntil(this.destroy$)).subscribe((resp: RolePermissionsResponse) => {
-      
-      // Lưu tất cả quyền cũ
-      this.originalPermissions = resp.permissions.map(p => ({
-        id: p.id,
-        granted: p.granted ?? false
-      }));
+    this.permissionService.userData$.pipe(takeUntil(this.destroy$)).subscribe((allPermissions) => {
+      this.roleService
+        .getPermissionsByRole(role.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((resp: RolePermissionsResponse) => {
+          // Lưu tất cả quyền cũ
+          this.originalPermissions = resp.permissions.map((p) => ({
+            id: p.id,
+            granted: p.granted ?? false,
+          }));
 
-      const originalMap = new Map<number, boolean>();
-      this.originalPermissions.forEach(p => originalMap.set(p.id, p.granted));
+          const originalMap = new Map<number, boolean>();
+          this.originalPermissions.forEach((p) => originalMap.set(p.id, p.granted));
 
-      const modules = [...new Set(allPermissions.map(p => p.module))];
-      this.treeData = modules.map(module => {
-        const modulePerms = allPermissions.filter(p => p.module === module);
-        return {
-          key: module,
-          title: module,
-          expanded: true,
-          // checked module = true nếu tất cả quyền module được granted
-          checked: modulePerms.every(p => originalMap.get(p.id) ?? false),
-          children: modulePerms.map(perm => ({
-            key: `${module}-${perm.id}`,
-            title: perm.description,
-            isLeaf: true,
-            id: perm.id,
-            checked: originalMap.get(perm.id) ?? false
-          }))
-        };
-      });
+          const modules = [...new Set(allPermissions.map((p) => p.module))];
+          this.treeData = modules.map((module) => {
+            const modulePerms = allPermissions.filter((p) => p.module === module);
+            return {
+              key: module,
+              title: module,
+              expanded: true,
+              // checked module = true nếu tất cả quyền module được granted
+              checked: modulePerms.every((p) => originalMap.get(p.id) ?? false),
+              children: modulePerms.map((perm) => ({
+                key: `${module}-${perm.id}`,
+                title: perm.description,
+                isLeaf: true,
+                id: perm.id,
+                checked: originalMap.get(perm.id) ?? false,
+              })),
+            };
+          });
 
-      this.cdr.detectChanges();
+          this.cdr.detectChanges();
+        });
     });
-  });
-}
-
+  }
 
   // ================== Xóa role ==================
   deleteRole(role: Role): void {
-    console.log('Đang xóa role:', role.name);
+    this.roleService
+      .deleteRole(role.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.msg.success('Xóa vai trò thành công');
+          this.loadRoles();
+        },
+        error: (err) => {
+          console.error('Lỗi khi xóa vai trò:', err);
+          this.msg.error('Xóa vai trò thất bại');
+        },
+      });
   }
 
   // ================== Helper ==================
@@ -342,6 +439,29 @@ export class RolesComponent implements OnInit, OnDestroy {
   }
 
   filterRoles(): void {
-    console.log('Lọc roles theo từ khóa:', this.searchQuery);
+    if (!this.searchQuery) {
+      this.loadRoles();
+      return;
+    }
+
+    this.roleService
+      .searchRoles(this.searchQuery)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (roles) => {
+          this.roles = roles;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Lỗi khi tìm kiếm vai trò:', err);
+          this.msg.error('Tìm kiếm vai trò thất bại');
+        },
+      });
+  }
+
+  checkRoleNameExists() {
+    this.roleNameExists = this.roles.some(
+      (role) => role.name.trim().toLowerCase() === this.roleName.trim().toLowerCase()
+    );
   }
 }

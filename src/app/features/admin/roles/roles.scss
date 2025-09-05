@@ -38,5 +38,20 @@
       background-color: darken(#40A9FF, 10%);
     }
   }
+}
 
+::ng-deep .custom-table tr {
+  white-space: nowrap !important;
+}
+
+::ng-deep .custom-role-modal .ant-modal-content {
+  border-radius: 15px !important;
+}
+
+::ng-deep .custom-role-modal .ant-modal-header {
+  border-radius: 15px !important;
+}
+
+::ng-deep .custom-role-modal .ant-btn {
+  border-radius: 8px !important;
 }
