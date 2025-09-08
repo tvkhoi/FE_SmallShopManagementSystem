@@ -5,46 +5,91 @@
                 <h2>Vai trò</h2>
             </nz-col>
             <nz-col nzSpan="12" style="text-align: right;">
-                <button nz-button nzType="primary" (click)="showModal()">Tạo vai trò</button>
+                <button nz-button nzType="primary" (click)="showCreateModal()">Tạo vai trò</button>
             </nz-col>
         </nz-row>
 
-        <!-- Modal thêm Role -->
-        <nz-modal [(nzVisible)]="isVisible" nzTitle="Tạo vai trò" (nzOnCancel)="handleCancel()"
-            [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooter" nzClassName="custom-role-modal">
+        <!-- Modal TẠO VAI TRÒ -->
+        <nz-modal [(nzVisible)]="isCreateVisible" nzTitle="Tạo vai trò" (nzOnCancel)="handleCreateCancel()"
+            [nzOkLoading]="isConfirmLoading" [nzFooter]="createFooter" nzClassName="custom-role-modal">
+
             <div *nzModalContent>
-                <!-- Form tạo role -->
-                <form nz-form>
-                    <!-- Role Name Input -->
+                <form #createRoleForm="ngForm">
                     <nz-form-item>
                         <nz-form-label [nzRequired]="true" nzFor="roleName">Tên vai trò</nz-form-label>
-                        <nz-form-control [nzErrorTip]="'Tên vai trò là bắt buộc'" [nzValidateStatus]="roleNameInput" [nzErrorTip]="roleNameExists ? 'Tên vai trò đã tồn tại' : 'Tên vai trò là bắt buộc'">
-                            <input nz-input id="roleName" [(ngModel)]="roleName" name="roleName"
-                                #roleNameInput="ngModel" required placeholder="Nhập tên vai trò" (ngModelChange)="checkRoleNameExists()"/>
+                        <nz-form-control [nzErrorTip]="'Tên vai trò là bắt buộc và không được trùng lặp.'">
+                            <input nz-input id="roleName" name="roleName" [(ngModel)]="roleName"
+                                #roleNameInput="ngModel" required placeholder="Nhập tên vai trò"
+                                (ngModelChange)="checkRoleNameExists(roleNameInput)" />
                         </nz-form-control>
                     </nz-form-item>
-
-                    <!-- Permissions Tree -->
-                    <!-- <h4>Permissions</h4>
-                    <nz-form-item>
-                        <nz-form-control [nzErrorTip]="'Vui lòng chọn ít nhất một quyền'" [nzValidateStatus]="permissionsCtrl">
-                            <nz-tree [nzData]="treeData" nzCheckable (nzCheckboxChange)="onCheck($event)">
-                            </nz-tree> -->
-
-                    <!-- Hidden input để gom validation -->
-                    <!-- <input type="hidden" [ngModel]="selectedPermissions.length > 0 ? 'valid' : ''"
-                                name="permissionsCtrl" #permissionsCtrl="ngModel" required />
-                        </nz-form-control>   
-                    </nz-form-item> -->
                 </form>
             </div>
         </nz-modal>
 
-        <!-- Footer Template -->
-        <ng-template #modalFooter>
-            <button nz-button nzType="default" (click)="handleCancel()">Hủy</button>
-            <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">
+
+        <!-- Modal GÁN QUYỀN -->
+        <nz-modal [(nzVisible)]="isAssignVisible" nzTitle="Permissions" (nzOnCancel)="handleAssignCancel()"
+            [nzOkLoading]="isConfirmLoading" (nzOnOk)="handleAssignOk()" nzWidth="800px"
+            nzWrapClassName="permissions-modal">
+
+            <div *nzModalContent>
+                <!-- Modal Header -->
+                <div class="permissions-header">
+                    <input nz-input placeholder="Tìm kiếm quyền..." />
+                    <label  nz-checkbox [ngModel]="isAllSelected()" (ngModelChange)="toggleAllPermissions($event)">
+                        Chọn tất cả
+                    </label>
+                </div>
+                <div class="permissions-container">
+                    <!-- Cột trái: danh sách module -->
+                    <div class="permissions-sidebar">
+                        <ul>
+                            <li *ngFor="let group of groupedPermissions"
+                                [class.active]="group.module === selectedModule"
+                                (click)="selectedModule = group.module">
+                                {{ group.module }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Cột phải: quyền theo module được chọn -->
+                    <div class="permissions-content" *ngIf="selectedModule">
+                        <h4>{{ selectedModule }}</h4>
+
+                        <label style="color: #FFF;" nz-checkbox [ngModel]="isAllSelected(selectedModule)"
+                            (ngModelChange)="toggleAllPermissions($event, selectedModule)">
+                            Select all
+                        </label>
+
+                        <ul>
+                            <li *ngFor="let perm of getPermissionsByModule(selectedModule)">
+                                <label style="color: #FFF;" nz-checkbox [(ngModel)]="perm.granted"
+                                    (ngModelChange)="allChecked = isAllSelected()">
+                                    {{ perm.description }}
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </nz-modal>
+
+
+        <!-- Footer Tạo vai trò -->
+        <ng-template #createFooter>
+            <button nz-button nzType="default" (click)="handleCreateCancel()">Hủy</button>
+            <button nz-button nzType="primary" (click)="handleCreateOk()" [nzLoading]="isConfirmLoading" [disabled]="!roleName || roleNameExists">
                 Lưu
+            </button>
+        </ng-template>
+
+        <!-- Footer Gán quyền -->
+        <ng-template #assignFooter>
+            <button nz-button nzType="default" (click)="handleAssignCancel()">Hủy</button>
+            <button nz-button nzType="primary" (click)="handleAssignOk()" [nzLoading]="isConfirmLoading">
+                Lưu quyền
             </button>
         </ng-template>
     </div>
@@ -67,13 +112,20 @@
         <tbody>
             <tr *ngFor="let role of pagedRoles">
                 <td data-label="Actions">
-                    <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu"><nz-icon nzType="setting"
-                            nzTheme="outline" style="font-size: 16px; padding-right: 5px;" />Hành động</a>
+                    <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu">
+                        <nz-icon nzType="setting" nzTheme="outline" style="font-size: 16px; padding-right: 5px;" />Hành
+                        động
+                    </a>
                     <nz-dropdown-menu #menu="nzDropdownMenu">
                         <ul nz-menu>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="editRole(role)">Chỉnh sửa</button></li>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="deleteRole(role)">Gán quyền</button></li>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="deleteRole(role)">Xóa</button>
+                            <li nz-menu-item>
+                                <button nz-button nzType="link" (click)="showAssignModal(role)">Gán quyền</button>
+                            </li>
+                            <li nz-menu-item>
+                                <button nz-button nzType="link" (click)="deleteRole(role)">Xóa</button>
+                            </li>
+                            <li nz-menu-item>
+                                <button nz-button nzType="link" (click)="editRole(role)">Sửa</button>
                             </li>
                         </ul>
                     </nz-dropdown-menu>
@@ -88,6 +140,7 @@
     <div class="pagination-container">
         <span>Total: {{ totalItems }}</span>
         <nz-pagination [nzTotal]="totalItems" [(nzPageIndex)]="currentPage" [nzPageSize]="pageSize"
-            (nzPageIndexChange)="onPageChange($event)" nzShowSizeChanger="false"></nz-pagination>
+            (nzPageIndexChange)="onPageChange($event)" nzShowSizeChanger="false">
+        </nz-pagination>
     </div>
 </div>
