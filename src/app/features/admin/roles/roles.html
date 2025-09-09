@@ -19,8 +19,8 @@
                         <nz-form-label [nzRequired]="true" nzFor="roleName">Tên vai trò</nz-form-label>
                         <nz-form-control [nzErrorTip]="'Tên vai trò là bắt buộc và không được trùng lặp.'">
                             <input nz-input id="roleName" name="roleName" [(ngModel)]="roleName"
-                                #roleNameInput="ngModel" required placeholder="Nhập tên vai trò"
-                                (ngModelChange)="checkRoleNameExists(roleNameInput)" />
+                                #roleNameInput="ngModel" required placeholder="Nhập tên vai trò" [ngClass]="{'input-error': roleNameExists}" 
+                                (ngModelChange)="onRoleNameChange($event)" />
                         </nz-form-control>
                     </nz-form-item>
                 </form>
@@ -28,68 +28,16 @@
         </nz-modal>
 
 
-        <!-- Modal GÁN QUYỀN -->
-        <nz-modal [(nzVisible)]="isAssignVisible" nzTitle="Permissions" (nzOnCancel)="handleAssignCancel()"
-            [nzOkLoading]="isConfirmLoading" (nzOnOk)="handleAssignOk()" nzWidth="800px"
-            nzWrapClassName="permissions-modal">
-
-            <div *nzModalContent>
-                <!-- Modal Header -->
-                <div class="permissions-header">
-                    <input nz-input placeholder="Tìm kiếm quyền..." />
-                    <label  nz-checkbox [ngModel]="isAllSelected()" (ngModelChange)="toggleAllPermissions($event)">
-                        Chọn tất cả
-                    </label>
-                </div>
-                <div class="permissions-container">
-                    <!-- Cột trái: danh sách module -->
-                    <div class="permissions-sidebar">
-                        <ul>
-                            <li *ngFor="let group of groupedPermissions"
-                                [class.active]="group.module === selectedModule"
-                                (click)="selectedModule = group.module">
-                                {{ group.module }}
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Cột phải: quyền theo module được chọn -->
-                    <div class="permissions-content" *ngIf="selectedModule">
-                        <h4>{{ selectedModule }}</h4>
-
-                        <label style="color: #FFF;" nz-checkbox [ngModel]="isAllSelected(selectedModule)"
-                            (ngModelChange)="toggleAllPermissions($event, selectedModule)">
-                            Select all
-                        </label>
-
-                        <ul>
-                            <li *ngFor="let perm of getPermissionsByModule(selectedModule)">
-                                <label style="color: #FFF;" nz-checkbox [(ngModel)]="perm.granted"
-                                    (ngModelChange)="allChecked = isAllSelected()">
-                                    {{ perm.description }}
-                                </label>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-            </div>
-        </nz-modal>
-
+        <app-assign-permission-modal [visible]="isAssignVisible" [role]="selectedRole"
+            [groupedPermissions]="groupedPermissions" (cancel)="handleAssignCancel()"
+            (save)="handleAssignOk($event)"></app-assign-permission-modal>
 
         <!-- Footer Tạo vai trò -->
         <ng-template #createFooter>
             <button nz-button nzType="default" (click)="handleCreateCancel()">Hủy</button>
-            <button nz-button nzType="primary" (click)="handleCreateOk()" [nzLoading]="isConfirmLoading" [disabled]="!roleName || roleNameExists">
+            <button nz-button nzType="primary" (click)="handleCreateOk()" [nzLoading]="isConfirmLoading"
+                [disabled]="!roleName || roleNameExists">
                 Lưu
-            </button>
-        </ng-template>
-
-        <!-- Footer Gán quyền -->
-        <ng-template #assignFooter>
-            <button nz-button nzType="default" (click)="handleAssignCancel()">Hủy</button>
-            <button nz-button nzType="primary" (click)="handleAssignOk()" [nzLoading]="isConfirmLoading">
-                Lưu quyền
             </button>
         </ng-template>
     </div>
@@ -135,12 +83,7 @@
             </tr>
         </tbody>
     </nz-table>
+    <app-pagination [total]="totalItems" [pageSize]="pageSize" [pageIndex]="currentPage"
+        (pageChange)="onPageChange($event)"></app-pagination>
 
-    <!-- Pagination -->
-    <div class="pagination-container">
-        <span>Total: {{ totalItems }}</span>
-        <nz-pagination [nzTotal]="totalItems" [(nzPageIndex)]="currentPage" [nzPageSize]="pageSize"
-            (nzPageIndexChange)="onPageChange($event)" nzShowSizeChanger="false">
-        </nz-pagination>
-    </div>
 </div>

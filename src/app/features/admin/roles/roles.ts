@@ -11,46 +11,24 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
-import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzTreeModule, NzFormatEmitEvent } from 'ng-zorro-antd/tree';
+import { NzFormatEmitEvent } from 'ng-zorro-antd/tree';
 
 // Services
 import { PermissionService } from '../../../core/services/permission.service';
 import { RoleService } from '../../../core/services/role.service';
+import { AssignPermissionModalComponent } from '../../../shared/components/assign-permission-modal/assign-permission-modal';
+import { PaginationComponent } from '../../../shared/components/pagination-component/pagination-component';
 
-// ================== Interfaces ==================
-interface Role {
-  id: number;
-  name: string;
-  userCount: number;
-}
+// Models and Interfaces
+import { Role } from '../../../core/models/role';
+import { Permission } from '../../../core/models/permission';
+import { TreeNode } from '../../../core/models/tree-node';
+import { RolePermissionsResponse } from './role-permission-respose.model';
 
-interface Permission {
-  id: number;
-  name: string;
-  module: string;
-  description: string;
-  granted?: boolean;
-}
-
-interface RolePermissionsResponse {
-  roleId: number;
-  permissions: Permission[];
-}
-
-interface TreeNode {
-  key: string;
-  title: string;
-  children?: TreeNode[];
-  isLeaf?: boolean;
-  checked?: boolean;
-  expanded?: boolean;
-  disabled?: boolean;
-  id?: number;
-}
 
 // ================== Component ==================
 @Component({
@@ -65,11 +43,11 @@ interface TreeNode {
     NzPaginationModule,
     NzSelectModule,
     NzModalModule,
-    NzCheckboxModule,
     NzFormModule,
     NzDropDownModule,
     NzIconModule,
-    NzTreeModule,
+    AssignPermissionModalComponent,
+    PaginationComponent,
   ],
   templateUrl: './roles.html',
   styleUrls: ['./roles.scss'],
@@ -93,6 +71,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   roleName = '';
   roleNameExists = false;
   selectedRoleId: number | null = null;
+  selectedRole: Role | null = null;
 
   // Pagination & search
   totalItems = 0;
@@ -126,38 +105,6 @@ export class RolesComponent implements OnInit, OnDestroy {
   }
 
   // ================== Load dữ liệu ==================
-  // private loadPermissions(): void {
-  //   this.permissionService
-  //     .getPermissions()
-  //     .pipe(
-  //       switchMap(() => this.permissionService.userData$),
-  //       takeUntil(this.destroy$)
-  //     )
-  //     .subscribe({
-  //       next: (data: Permission[]) => {
-  //         this.zone.run(() => {
-  //           const modules = [...new Set(data.map((p) => p.module))];
-  //           this.treeData = modules.map((module) => ({
-  //             key: module,
-  //             title: module,
-  //             expanded: true,
-  //             children: data
-  //               .filter((p) => p.module === module)
-  //               .map((perm) => ({
-  //                 key: `${module}-${perm.id}`,
-  //                 title: perm.description,
-  //                 isLeaf: true,
-  //                 checked: false,
-  //                 id: perm.id,
-  //               })),
-  //           }));
-  //           this.cdr.detectChanges();
-  //         });
-  //       },
-  //       error: (error) => console.error('Lỗi khi load permissions:', error),
-  //     });
-  // }
-
   private loadPermissions(): void {
     this.permissionService
       .getPermissions()
@@ -227,18 +174,19 @@ export class RolesComponent implements OnInit, OnDestroy {
   }
 
   handleCreateOk(): void {
-    if (!this.roleName || this.roleNameExists) return;
+    if (!this.roleName) return;
 
     this.isConfirmLoading = true;
 
     const save$ = this.selectedRoleId
-      ? this.roleService.updateRole(this.selectedRoleId, { name: this.roleName }) // Sửa role
-      : this.roleService.createRole({ name: this.roleName }); // Tạo role mới
+      ? this.roleService.updateRole(this.selectedRoleId, { name: this.roleName })
+      : this.roleService.createRole({ name: this.roleName });
 
     save$
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
+          // luôn reset loading kể cả khi success hay error
           this.isConfirmLoading = false;
           this.cdr.detectChanges();
         })
@@ -248,7 +196,7 @@ export class RolesComponent implements OnInit, OnDestroy {
           const message = this.selectedRoleId
             ? 'Cập nhật vai trò thành công'
             : 'Tạo vai trò thành công';
-          this.afterSaveSuccess(message, 'create'); // type vẫn 'create' để đóng modal
+          this.afterSaveSuccess(message, 'create');
         },
         error: (err) => this.afterSaveError(err),
       });
@@ -264,6 +212,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   showAssignModal(role: Role): void {
     this.isAssignVisible = true;
     this.selectedRoleId = role.id;
+    this.selectedRole = role;
 
     this.roleService.getPermissionsByRole(role.id).subscribe((resp: RolePermissionsResponse) => {
       this.originalPermissions = resp.permissions.map((p) => ({
@@ -287,35 +236,28 @@ export class RolesComponent implements OnInit, OnDestroy {
     });
   }
 
-  handleAssignOk(): void {
+  handleAssignOk(payload: Permission[]): void {
     if (!this.selectedRoleId) return;
     this.isConfirmLoading = true;
 
-    // Lấy toàn bộ trạng thái hiện tại từ groupedPermissions
-    console.log('groupedPermissions sau khi load:', this.groupedPermissions);
-    const payload: { id: number; granted: boolean }[] = [];
-    this.groupedPermissions.forEach((group) => {
-      group.permissions.forEach((perm) => {
-        payload.push({
-          id: perm.id,
-          granted: !!perm.granted, // true/false theo checkbox hiện tại
-        });
-      });
-    });
+    // Chuyển payload sang dạng {id, granted} nếu cần
+    const assignPayload = payload.map((p) => ({
+      id: p.id,
+      granted: !!p.granted,
+    }));
 
-    console.log('Payload gửi lên server:', payload);
     this.roleService
-      .assignPermissionsToRole(this.selectedRoleId, payload)
+      .assignPermissionsToRole(this.selectedRoleId, assignPayload)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
-          this.isConfirmLoading = false; // đảm bảo luôn reset
+          this.isConfirmLoading = false;
           this.cdr.detectChanges();
         })
       )
       .subscribe({
         next: (resp) => {
-          // Sync lại groupedPermissions bằng response từ BE
+          // Cập nhật lại groupedPermissions theo resp nếu muốn
           const updatedMap = new Map<number, boolean>();
           resp.permissions.forEach((p: any) => updatedMap.set(p.id, p.granted));
 
@@ -338,75 +280,6 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.selectedRoleId = null;
   }
 
-  getPermissionsByModule(module: string): Permission[] {
-    const group = this.groupedPermissions.find((g) => g.module === module);
-    return group ? group.permissions : [];
-  }
-
-  isAllSelected(module?: string): boolean {
-    if (module) {
-      const perms = this.getPermissionsByModule(module);
-      return perms.length > 0 && perms.every((p) => p.granted === true);
-    } else {
-      const allPerms = this.groupedPermissions.flatMap((g) => g.permissions);
-      return allPerms.length > 0 && allPerms.every((p) => p.granted === true);
-    }
-  }
-
-  toggleAllPermissions(checked: boolean, module?: string): void {
-    if (module) {
-      // Check All cho 1 module
-      this.groupedPermissions = this.groupedPermissions.map((group) =>
-        group.module === module
-          ? {
-              ...group,
-              permissions: group.permissions.map((perm) => ({
-                ...perm,
-                granted: checked,
-              })),
-            }
-          : group
-      );
-    } else {
-      // Check All cho toàn bộ
-      this.groupedPermissions = this.groupedPermissions.map((group) => ({
-        ...group,
-        permissions: group.permissions.map((perm) => ({
-          ...perm,
-          granted: checked,
-        })),
-      }));
-    }
-
-    // cập nhật lại trạng thái allChecked sau khi toggle
-    this.allChecked = this.isAllSelected();
-    this.cdr.detectChanges();
-  }
-
-  // Gán toàn bộ quyền cho role hiện tại
-  grantAllPermissions(): void {
-    this.groupedPermissions = this.groupedPermissions.map((group) => ({
-      ...group,
-      permissions: group.permissions.map((perm) => ({
-        ...perm,
-        granted: true,
-      })),
-    }));
-    this.cdr.detectChanges();
-  }
-
-  // Bỏ toàn bộ quyền
-  revokeAllPermissions(): void {
-    this.groupedPermissions = this.groupedPermissions.map((group) => ({
-      ...group,
-      permissions: group.permissions.map((perm) => ({
-        ...perm,
-        granted: false,
-      })),
-    }));
-    this.cdr.detectChanges();
-  }
-
   // ================== Xử lý sau khi lưu ==================
   private afterSaveSuccess(message: string, type: 'create' | 'assign'): void {
     this.zone.run(() => {
@@ -424,7 +297,21 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.zone.run(() => {
       this.isConfirmLoading = false;
       console.error('Lỗi khi lưu:', error);
-      this.msg.error('Có lỗi xảy ra, vui lòng thử lại');
+
+      // Kiểm tra nếu backend trả về duplicate
+      if (error?.error?.errorCode === 'ROLE_DUPLICATE') {
+        this.msg.warning('Tên vai trò đã tồn tại, vui lòng nhập tên khác');
+        this.roleNameExists = true;
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          const input = document.querySelector<HTMLInputElement>('#roleNameInput');
+          input?.focus();
+        });
+      } else {
+        this.roleNameExists = false;
+        this.msg.error('Có lỗi xảy ra, vui lòng thử lại');
+      }
+
       this.cdr.detectChanges();
     });
   }
@@ -524,23 +411,11 @@ export class RolesComponent implements OnInit, OnDestroy {
       });
   }
 
-  checkRoleNameExists(roleNameInput: any): void {
-    const duplicate = this.roles.some(
-      (role) => role.name.trim().toLowerCase() === this.roleName.trim().toLowerCase()
-    );
-
-    this.roleNameExists = duplicate;
-
-    if (duplicate) {
-      roleNameInput.control.setErrors({
-        ...roleNameInput.errors,
-        duplicate: true,
-      });
-    } else {
-      if (roleNameInput.errors?.['duplicate']) {
-        const { duplicate, ...others } = roleNameInput.errors;
-        roleNameInput.control.setErrors(Object.keys(others).length ? others : null);
-      }
+  onRoleNameChange(value: string): void {
+    // reset cờ duplicate khi user gõ lại
+    if (this.roleNameExists) {
+      this.roleNameExists = false;
+      this.cdr.detectChanges();
     }
   }
 }

@@ -15,6 +15,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { AdminUserService, AdminUserDto } from '../../../core/services/admin-user.service';
 import { PermissionService } from '../../../core/services/permission.service';
 import { take } from 'rxjs/operators';
+import { PaginationComponent } from "../../../shared/components/pagination-component/pagination-component";
 
 @Component({
   selector: 'app-users',
@@ -31,8 +32,9 @@ import { take } from 'rxjs/operators';
     NzIconModule,
     NzDropDownModule,
     NzTreeModule,
-    NzCheckboxModule
-  ],
+    NzCheckboxModule,
+    PaginationComponent
+],
   templateUrl: './users.html',
   styleUrls: ['./users.scss']
 })

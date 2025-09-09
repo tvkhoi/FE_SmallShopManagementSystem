@@ -61,7 +61,7 @@
         <ng-template #suffixIcon><i nz-icon nzType="search"></i></ng-template>
     </div>
 
-    <nz-table #userTable [nzData]="users.slice((currentPage - 1) * pageSize, currentPage * pageSize)" nzSize="small"
+    <nz-table #userTable [nzData]="users" nzSize="small"
         [nzScroll]="{ x: 'max-content', y: 'calc(100vh - 400px)' }" class="user-table">
         <thead>
             <tr>
@@ -88,9 +88,7 @@
             </tr>
         </tbody>
     </nz-table>
-    <div class="pagination-container">
-        <span>Total: {{ totalItems }}</span>
-        <nz-pagination [nzTotal]="totalItems" [(nzPageIndex)]="currentPage" [nzPageSize]="pageSize"
-            (nzPageIndexChange)="onPageChange($event)" nzShowSizeChanger="false"></nz-pagination>
-    </div>
+    <app-pagination [total]="totalItems" [pageSize]="pageSize" [pageIndex]="currentPage"
+        (pageChange)="onPageChange($event)"></app-pagination>
+
 </div>
