@@ -6,6 +6,14 @@
     input {
       margin-right: 8px;
     }
+
+
+    :host ::ng-deep .ant-btn {
+      border-radius: 8px !important;
+      background: #1677ff;
+      color: white;
+    }
+
   }
 
   .roles-header {

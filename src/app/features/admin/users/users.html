@@ -1,93 +1,84 @@
 <div class="users-container">
     <div class="users-header">
-        <h2>Users</h2>
+        <h2>Người dùng</h2>
         <div class="user-header__actions">
-            <button nz-button nzType="primary" (click)="showModal()">Add Permission User</button>
+            <button nz-button nzType="primary" (click)="showModal()">Thêm người dùng</button>
         </div>
     </div>
 
     <!-- Modal gán quyền cho User -->
-    <nz-modal [(nzVisible)]="isVisible" nzTitle="Assign Permissions to User" (nzOnCancel)="handleCancel()"
+    <nz-modal [(nzVisible)]="isVisible" nzTitle="Gán quyền cho người dùng" (nzOnCancel)="handleCancel()"
         [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooter">
         <div *nzModalContent>
             <form nz-form>
                 <nz-form-item>
-                    <nz-form-label [nzRequired]="true" nzFor="userId">User ID</nz-form-label>
-                    <nz-form-control [nzErrorTip]="'Vui lòng nhập User ID hợp lệ'">
+                    <nz-form-label [nzRequired]="true" nzFor="userId">Mã người dùng</nz-form-label>
+                    <nz-form-control [nzErrorTip]="'Vui lòng nhập mã người dùng hợp lệ'">
                         <input nz-input id="userId" [(ngModel)]="userId" name="userId" required
-                            placeholder="Enter user ID" type="number" />
-                    </nz-form-control>
-                </nz-form-item>
-
-                <h4>Permissions</h4>
-                <nz-form-item>
-                    <nz-form-control [nzErrorTip]="'Vui lòng chọn ít nhất một quyền'"
-                        [nzValidateStatus]="permissionsCtrl">
-                        <label nz-checkbox [(ngModel)]="allChecked" [ngModelOptions]="{standalone: true}"
-                            (ngModelChange)="toggleAllPermissions($event)">Select all</label>
-                        <div *ngFor="let module of treeData" style="margin: 8px 0;">
-                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                                <strong>{{ module.title }}</strong>
-                                <label nz-checkbox [ngModel]="isModuleAllChecked(module.key)"
-                                    [ngModelOptions]="{standalone: true}"
-                                    (ngModelChange)="toggleModulePermissions(module.key, $event)">Select all in
-                                    module</label>
-                            </div>
-                            <div style="padding-left: 16px;">
-                                <label nz-checkbox *ngFor="let perm of module.children" [(ngModel)]="perm.checked"
-                                    [ngModelOptions]="{standalone: true}" (ngModelChange)="updateAllCheckedState()"
-                                    style="display:block; margin:4px 0;">{{
-                                    perm.title }}</label>
-                            </div>
-                        </div>
-                        <input type="hidden" [ngModel]="selectedPermissions.length > 0 ? 'valid' : ''"
-                            name="permissionsCtrl" #permissionsCtrl="ngModel" required />
+                            placeholder="Nhập mã người dùng" type="number" />
                     </nz-form-control>
                 </nz-form-item>
             </form>
         </div>
     </nz-modal>
 
+    <app-assign-permission-modal [visible]="isAssignVisible" [user]="selectedUser"
+            [groupedPermissions]="groupedPermissions" (cancel)="handleAssignCancel()"
+            (save)="handleAssignOk($event)"></app-assign-permission-modal>
+
     <ng-template #modalFooter>
-        <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
-        <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">Save</button>
+        <button nz-button nzType="default" (click)="handleCancel()">Hủy</button>
+        <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">Lưu</button>
     </ng-template>
 
     <div class="search-bar">
         <nz-input-group [nzSuffix]="suffixIcon">
-            <input type="text" nz-input placeholder="Search" [(ngModel)]="searchQuery"
+            <input type="text" nz-input placeholder="Tìm kiếm" [(ngModel)]="searchQuery"
                 (ngModelChange)="filterUsers()" />
         </nz-input-group>
         <ng-template #suffixIcon><i nz-icon nzType="search"></i></ng-template>
     </div>
 
-    <nz-table #userTable [nzData]="users" nzSize="small"
-        [nzScroll]="{ x: 'max-content', y: 'calc(100vh - 400px)' }" class="user-table">
+    <nz-table #userTable [nzData]="users" [nzFrontPagination]="false" class="user-table">
         <thead>
             <tr>
-                <th nzWidth="15%" data-label="Actions">ACTIONS</th>
-                <th nzWidth="35%" data-label="User Name">USER NAME</th>
-                <th nzWidth="50%" data-label="Email Address">EMAIL ADDRESS</th>
+                <th nzWidth="16.6%" data-label="Hành động">HÀNH ĐỘNG</th>
+                <th nzWidth="16.6%" data-label="Tên người dùng">TÊN NGƯỜI DÙNG</th>
+                <th nzWidth="16.6%" data-label="Địa chỉ email">ĐỊA CHỈ EMAIL</th>
+                <th nzWidth="16.6%" data-label="Hành động">HÀNH ĐỘNG</th>
+                <th nzWidth="16.6%" data-label="Tên người dùng">TÊN NGƯỜI DÙNG</th>
+                <th nzWidth="16.6%" data-label="Địa chỉ email">ĐỊA CHỈ EMAIL</th>
+
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let user of userTable.data">
-                <td data-label="Actions">
-                    <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu"><nz-icon nzType="setting"
-                            nzTheme="outline" style="font-size: 16px; padding-right: 5px;" />Action</a>
+                <td data-label="Hành động">
+                    <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu">
+                        <nz-icon nzType="setting" nzTheme="outline" style="font-size: 16px; padding-right: 5px;" />Hành
+                        động
+                    </a>
                     <nz-dropdown-menu #menu="nzDropdownMenu">
                         <ul nz-menu>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="editUser(user)">Edit</button></li>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="deleteUser(user)">Delete</button>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="editUser(user)">Xem chi
+                                    tiết</button></li>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="editUser(user)">Sửa</button></li>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="showAssignModal(user)">Gán quyền</button>
+                            </li>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="deleteUser(user)">Xóa</button>
                             </li>
                         </ul>
                     </nz-dropdown-menu>
                 </td>
-                <td data-label="User Name">{{ user.username }}</td>
-                <td data-label="Email Address">{{ user.email }}</td>
+                <td data-label="Tên người dùng">{{ user.username }}</td>
+                <td data-label="Địa chỉ email">{{ user.email }}</td>
+                <td data-label="Địa chỉ email">{{ user.email }}</td>
+                <td data-label="Địa chỉ email">{{ user.email }}</td>
+                <td data-label="Địa chỉ email">{{ user.email }}</td>
             </tr>
         </tbody>
     </nz-table>
+
     <app-pagination [total]="totalItems" [pageSize]="pageSize" [pageIndex]="currentPage"
         (pageChange)="onPageChange($event)"></app-pagination>
 
