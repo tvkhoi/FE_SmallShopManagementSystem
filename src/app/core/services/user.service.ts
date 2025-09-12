@@ -1,9 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import { UserDTO } from '../../features/admin/users/user.dto';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   private apiUrl = 'https://localhost:7277/api'; // baseUrl chung
@@ -34,14 +35,14 @@ export class UserService {
     return this.http.get(`${this.apiUrl}/User/${id}`);
   }
 
-  getUsersPaged(params: { 
-    isActive?: boolean, 
-    email?: string, 
-    username?: string, 
-    phone?: string, 
-    fullName?: string, 
-    pageNumber?: number, 
-    pageSize?: number 
+  getUsersPaged(params: {
+    isActive?: boolean;
+    email?: string;
+    username?: string;
+    phone?: string;
+    fullName?: string;
+    pageNumber?: number;
+    pageSize?: number;
   }): Observable<any> {
     return this.http.get(`${this.apiUrl}/User/paged`, { params: params as any });
   }
@@ -50,8 +51,8 @@ export class UserService {
     return this.http.get(`${this.apiUrl}/User/search?keyword=${keyword}`);
   }
 
-  createUser(userData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/User`, userData);
+  createUser(userData: UserDTO): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/User`, userData);
   }
 
   updateUser(id: number, userData: any): Observable<any> {
@@ -71,8 +72,9 @@ export class UserService {
   }
 
   // ========== ROLE ==========
-  assignRole(userId: number, roleId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/User/${userId}/assign-role`, { roleId });
+  /** Gán nhiều role cho user */
+  assignRoles(userId: number, roleIds: number[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/User/${userId}/assign-roles`, { roleIds });
   }
 
   removeRole(userId: number, roleId: number): Observable<any> {

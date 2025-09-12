@@ -12,18 +12,24 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTreeModule, NzFormatEmitEvent } from 'ng-zorro-antd/tree';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
-import { AdminUserService, AdminUserDto } from '../../../core/services/admin-user.service';
-import { PermissionService } from '../../../core/services/permission.service';
-import { finalize, switchMap, take, takeUntil } from 'rxjs/operators';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { of, Subject } from 'rxjs';
+import { finalize, switchMap, takeUntil } from 'rxjs/operators';
+import { NzTabsModule } from 'ng-zorro-antd/tabs';
+
 import { PaginationComponent } from '../../../shared/components/pagination-component/pagination-component';
 import { AssignPermissionModalComponent } from '../../../shared/components/assign-permission-modal/assign-permission-modal';
+import { PermissionService } from '../../../core/services/permission.service';
+import { UserService } from '../../../core/services/user.service';
+
 import { Permission } from '../../../core/models/permission';
-import { RolePermissionsResponse } from '../roles/role-permission-respose.model';
 import { TreeNode } from '../../../core/models/tree-node';
 import { User } from '../../../core/models/user';
-import { UserService } from '../../../core/services/user.service';
 import { UserPermissionsResponse } from './user-permission-respose.model';
-import { Subject } from 'rxjs';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { Role } from '../../../core/models/role';
+import { RoleService } from '../../../core/services/role.service';
+import { UserDTO } from './user.dto';
 
 @Component({
   selector: 'app-users',
@@ -41,51 +47,72 @@ import { Subject } from 'rxjs';
     NzDropDownModule,
     NzTreeModule,
     NzCheckboxModule,
+    NzTagModule,
     PaginationComponent,
     AssignPermissionModalComponent,
+    NzTabsModule,
+    NzSwitchModule,
   ],
   templateUrl: './users.html',
   styleUrls: ['./users.scss'],
 })
 export class UsersComponent implements OnInit {
-  // private adminUserService = inject(AdminUserService);
   private permissionService = inject(PermissionService);
   private userService = inject(UserService);
+  private roleService = inject(RoleService);
   private cdr = inject(ChangeDetectorRef);
   private zone = inject(NgZone);
   private msg = inject(NzMessageService);
 
-  searchQuery: string = '';
+  searchQuery = '';
   users: User[] = [];
-  originalPermissions: { id: number; granted: boolean }[] = [];
-  groupedPermissions: { module: string; permissions: Permission[] }[] = [];
-  selectedModule: string | null = null;
+
+  newUser: UserDTO = {
+    id: 0,
+    username: '',
+    email: '',
+    fullName: '',
+    phoneNumber: '',
+    password: '',
+    isActive: true,
+    isDeleted: false,
+    RoleName: [],
+  };
 
   totalItems = 0;
   pageSize = 10;
   currentPage = 1;
 
-  // Modal state
+  // Modal states
   isVisible = false;
   isConfirmLoading = false;
-  submitted = false;
   isAssignVisible = false;
+  isViewDetailsVisible = false;
+  submitted = false;
+  passwordVisible: boolean = false;
 
-  // Assign permissions to existing user
   userId: number | null = null;
   selectedUserId: number | null = null;
   selectedUser: User | null = null;
 
-  // Permissions tree
+  // Permissions
+  groupedPermissions: { module: string; permissions: Permission[] }[] = [];
   treeData: TreeNode[] = [];
   allChecked = false;
 
+  // Role
+  roles: Role[] = [];
+  selectedNames: string[] = [];
+
   private destroy$ = new Subject<void>();
+
   ngOnInit(): void {
     this.loadUsers();
     this.loadPermissions();
+    this.loadRoles();
   }
 
+  /** Load danh sách user */
   private loadUsers(): void {
     this.userService.getAllUsers().subscribe({
       next: (data) => {
@@ -99,139 +126,69 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  handleAssignOk(payload: Permission[]): void {
-    if (!this.selectedUserId) return;
-    this.isConfirmLoading = true;
-
-    // Chuyển payload sang dạng {id, granted} nếu cần
-    const assignPayload = payload.map((p) => ({
-      id: p.id,
-      granted: !!p.granted,
-    }));
-    console.log('Payload gán quyền:', assignPayload);
-    this.userService
-      .assignPermissions(this.selectedUserId, assignPayload)
+  /** Load toàn bộ quyền */
+  private loadPermissions(): void {
+    this.permissionService
+      .getPermissions()
       .pipe(
-        finalize(() => {
-          this.isConfirmLoading = false;
-          this.cdr.detectChanges();
-        })
+        switchMap(() => this.permissionService.userData$),
+        takeUntil(this.destroy$)
       )
       .subscribe({
-        next: (resp) => {
-          // Cập nhật lại groupedPermissions theo resp nếu muốn
-          const updatedMap = new Map<number, boolean>();
-          resp.permissions.forEach((p: any) => updatedMap.set(p.id, p.granted));
+        next: (data: Permission[]) => {
+          this.zone.run(() => {
+            const modules = [...new Set(data.map((p) => p.module))];
+            this.groupedPermissions = modules.map((module) => ({
+              module,
+              permissions: data.filter((p) => p.module === module),
+            }));
 
-          this.groupedPermissions = this.groupedPermissions.map((group) => ({
-            ...group,
-            permissions: group.permissions.map((perm) => ({
-              ...perm,
-              granted: updatedMap.get(perm.id) ?? false,
-            })),
-          }));
-
-          this.afterSaveSuccess('Gán quyền thành công', 'assign');
-        },
-        error: (err) => this.afterSaveError(err),
-      });
-  }
-
-  handleAssignCancel(): void {
-    this.isAssignVisible = false;
-    this.selectedUserId = null;
-  }
-
-  private afterSaveSuccess(message: string, type: 'create' | 'assign'): void {
-    this.zone.run(() => {
-      this.isConfirmLoading = false;
-      this.isAssignVisible = false;
-      this.msg.success(message);
-      this.cdr.detectChanges();
-    });
-  }
-
-  private afterSaveError(error: any): void {
-    this.zone.run(() => {
-      this.isConfirmLoading = false;
-      console.error('Lỗi khi lưu:', error);
-      this.cdr.detectChanges();
-    });
-  }
-
-  onCheck(event: NzFormatEmitEvent): void {
-    const checkedKeys = event.keys as string[];
-    this.treeData = this.treeData.map((node) => {
-      if (checkedKeys.includes(node.key)) {
-        const children = node.children?.map((c) => ({ ...c, checked: true }));
-        return { ...node, checked: true, children };
-      } else {
-        const children = node.children?.map((c) => ({
-          ...c,
-          checked: checkedKeys.includes(c.key),
-        }));
-        return { ...node, checked: false, children };
-      }
-    });
-    this.updateAllCheckedState();
-  }
-
-  get selectedPermissions(): { id: number; name: string; module: string; description: string }[] {
-    const selected: { id: number; name: string; module: string; description: string }[] = [];
-    this.treeData.forEach((moduleNode) => {
-      moduleNode.children?.forEach((permNode: any) => {
-        if (permNode.checked) {
-          selected.push({
-            id: permNode.id!,
-            name: permNode.title!,
-            module: moduleNode.key,
-            description: permNode.title!,
+            this.treeData = modules.map((module) => ({
+              key: module,
+              title: module,
+              expanded: true,
+              children: data
+                .filter((p) => p.module === module)
+                .map((perm) => ({
+                  key: `${module}-${perm.id}`,
+                  title: perm.description,
+                  isLeaf: true,
+                  checked: false,
+                  id: perm.id,
+                })),
+            }));
+            this.cdr.detectChanges();
           });
-        }
+        },
+        error: (err) => console.error('Lỗi khi load permissions:', err),
       });
-    });
-    return selected;
   }
 
-  toggleAllPermissions(checked: boolean): void {
-    this.allChecked = checked;
-    this.treeData = this.treeData.map((moduleNode) => ({
-      ...moduleNode,
-      checked,
-      children: moduleNode.children?.map((c: any) => ({ ...c, checked })),
-    }));
+  /** Load toàn bộ role */
+  private loadRoles(): void {
+    this.roleService.getAllRoles().subscribe({
+      next: (data: Role[]) => {
+        this.zone.run(() => {
+          // map thêm thuộc tính checked
+          this.roles = data.map((role) => ({
+            ...role,
+            checked: false,
+          }));
+          this.cdr.detectChanges();
+        });
+      },
+      error: (err) => console.error('Lỗi khi load roles:', err),
+    });
+  }
+
+  onChangeRoleSelection(): void {
+    this.selectedNames = this.roles.filter((r) => r.checked).map((r) => r.name);
     this.cdr.detectChanges();
   }
 
-  updateAllCheckedState(): void {
-    const leaves: any[] = [];
-    this.treeData.forEach((m) => m.children?.forEach((c) => leaves.push(c)));
-    this.allChecked = leaves.length > 0 && leaves.every((l) => !!l.checked);
-  }
-
-  // Module-level toggles
-  isModuleAllChecked(moduleKey: string): boolean {
-    const moduleNode = this.treeData.find((m) => m.key === moduleKey);
-    if (!moduleNode || !moduleNode.children || moduleNode.children.length === 0) return false;
-    return moduleNode.children.every((c: any) => !!c.checked);
-  }
-
-  // toggleModulePermissions(moduleKey: string, checked: boolean): void {
-  //   this.treeData = this.treeData.map((m) => {
-  //     if (m.key !== moduleKey) return m;
-  //     return {
-  //       ...m,
-  //       checked,
-  //       children: m.children?.map((c: any) => ({ ...c, checked })),
-  //     };
-  //   });
-  //   this.updateAllCheckedState();
-  //   this.cdr.detectChanges();
-  // }
-
-  // UI actions
-  filterUsers() {
-    const term = (this.searchQuery || '').trim();
+  /** Xử lý tìm kiếm user */
+  filterUsers(): void {
+    const term = this.searchQuery.trim();
     if (!term) {
       this.loadUsers();
       return;
@@ -249,86 +206,90 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  onPageChange(page: number) {
+  onPageChange(page: number): void {
     this.currentPage = page;
     this.cdr.detectChanges();
   }
 
-  showModal() {
+  /** Modal: tạo user + gán quyền */
+  showModal(): void {
     this.isVisible = true;
     this.submitted = false;
     this.userId = null;
-    // reset checks
-    this.treeData = this.treeData.map((m) => ({
-      ...m,
-      checked: false,
-      children: m.children?.map((c: any) => ({ ...c, checked: false })),
-    }));
+
+    // Reset form user
+    this.newUser = {
+      id: 0,
+      username: '',
+      email: '',
+      fullName: '',
+      phoneNumber: '',
+      password: '',
+      isActive: true,
+      isDeleted: false,
+      RoleName: [],
+    };
+
+    // Reset role selection
+    this.roles = this.roles.map((r) => ({ ...r, checked: false }));
+    this.selectedNames = [];
+    // reset check tree
+    // this.treeData = this.treeData.map((m) => ({
+    //   ...m,
+    //   checked: false,
+    //   children: m.children?.map((c: any) => ({ ...c, checked: false })),
+    // }));
   }
 
-  handleCancel() {
+  handleCancel(): void {
     this.isVisible = false;
     this.submitted = false;
   }
 
-  handleOk() {
+  handleOk(): void {
     this.submitted = true;
-    if (!this.userId || this.selectedPermissions.length === 0) {
-      return;
-    }
     this.isConfirmLoading = true;
-    this.cdr.detectChanges();
 
-    const payload = this.selectedPermissions.map((p) => ({ id: p.id, granted: true }));
-    this.userService.assignPermissions(this.userId, payload).subscribe({
-      next: () => {
-        this.zone.run(() => {
+    // Gán danh sách RoleName từ selection
+    this.newUser.RoleName = this.selectedNames ?? [];
+
+    this.userService
+      .createUser(this.newUser)
+      .pipe(
+        finalize(() => {
           this.isConfirmLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (resp) => {
+          this.msg.success('Tạo user và gán role thành công');
           this.isVisible = false;
           this.loadUsers();
-          this.msg.success('Gán quyền cho người dùng thành công');
-          this.cdr.detectChanges();
-        });
-      },
-      error: (e) => {
-        this.zone.run(() => {
-          this.isConfirmLoading = false;
-          this.cdr.detectChanges();
-          console.error('Lỗi khi gán quyền cho user:', e);
-        });
-      },
-    });
+        },
+        error: (err) => {
+          console.error('Lỗi khi tạo user:', err);
+          if (err.error && typeof err.error === 'string') {
+            this.msg.error(err.error);
+          } else if (err.error?.errors) {
+            this.msg.error(Object.values(err.error.errors).flat().join(', '));
+          } else {
+            this.msg.error('Không thể tạo user');
+          }
+        },
+      });
   }
 
-  editUser(user: User) {
-    console.log('Sửa user:', user.username);
-  }
-
-  deleteUser(user: User) {
-    this.userService.deleteUser(user.id).subscribe({
-      next: () => {
-        this.msg.success('Đã xóa user');
-        this.loadUsers();
-      },
-      error: (e) => console.error('Lỗi khi xóa user:', e),
-    });
-  }
-
+  /** Modal: gán quyền cho user đã tồn tại */
   showAssignModal(user: User): void {
     this.isAssignVisible = true;
     this.selectedUserId = user.id;
     this.selectedUser = user;
 
     this.userService.getUserPermissions(user.id).subscribe((resp: UserPermissionsResponse) => {
-      this.originalPermissions = resp.permissions.map((p) => ({
-        id: p.id,
-        granted: p.granted ?? false,
-      }));
-
       const originalMap = new Map<number, boolean>();
-      this.originalPermissions.forEach((p) => originalMap.set(p.id, p.granted));
+      resp.permissions.forEach((p) => originalMap.set(p.id, p.granted ?? false));
 
-      // Gán lại trạng thái granted cho groupedPermissions
       this.groupedPermissions = this.groupedPermissions.map((group) => ({
         ...group,
         permissions: group.permissions.map((perm) => ({
@@ -339,48 +300,122 @@ export class UsersComponent implements OnInit {
       this.cdr.detectChanges();
     });
   }
-  private loadPermissions(): void {
-    this.permissionService
-      .getPermissions()
-      .pipe(
-        switchMap(() => this.permissionService.userData$),
-        takeUntil(this.destroy$)
-      )
+
+  handleAssignOk(payload: Permission[]): void {
+    if (!this.selectedUserId) return;
+    this.isConfirmLoading = true;
+
+    const assignPayload = payload.map((p) => ({ id: p.id, granted: !!p.granted }));
+    this.userService
+      .assignPermissions(this.selectedUserId, assignPayload)
+      .pipe(finalize(() => (this.isConfirmLoading = false)))
       .subscribe({
-        next: (data: Permission[]) => {
-          this.zone.run(() => {
-            const modules = [...new Set(data.map((p) => p.module))];
+        next: (resp) => {
+          const updatedMap = new Map<number, boolean>();
+          resp.permissions.forEach((p: any) => updatedMap.set(p.id, p.granted));
 
-            // group permissions theo module
-            this.groupedPermissions = modules.map((module) => ({
-              module,
-              permissions: data.filter((p) => p.module === module),
-            }));
-
-            // chọn module đầu tiên mặc định
-            if (modules.length > 0) {
-              this.selectedModule = modules[0];
-            }
-            // giữ lại treeData nếu vẫn cần cho NzTree
-            this.treeData = modules.map((module) => ({
-              key: module,
-              title: module,
-              expanded: true,
-              children: data
-                .filter((p) => p.module === module)
-                .map((perm) => ({
-                  key: `${module}-${perm.id}`,
-                  title: perm.description,
-                  isLeaf: true,
-                  checked: false,
-                  id: perm.id,
-                })),
-            }));
-
-            this.cdr.detectChanges();
-          });
+          this.groupedPermissions = this.groupedPermissions.map((group) => ({
+            ...group,
+            permissions: group.permissions.map((perm) => ({
+              ...perm,
+              granted: updatedMap.get(perm.id) ?? false,
+            })),
+          }));
+          this.afterSaveSuccess('Gán quyền thành công');
         },
-        error: (error) => console.error('Lỗi khi load permissions:', error),
+        error: (err) => this.afterSaveError(err),
       });
+  }
+
+  handleAssignCancel(): void {
+    this.isAssignVisible = false;
+    this.selectedUserId = null;
+  }
+
+  private afterSaveSuccess(message: string): void {
+    this.zone.run(() => {
+      this.isConfirmLoading = false;
+      this.isAssignVisible = false;
+      this.msg.success(message);
+      this.cdr.detectChanges();
+    });
+  }
+
+  private afterSaveError(error: any): void {
+    this.zone.run(() => {
+      this.isConfirmLoading = false;
+      console.error('Lỗi khi lưu:', error);
+      this.cdr.detectChanges();
+    });
+  }
+  handleViewDetailsCancel(): void {
+    this.isViewDetailsVisible = false;
+  }
+
+  /** Xử lý user */
+  editUser(user: User): void {
+    console.log('Sửa user:', user.username);
+  }
+
+  deleteUser(user: User): void {
+    this.userService.deleteUser(user.id).subscribe({
+      next: () => {
+        this.msg.success('Đã xóa user');
+        this.loadUsers();
+      },
+      error: (e) => console.error('Lỗi khi xóa user:', e),
+    });
+  }
+
+  viewDetails(user: User): void {
+    this.isViewDetailsVisible = true;
+    this.selectedUser = user;
+  }
+
+  /** Tree helpers */
+  get selectedPermissions(): { id: number; name: string; module: string; description: string }[] {
+    const selected: any[] = [];
+    this.treeData.forEach((moduleNode) => {
+      moduleNode.children?.forEach((permNode: any) => {
+        if (permNode.checked) {
+          selected.push({
+            id: permNode.id!,
+            name: permNode.title!,
+            module: moduleNode.key,
+            description: permNode.title!,
+          });
+        }
+      });
+    });
+    return selected;
+  }
+
+  onCheck(event: NzFormatEmitEvent): void {
+    const checkedKeys = event.keys as string[];
+    this.treeData = this.treeData.map((node) => ({
+      ...node,
+      checked: checkedKeys.includes(node.key),
+      children: node.children?.map((c) => ({
+        ...c,
+        checked: checkedKeys.includes(c.key),
+      })),
+    }));
+    this.updateAllCheckedState();
+  }
+
+  toggleAllPermissions(checked: boolean): void {
+    this.allChecked = checked;
+    this.treeData = this.treeData.map((moduleNode) => ({
+      ...moduleNode,
+      checked,
+      children: moduleNode.children?.map((c: any) => ({ ...c, checked })),
+    }));
+    this.cdr.detectChanges();
+  }
+
+  updateAllCheckedState(): void {
+    const leaves: any[] = [];
+    this.treeData.forEach((m) => m.children?.forEach((c) => leaves.push(c)));
+    this.allChecked = leaves.length > 0 && leaves.every((l) => !!l.checked);
   }
 }

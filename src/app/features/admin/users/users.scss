@@ -138,3 +138,21 @@
 ::ng-deep .custom-user-modal .ant-btn {
   border-radius: 8px !important;
 }
+
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: top;
+
+    &.label {
+      font-weight: 600;
+      width: 30%;
+      color: #555;
+      background-color: #fafafa;
+    }
+  }
+}
