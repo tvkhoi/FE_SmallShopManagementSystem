@@ -1,13 +1,13 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core'; 
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { UserDTO } from '../../features/admin/users/user.dto';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private apiUrl = 'https://localhost:7277/api'; // baseUrl chung
+  private apiUrl = 'https://localhost:7277/api'; 
   private http = inject(HttpClient);
 
   private userDataSource = new BehaviorSubject({ username: '', email: '', password: '' });
@@ -19,11 +19,21 @@ export class UserService {
 
   // ========== AUTH ==========
   signUp(userData: { username: string; email: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Auth/register`, userData, { responseType: 'text' });
+    return this.http.post(`${this.apiUrl}/Auth/register`, userData); 
   }
 
-  login(userData: { username: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Auth/login`, userData, { responseType: 'json' });
+  /** BE yêu cầu login = email + password */
+  login(userData: { email: string; password: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Auth/login`, userData);
+  }
+
+  /** Refresh token */
+  refreshToken(refreshToken: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Auth/refresh-token`, refreshToken);
+  }
+
+  logout(refreshToken: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Auth/logout`, refreshToken);
   }
 
   // ========== USER ==========
@@ -72,7 +82,6 @@ export class UserService {
   }
 
   // ========== ROLE ==========
-  /** Gán nhiều role cho user */
   assignRoles(userId: number, roleIds: number[]): Observable<any> {
     return this.http.post(`${this.apiUrl}/User/${userId}/assign-roles`, { roleIds });
   }
