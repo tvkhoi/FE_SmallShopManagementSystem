@@ -5,12 +5,12 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
-import {NzAvatarModule }from 'ng-zorro-antd/avatar';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { UserService } from '../../../core/services/user.service';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
 import { NzMessageService } from 'ng-zorro-antd/message';
-
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-sign-up',
@@ -24,21 +24,25 @@ import { NzMessageService } from 'ng-zorro-antd/message';
     NzFormModule,
     NzInputModule,
     NzButtonModule,
-    RouterModule
+    RouterModule,
+    CommonModule
   ],
   standalone: true
 })
 export class SignUpComponent implements OnInit {
   signUpForm!: FormGroup;
   isLoading = false;
-  private fb: FormBuilder = inject(FormBuilder);
-  private userService: UserService = inject(UserService);
-  private router: Router = inject(Router);
+
+  private fb = inject(FormBuilder);
+  private userService = inject(UserService);
+  private router = inject(Router);
   private message = inject(NzMessageService);
 
   ngOnInit(): void {
     this.signUpForm = this.fb.group(
       {
+        fullname: ['', [Validators.required]],
+        phoneNumber: ['', [Validators.required, Validators.pattern(/^0[0-9]{9}$/)]],
         username: ['', [Validators.required]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
@@ -48,10 +52,11 @@ export class SignUpComponent implements OnInit {
     );
   }
 
-  // custom validator: check password trùng nhau
+  // Custom validator: check password trùng nhau
   passwordMatchValidator(group: FormGroup) {
     const password = group.get('password')?.value;
     const confirm = group.get('c_password')?.value;
+    if (!password || !confirm) return null;
     return password === confirm ? null : { notSame: true };
   }
 
@@ -59,38 +64,28 @@ export class SignUpComponent implements OnInit {
     if (this.signUpForm.invalid) {
       Object.values(this.signUpForm.controls).forEach(control => {
         control.markAsDirty();
-        control.updateValueAndValidity();
+        control.updateValueAndValidity({ onlySelf: true });
       });
+      this.message.error('Vui lòng nhập đầy đủ thông tin hợp lệ!');
       return;
     }
 
     this.isLoading = true;
-  const { username, email, password } = this.signUpForm.value;
+    const { fullname, phoneNumber, username, email, password } = this.signUpForm.value;
 
-  this.userService.signUp({ username, email, password })
-    .pipe(finalize(() => (this.isLoading = false)))
-    .subscribe({
-      next: (res: any) => {
-        console.log('Đăng ký thành công:', res);
-        this.message.success('Đăng ký thành công');
-      },
-      complete: () => {
-        this.isLoading = false;
-        // sau khi đăng ký thành công => điều hướng sang login
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-      console.error('Đăng ký thất bại, chi tiết error:', err);
-      this.message.error('Đăng ký thất bại');
-      if (err.status) {
-        console.error('HTTP Status:', err.status);
-      }
-      if (err.error) {
-        console.error('Backend trả error:', err.error);
-      }
-    }
-    });
+    this.userService
+      .signUp({ fullname, phoneNumber, username, email, password })
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: (res: any) => {
+          console.log('Đăng ký thành công:', res);
+          this.message.success('Đăng ký thành công');
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {
+          console.error('Đăng ký thất bại:', err);
+          this.message.error(err.error?.message || 'Đăng ký thất bại, vui lòng thử lại!');
+        }
+      });
   }
-
-  
 }
