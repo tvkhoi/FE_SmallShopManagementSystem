@@ -65,25 +65,19 @@ export class LoginComponent implements OnInit {
         })
       )
       .subscribe({
-        next: (res: any) => {
-          this.userService.changeData(res);
+        next: (res) => {
           console.log('Đăng nhập thành công, response:', res);
 
-          // đồng bộ tên key token từ backend
-          const accessToken = res.accessToken || res.token;
-          const refreshToken = res.refreshToken;
-
-          if (accessToken && refreshToken) {
-            this.authService.saveTokens(accessToken, refreshToken);
+          if (res.token && res.refreshToken) {
+            this.authService.saveTokens(res.token, res.refreshToken);
             this.authService.redirectByRole();
+            this.message.success('Đăng nhập thành công');
           } else {
-            console.error('Không tìm thấy accessToken/refreshToken trong response');
+            this.message.error('Không tìm thấy token trong phản hồi');
           }
-
-          this.message.success('Đăng nhập thành công');
         },
-        error: () => {
-          this.message.error('Đăng nhập thất bại');
+        error: (err) => {
+          console.error('Đăng nhập thất bại:', err);
         },
       });
   }

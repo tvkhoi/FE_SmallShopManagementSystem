@@ -9,7 +9,7 @@ const refreshSubject = new BehaviorSubject<string | null>(null);
 
 export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
   const authService = inject(AuthService);
-  const token = authService.getAccessToken(); // bạn cần thêm getAccessToken()
+  const token = authService.getAccessToken();
 
   let authReq = req;
   if (token) {

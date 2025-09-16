@@ -1,101 +1,190 @@
-import { inject, Injectable } from '@angular/core'; 
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, throwError } from 'rxjs';
+import { ApiResponse } from '../models/ApiResponse';
+import { LoginResponse } from '../models/LoginResponse';
 import { UserDTO } from '../../features/admin/users/user.dto';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private apiUrl = 'https://localhost:7277/api'; 
+  private apiUrl = 'https://localhost:7277/api';
   private http = inject(HttpClient);
 
-  private userDataSource = new BehaviorSubject({ username: '', email: '', password: '' });
+  private userDataSource = new BehaviorSubject<LoginResponse | null>(null);
   currentUserData = this.userDataSource.asObservable();
 
-  changeData(newUserData: { username: string; email: string; password: string }) {
+  changeData(newUserData: LoginResponse) {
     this.userDataSource.next(newUserData);
   }
 
   // ========== AUTH ==========
-  signUp(userData: { username: string; email: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Auth/register`, userData); 
+  signUp(userData: { fullname: string; phoneNumber: string; username: string; email: string; password: string }): Observable<any> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/Auth/register`, userData).pipe(
+      map((res) => {
+        if (res.success) return res.data;
+        throw res;
+      })
+    );
   }
 
-  /** BE yêu cầu login = email + password */
-  login(userData: { email: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Auth/login`, userData);
+  login(userData: { email: string; password: string }): Observable<LoginResponse> {
+    return this.http.post<ApiResponse<LoginResponse>>(`${this.apiUrl}/Auth/login`, userData).pipe(
+      map((res) => {
+        if (res.success && res.data) return res.data;
+        throw res;
+      })
+    );
   }
 
-  /** Refresh token */
-  refreshToken(refreshToken: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Auth/refresh-token`, refreshToken);
+  refreshToken(refreshToken: string): Observable<LoginResponse> {
+    return this.http
+      .post<ApiResponse<LoginResponse>>(`${this.apiUrl}/Auth/refresh-token`, refreshToken)
+      .pipe(
+        map((res) => {
+          if (res.success && res.data) return res.data;
+          throw res;
+        })
+      );
   }
 
   logout(refreshToken: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Auth/logout`, refreshToken);
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/Auth/logout`, refreshToken).pipe(
+      map((res) => {
+        if (res.success) return res.data;
+        throw res;
+      })
+    );
   }
 
   // ========== USER ==========
   getAllUsers(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/User`);
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/User`).pipe(
+      map((res) => {
+        if (res.success) return res.data;
+        throw res;
+      })
+    );
   }
 
   getUserById(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/User/${id}`);
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/User/${id}`).pipe(
+      map((res) => {
+        if (res.success) return res.data;
+        throw res;
+      })
+    );
   }
 
-  getUsersPaged(params: {
-    isActive?: boolean;
-    email?: string;
-    username?: string;
-    phone?: string;
-    fullName?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  }): Observable<any> {
-    return this.http.get(`${this.apiUrl}/User/paged`, { params: params as any });
+  getUsersPaged(params: any): Observable<any> {
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/User/paged`, { params }).pipe(
+      map((res) => {
+        if (res.success) return res.data;
+        throw res;
+      })
+    );
   }
 
   searchUsers(keyword: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/User/search?keyword=${keyword}`);
+    return this.http
+      .get<ApiResponse<any>>(`${this.apiUrl}/User/search?keyword=${keyword}`)
+      .pipe(
+        map((res) => {
+          if (res.success) return res.data;
+          throw res;
+        })
+      );
   }
 
   createUser(userData: UserDTO): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/User`, userData);
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/User`, userData).pipe(
+      map((res) => {
+        if (res.success) return res.data;
+        throw res;
+      })
+    );
   }
 
   updateUser(id: number, userData: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/User/${id}`, userData);
+    return this.http.put<ApiResponse<any>>(`${this.apiUrl}/User/${id}`, userData).pipe(
+      map((res) => {
+        if (res.success) return res.data;
+        throw res;
+      })
+    );
   }
 
   deleteUser(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/User/${id}/DeleteUser`, {});
+    return this.http.put<ApiResponse<any>>(`${this.apiUrl}/User/${id}/DeleteUser`, {}).pipe(
+      map((res) => {
+        if (res.success) return res.data;
+        throw res;
+      })
+    );
   }
 
   activateUser(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/User/${id}/activate`, {});
+    return this.http.put<ApiResponse<any>>(`${this.apiUrl}/User/${id}/activate`, {}).pipe(
+      map((res) => {
+        if (res.success) return res.data;
+        throw res;
+      })
+    );
   }
 
   deactivateUser(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/User/${id}/deactivate`, {});
+    return this.http.put<ApiResponse<any>>(`${this.apiUrl}/User/${id}/deactivate`, {}).pipe(
+      map((res) => {
+        if (res.success) return res.data;
+        throw res;
+      })
+    );
   }
 
   // ========== ROLE ==========
   assignRoles(userId: number, roleIds: number[]): Observable<any> {
-    return this.http.post(`${this.apiUrl}/User/${userId}/assign-roles`, { roleIds });
+    return this.http
+      .post<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/assign-roles`, { roleIds })
+      .pipe(
+        map((res) => {
+          if (res.success) return res.data;
+          throw res;
+        })
+      );
   }
 
   removeRole(userId: number, roleId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/User/${userId}/remove-role/${roleId}`);
+    return this.http
+      .delete<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/remove-role/${roleId}`)
+      .pipe(
+        map((res) => {
+          if (res.success) return res.data;
+          throw res;
+        })
+      );
   }
 
   // ========== PERMISSION ==========
   getUserPermissions(userId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/User/${userId}/permissions`);
+    return this.http
+      .get<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/permissions`)
+      .pipe(
+        map((res) => {
+          if (res.success) return res.data;
+          throw res;
+        })
+      );
   }
 
   assignPermissions(userId: number, permissions: any[]): Observable<any> {
-    return this.http.post(`${this.apiUrl}/User/${userId}/assign-permissions`, { permissions });
+    return this.http
+      .post<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/assign-permissions`, { permissions })
+      .pipe(
+        map((res) => {
+          if (res.success) return res.data;
+          throw res;
+        })
+      );
   }
 }

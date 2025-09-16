@@ -11,33 +11,33 @@
       <nz-form-item>
         <nz-form-label [nzSpan]="24" nzFor="email">Email</nz-form-label>
         <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập email hợp lệ!">
-          <input nz-input id="email" formControlName="email" placeholder="Email" />
+          <input nz-input id="email" formControlName="email" placeholder="Nhập email" />
         </nz-form-control>
       </nz-form-item>
 
-      <!-- Password -->
+      <!-- Mật khẩu -->
       <nz-form-item>
-        <nz-form-label [nzSpan]="24" nzFor="password">Password</nz-form-label>
+        <nz-form-label [nzSpan]="24" nzFor="password">Mật khẩu</nz-form-label>
         <nz-form-control [nzSpan]="24">
           <input nz-input type="password" id="password" formControlName="password" placeholder="********" />
           <div class="forget-pass">
-            <a [routerLink]="['/forget-password']">Forget Password ?</a>
+            <a [routerLink]="['/forget-password']">Quên mật khẩu?</a>
           </div>
         </nz-form-control>
       </nz-form-item>
 
-      <!-- Login Button -->
+      <!-- Nút đăng nhập -->
       <div class="text-center">
         <button nz-button nzType="primary" class="login-btn" [nzBlock]="true"
           [disabled]="loginForm.invalid || isLoading">
-          {{ isLoading ? 'Loading...' : 'Login' }}
+          {{ isLoading ? 'Đang xử lý...' : 'Đăng nhập' }}
         </button>
       </div>
 
-      <!-- Sign Up -->
+      <!-- Chuyển sang đăng ký -->
       <div class="sign-up">
-        Don’t have an account?
-        <a [routerLink]="['/sign-up']">Sign Up</a> here.
+        Bạn chưa có tài khoản?
+        <a [routerLink]="['/sign-up']">Đăng ký</a> ngay.
       </div>
     </form>
   </div>
