@@ -45,7 +45,7 @@
     <!-- Search box -->
     <div class="roles-search">
         <input nz-input placeholder="Tìm kiếm vai trò..." [(ngModel)]="searchQuery" />
-        <button nz-button nzType="default" (click)="filterRoles()">Tìm kiếm</button>
+        <button class="search-button" nz-button nzType="default" (click)="filterRoles()">Tìm kiếm</button>
     </div>
 
     <!-- Table roles -->
@@ -67,13 +67,13 @@
                     <nz-dropdown-menu #menu="nzDropdownMenu">
                         <ul nz-menu>
                             <li nz-menu-item>
-                                <button nz-button nzType="link" (click)="showAssignModal(role)">Gán quyền</button>
+                                <button nz-button nzType="link" (click)="showAssignModal(role)" [disabled]="role.name === 'Admin'">Gán quyền</button>
                             </li>
                             <li nz-menu-item>
-                                <button nz-button nzType="link" (click)="deleteRole(role)">Xóa</button>
+                                <button nz-button nzType="link" (click)="deleteRole(role)" [disabled]="role.name === 'Admin'">Xóa</button>
                             </li>
                             <li nz-menu-item>
-                                <button nz-button nzType="link" (click)="editRole(role)">Sửa</button>
+                                <button nz-button nzType="link" (click)="editRole(role)" [disabled]="role.name === 'Admin'">Sửa</button>
                             </li>
                         </ul>
                     </nz-dropdown-menu>

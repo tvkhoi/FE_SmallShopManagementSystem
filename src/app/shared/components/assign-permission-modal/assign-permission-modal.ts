@@ -5,6 +5,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzTreeModule } from 'ng-zorro-antd/tree';
+import { User } from '../../../core/models/user';
 
 // ================== Interfaces ==================
 export interface Permission {
@@ -44,6 +45,7 @@ export interface GroupedPermissions {
 export class AssignPermissionModalComponent {
   @Input() visible = false;
   @Input() role!: Role | null;
+  @Input() user!: User | null;
   @Input() groupedPermissions: GroupedPermissions[] = [];
 
   @Output() cancel = new EventEmitter<void>();

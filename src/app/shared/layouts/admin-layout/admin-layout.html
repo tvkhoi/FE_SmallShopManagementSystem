@@ -1,15 +1,10 @@
 <nz-layout class="admin-layout">
   <!-- Sidebar -->
-  <nz-sider
-    nzCollapsible
-    [nzCollapsed]="isCollapsed"
-    [nzWidth]="220"
-    class="admin-sider"
-    [class.open]="sidebarOpen"
-
-  >
+  <nz-sider nzCollapsible [nzCollapsed]="isCollapsed" [nzWidth]="220" class="admin-sider" [class.open]="sidebarOpen">
     <div class="logo">
-      <img src="https://st.quantrimang.com/photos/image/2021/09/05/Co-Vietnam.png" width="50" height="auto" style="padding-right: 10px;">QUẢN TRỊ VIÊN</div>
+      <img src="https://st.quantrimang.com/photos/image/2021/09/05/Co-Vietnam.png" width="50" height="auto"
+        style="padding-right: 10px;">QUẢN TRỊ VIÊN
+    </div>
     <ul nz-menu nzTheme="dark" nzMode="inline">
       <li nz-menu-item routerLink="/admin/dashboard" routerLinkActive="ant-menu-item-selected">
         <span nz-icon nzType="dashboard"></span>
@@ -20,7 +15,7 @@
         <span>QUẢN LÍ NGƯỜI DÙNG</span>
       </li>
       <li nz-menu-item routerLink="/admin/roles" routerLinkActive="ant-menu-item-selected">
-        <span nz-icon nzType="role"></span>
+        <span nz-icon nzType="team"></span>
         <span>QUẢN LÍ VAI TRÒ</span>
       </li>
       <li nz-menu-item routerLink="/admin/audit_log" routerLinkActive="ant-menu-item-selected">
@@ -41,28 +36,41 @@
           <span class="page-title">{{ currentTitle }}</span>
         </div>
       </div>
-      <div class="right">
-        <span class="greeting">Hello, Admin</span>
-        <button nz-button nzType="primary" nzDanger (click)="logout()">Logout</button>
-      </div>
       <ul nz-menu nzMode="horizontal" class="mobile-menu">
         <li nz-menu-item routerLink="/admin/dashboard" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="dashboard"></span>
-          TRANG CHỦ
+          <div class="menu-mobile-item">
+            <span nz-icon nzType="dashboard"></span>
+            <span class="menu-text">TRANG CHỦ</span>
+          </div>
         </li>
         <li nz-menu-item routerLink="/admin/users" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="user"></span>
-          QUẢN LÍ NGƯỜI DÙNG
+          <div class="menu-mobile-item">
+            <span nz-icon nzType="user"></span>
+            <span class="menu-text">NGƯỜI DÙNG</span>
+          </div>
         </li>
         <li nz-menu-item routerLink="/admin/roles" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="role"></span>
-          QUẢN LÍ VAI TRÒ
+          <div class="menu-mobile-item">
+            <span nz-icon nzType="team"></span>
+            <span class="menu-text">VAI TRÒ</span>
+          </div>
         </li>
         <li nz-menu-item routerLink="/admin/audit_log" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="audit"></span>
-          NHẬT KÝ HỆ THỐNG
+          <div class="menu-mobile-item">
+            <span nz-icon nzType="audit"></span>
+            <span class="menu-text">NHẬT KÝ</span>
+          </div>
+        </li>
+        <li nz-menu-item routerLink="/admin/profile" routerLinkActive="ant-menu-item-selected">
+          <div class="menu-mobile-item">
+            <span nz-icon nzType="user"></span>
+            <span class="menu-text">HỒ SƠ</span>
+          </div>
         </li>
       </ul>
+
+
+
     </nz-header>
 
     <!-- Content -->
@@ -73,4 +81,14 @@
     <!-- Footer -->
     <nz-footer class="admin-footer">© 2025 Admin Panel</nz-footer>
   </nz-layout>
+
+  <!-- Sidebar phải (Toolbar) -->
+  <nz-sider nzTheme="dark" nzWidth="60" class="right-toolbar">
+    <div class="toolbar-item">
+      <div class="toolbar-item__icon">
+        <span nz-icon nzType="user"></span>
+      </div>
+      <div class="label">Quản trị viên</div>
+    </div>
+  </nz-sider>
 </nz-layout>

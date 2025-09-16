@@ -1,94 +1,216 @@
 <div class="users-container">
+    <!-- Header -->
     <div class="users-header">
-        <h2>Users</h2>
+        <h2>Người dùng</h2>
         <div class="user-header__actions">
-            <button nz-button nzType="primary" (click)="showModal()">Add Permission User</button>
+            <button nz-button nzType="primary" (click)="showModal()">Thêm người dùng</button>
         </div>
     </div>
 
-    <!-- Modal gán quyền cho User -->
-    <nz-modal [(nzVisible)]="isVisible" nzTitle="Assign Permissions to User" (nzOnCancel)="handleCancel()"
-        [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooter">
+    <!-- Modal: Gán quyền cho user mới -->
+    <nz-modal [(nzVisible)]="isVisible" nzTitle="Thêm người dùng" (nzOnCancel)="handleCancel()"
+        [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooter"
+        [nzBodyStyle]="{ 'max-height': '60vh', 'overflow-y': 'auto' }">
         <div *nzModalContent>
-            <form nz-form>
-                <nz-form-item>
-                    <nz-form-label [nzRequired]="true" nzFor="userId">User ID</nz-form-label>
-                    <nz-form-control [nzErrorTip]="'Vui lòng nhập User ID hợp lệ'">
-                        <input nz-input id="userId" [(ngModel)]="userId" name="userId" required
-                            placeholder="Enter user ID" type="number" />
-                    </nz-form-control>
-                </nz-form-item>
+            <nz-tabs>
+                <nz-tab nzTitle="Thông tin người dùng">
+                    <form nz-form [nzLayout]="'vertical'" #userForm="ngForm">
 
-                <h4>Permissions</h4>
-                <nz-form-item>
-                    <nz-form-control [nzErrorTip]="'Vui lòng chọn ít nhất một quyền'"
-                        [nzValidateStatus]="permissionsCtrl">
-                        <label nz-checkbox [(ngModel)]="allChecked" [ngModelOptions]="{standalone: true}"
-                            (ngModelChange)="toggleAllPermissions($event)">Select all</label>
-                        <div *ngFor="let module of treeData" style="margin: 8px 0;">
-                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                                <strong>{{ module.title }}</strong>
-                                <label nz-checkbox [ngModel]="isModuleAllChecked(module.key)"
-                                    [ngModelOptions]="{standalone: true}"
-                                    (ngModelChange)="toggleModulePermissions(module.key, $event)">Select all in
-                                    module</label>
-                            </div>
-                            <div style="padding-left: 16px;">
-                                <label nz-checkbox *ngFor="let perm of module.children" [(ngModel)]="perm.checked"
-                                    [ngModelOptions]="{standalone: true}" (ngModelChange)="updateAllCheckedState()"
-                                    style="display:block; margin:4px 0;">{{
-                                    perm.title }}</label>
-                            </div>
-                        </div>
-                        <input type="hidden" [ngModel]="selectedPermissions.length > 0 ? 'valid' : ''"
-                            name="permissionsCtrl" #permissionsCtrl="ngModel" required />
-                    </nz-form-control>
-                </nz-form-item>
-            </form>
+                        <!-- Username -->
+                        <nz-form-item>
+                            <nz-form-label [nzRequired]="true" nzFor="username">Tên đăng nhập</nz-form-label>
+                            <nz-form-control [nzErrorTip]="'Tên đăng nhập là bắt buộc'">
+                                <input nz-input id="username" name="username" [(ngModel)]="newUser.username" required
+                                    placeholder="Nhập tên đăng nhập" />
+                            </nz-form-control>
+                        </nz-form-item>
+
+                        <!-- Email -->
+                        <nz-form-item>
+                            <nz-form-label [nzRequired]="true" nzFor="email">Email</nz-form-label>
+                            <nz-form-control [nzErrorTip]="emailRef.errors?.['required'] ? 'Vui lòng nhập email': emailRef.errors?.['email'] ? 'Vui lòng nhập email hợp lệ': ''">
+                                <input nz-input type="email" id="email" name="email" [(ngModel)]="newUser.email"
+                                    required email #emailRef="ngModel" placeholder="Nhập email" />
+                            </nz-form-control>
+                        </nz-form-item>
+
+
+                        <!-- Họ và tên -->
+                        <nz-form-item>
+                            <nz-form-label nzFor="fullName">Họ và tên</nz-form-label>
+                            <nz-form-control>
+                                <input nz-input id="fullName" name="fullName" [(ngModel)]="newUser.fullName"
+                                    placeholder="Nhập họ và tên" />
+                            </nz-form-control>
+                        </nz-form-item>
+
+                        <!-- Số điện thoại -->
+                        <nz-form-item>
+                            <nz-form-label nzFor="phoneNumber">Số điện thoại</nz-form-label>
+                            <nz-form-control>
+                                <input nz-input type="tel" id="phoneNumber" name="phoneNumber"
+                                    [(ngModel)]="newUser.phoneNumber" placeholder="Nhập số điện thoại" />
+                            </nz-form-control>
+                        </nz-form-item>
+
+                        <!-- Mật khẩu -->
+                        <nz-form-item>
+                            <nz-form-label [nzRequired]="true" nzFor="password">Mật khẩu</nz-form-label>
+                            <nz-form-control>
+                                <nz-input-group [nzSuffix]="suffixIcon">
+                                    <input nz-input [type]="passwordVisible ? 'text' : 'password'" id="password"
+                                        name="password" [(ngModel)]="newUser.password" placeholder="Nhập mật khẩu"
+                                        required />
+                                </nz-input-group>
+                                <ng-template #suffixIcon>
+                                    <span nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
+                                        (click)="passwordVisible = !passwordVisible" style="cursor: pointer;"></span>
+                                </ng-template>
+                            </nz-form-control>
+                        </nz-form-item>
+
+                        <!-- Trạng thái -->
+                        <nz-form-item>
+                            <nz-form-label nzFor="isActive">Trạng thái</nz-form-label>
+                            <nz-form-control>
+                                <nz-switch id="isActive" name="isActive" [(ngModel)]="newUser.isActive"
+                                    [nzCheckedChildren]="'Kích hoạt'" [nzUnCheckedChildren]="'Khóa'">
+                                </nz-switch>
+                            </nz-form-control>
+                        </nz-form-item>
+                    </form>
+                </nz-tab>
+
+                <nz-tab nzTitle="Quyền hạn">
+                    <form nz-form [nzLayout]="'vertical'">
+                        <nz-form-item>
+                            <nz-form-label>Chọn vai trò</nz-form-label>
+                            <nz-form-control>
+                                <div *ngFor="let role of roles">
+                                    <label nz-checkbox [(ngModel)]="role.checked" name="{{ role.name }}"
+                                        (ngModelChange)="onChangeRoleSelection()">
+                                        {{ role.name }}
+                                    </label>
+                                </div>
+                            </nz-form-control>
+                        </nz-form-item>
+                    </form>
+                </nz-tab>
+            </nz-tabs>
+        </div>
+    </nz-modal>
+
+    <!-- Modal: Assign permissions -->
+    <app-assign-permission-modal [visible]="isAssignVisible" [user]="selectedUser"
+        [groupedPermissions]="groupedPermissions" (cancel)="handleAssignCancel()"
+        (save)="handleAssignOk($event)"></app-assign-permission-modal>
+
+    <nz-modal [(nzVisible)]="isViewDetailsVisible" nzTitle="Xem chi tiết" (nzOnCancel)="handleViewDetailsCancel()"
+        [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooterViewDetails">
+        <div *nzModalContent>
+            <table class="details-table">
+                <tr>
+                    <td class="label">Mã người dùng</td>
+                    <td>{{ selectedUser?.id }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Tên đăng nhập</td>
+                    <td>{{ selectedUser?.username }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Họ và tên</td>
+                    <td>{{ selectedUser?.fullName }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Email</td>
+                    <td>{{ selectedUser?.email }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Số điện thoại</td>
+                    <td>{{ selectedUser?.phoneNumber }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Trạng thái</td>
+                    <td>
+                        <nz-tag [nzColor]="selectedUser?.isActive ? 'green' : 'red'">
+                            {{ selectedUser?.isActive ? 'Kích hoạt' : 'Không kích hoạt' }}
+                        </nz-tag>
+                    </td>
+                </tr>
+            </table>
         </div>
     </nz-modal>
 
     <ng-template #modalFooter>
-        <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
-        <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">Save</button>
+        <button nz-button nzType="default" (click)="handleCancel()">Hủy</button>
+        <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">Lưu</button>
     </ng-template>
 
+    <ng-template #modalFooterViewDetails>
+        <button style="width: 100%;" nz-button nzType="primary" (click)="handleViewDetailsCancel()">Đóng</button>
+    </ng-template>
+
+    <!-- Search -->
     <div class="search-bar">
         <nz-input-group [nzSuffix]="suffixIcon">
-            <input type="text" nz-input placeholder="Search" [(ngModel)]="searchQuery"
+            <input type="text" nz-input placeholder="Tìm kiếm" [(ngModel)]="searchQuery"
                 (ngModelChange)="filterUsers()" />
         </nz-input-group>
-        <ng-template #suffixIcon><i nz-icon nzType="search"></i></ng-template>
+        <ng-template #suffixIcon>
+            <i nz-icon nzType="search"></i>
+        </ng-template>
     </div>
 
-    <nz-table #userTable [nzData]="users" nzSize="small"
-        [nzScroll]="{ x: 'max-content', y: 'calc(100vh - 400px)' }" class="user-table">
+    <!-- Table -->
+    <nz-table #userTable [nzData]="users" [nzFrontPagination]="false" class="user-table">
         <thead>
             <tr>
-                <th nzWidth="15%" data-label="Actions">ACTIONS</th>
-                <th nzWidth="35%" data-label="User Name">USER NAME</th>
-                <th nzWidth="50%" data-label="Email Address">EMAIL ADDRESS</th>
+                <th nzWidth="16.6%">Hành động</th>
+                <th nzWidth="16.6%">Tên người dùng</th>
+                <th nzWidth="16.6%">Họ và tên</th>
+                <th nzWidth="16.6%">Địa chỉ email</th>
+                <th nzWidth="16.6%">Số điện thoại</th>
+                <th nzWidth="16.6%">Trạng thái</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let user of userTable.data">
-                <td data-label="Actions">
-                    <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu"><nz-icon nzType="setting"
-                            nzTheme="outline" style="font-size: 16px; padding-right: 5px;" />Action</a>
+                <td>
+                    <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu">
+                        <nz-icon nzType="setting" nzTheme="outline"
+                            style="font-size: 16px; padding-right: 5px;"></nz-icon>
+                        Hành động
+                    </a>
                     <nz-dropdown-menu #menu="nzDropdownMenu">
                         <ul nz-menu>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="editUser(user)">Edit</button></li>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="deleteUser(user)">Delete</button>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="viewDetails(user)"
+                                    [disabled]="user.id===1">Xem chi
+                                    tiết</button></li>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="editUser(user)"
+                                    [disabled]="user.id===1">Sửa</button></li>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="showAssignModal(user)"
+                                    [disabled]="user.id===1">Gán
+                                    quyền</button></li>
+                            <li nz-menu-item><button nz-button nzType="link" (click)="deleteUser(user)"
+                                    [disabled]="user.id===1">Xóa</button>
                             </li>
                         </ul>
                     </nz-dropdown-menu>
                 </td>
-                <td data-label="User Name">{{ user.username }}</td>
-                <td data-label="Email Address">{{ user.email }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.fullName }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.phoneNumber }}</td>
+                <td>
+                    <nz-tag [nzColor]="user.isActive ? 'green' : 'red'">
+                        {{ user.isActive ? 'Kích hoạt' : 'Không kích hoạt' }}
+                    </nz-tag>
+                </td>
             </tr>
         </tbody>
     </nz-table>
+
+    <!-- Pagination -->
     <app-pagination [total]="totalItems" [pageSize]="pageSize" [pageIndex]="currentPage"
         (pageChange)="onPageChange($event)"></app-pagination>
-
 </div>

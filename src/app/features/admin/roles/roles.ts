@@ -75,7 +75,7 @@ export class RolesComponent implements OnInit, OnDestroy {
 
   // Pagination & search
   totalItems = 0;
-  pageSize = 10;
+  pageSize = 7;
   currentPage = 1;
   searchQuery = '';
 

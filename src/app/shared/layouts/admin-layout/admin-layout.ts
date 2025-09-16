@@ -56,7 +56,7 @@ export class AdminLayout implements OnInit {
     this.sidebarOpen = !this.sidebarOpen;
   }
   logout() {
-    this.authService.clearToken();
+    this.authService.clearTokens();
     this.router.navigate(['/login']);
     this.messageService.success('Đăng xuất thành công');
   }
