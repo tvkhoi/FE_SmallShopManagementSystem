@@ -8,8 +8,8 @@
     </div>
 
     <!-- Modal: Gán quyền cho user mới -->
-    <nz-modal [(nzVisible)]="isVisible" nzTitle="Thêm người dùng" (nzOnCancel)="handleCancel()"
-        [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooter"
+    <nz-modal [(nzVisible)]="isVisible" [nzTitle]="isEditMode ? 'Sửa người dùng' : 'Thêm người dùng'"
+        (nzOnCancel)="handleCancel()" [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooter"
         [nzBodyStyle]="{ 'max-height': '60vh', 'overflow-y': 'auto' }">
         <div *nzModalContent>
             <nz-tabs>
@@ -21,16 +21,18 @@
                             <nz-form-label [nzRequired]="true" nzFor="username">Tên đăng nhập</nz-form-label>
                             <nz-form-control [nzErrorTip]="'Tên đăng nhập là bắt buộc'">
                                 <input nz-input id="username" name="username" [(ngModel)]="newUser.username" required
-                                    placeholder="Nhập tên đăng nhập" />
+                                    placeholder="Nhập tên đăng nhập" [disabled]="isEditMode" />
                             </nz-form-control>
                         </nz-form-item>
 
                         <!-- Email -->
                         <nz-form-item>
                             <nz-form-label [nzRequired]="true" nzFor="email">Email</nz-form-label>
-                            <nz-form-control [nzErrorTip]="emailRef.errors?.['required'] ? 'Vui lòng nhập email': emailRef.errors?.['email'] ? 'Vui lòng nhập email hợp lệ': ''">
+                            <nz-form-control
+                                [nzErrorTip]="emailRef.errors?.['required'] ? 'Vui lòng nhập email': emailRef.errors?.['email'] ? 'Vui lòng nhập email hợp lệ': ''">
                                 <input nz-input type="email" id="email" name="email" [(ngModel)]="newUser.email"
-                                    required email #emailRef="ngModel" placeholder="Nhập email" />
+                                    required email #emailRef="ngModel" placeholder="Nhập email"
+                                    [disabled]="isEditMode" />
                             </nz-form-control>
                         </nz-form-item>
 
@@ -60,7 +62,7 @@
                                 <nz-input-group [nzSuffix]="suffixIcon">
                                     <input nz-input [type]="passwordVisible ? 'text' : 'password'" id="password"
                                         name="password" [(ngModel)]="newUser.password" placeholder="Nhập mật khẩu"
-                                        required />
+                                        required [disabled]="isEditMode" />
                                 </nz-input-group>
                                 <ng-template #suffixIcon>
                                     <span nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
@@ -194,6 +196,12 @@
                             <li nz-menu-item><button nz-button nzType="link" (click)="deleteUser(user)"
                                     [disabled]="user.id===1">Xóa</button>
                             </li>
+                            <li nz-menu-item>
+                                <button nz-button nzType="link" (click)="toggleLock(user)" [disabled]="user.id === 1">
+                                    {{ user.isActive ? 'Lock' : 'Unlock' }}
+                                </button>
+                            </li>
+
                         </ul>
                     </nz-dropdown-menu>
                 </td>

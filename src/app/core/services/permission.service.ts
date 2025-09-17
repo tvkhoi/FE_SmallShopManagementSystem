@@ -1,13 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { Permission } from '../models/permission';
+import { ApiResponse } from '../models/ApiResponse';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PermissionService {
-  private apiUrl = 'https://localhost:7277/api/Permission'; // baseUrl
+  private apiUrl = 'https://localhost:7277/api/Permission';
   private http = inject(HttpClient);
   private userDataSource = new BehaviorSubject<any[]>([]);
 
@@ -22,18 +24,14 @@ export class PermissionService {
   }
 
   getPermissions() {
-    return this.http.get<any[]>(this.apiUrl).pipe(
-      tap((res) => {
-        const permissionsWithSelected = res.map((p) => ({
+    return this.http.get<ApiResponse<Permission[]>>(this.apiUrl).pipe(
+      map((res) => res.data),
+      tap((permissions) => {
+        const permissionsWithGranted = permissions.map((p) => ({
           ...p,
-          selected: false,
+          granted: false,
         }));
-        this.userDataSource.next(permissionsWithSelected);
-      }),
-      catchError((err) => {
-        console.error('Permission API error:', err);
-        this.userDataSource.next([]); // fallback tránh trang trắng
-        return of([]);
+        this.userDataSource.next(permissionsWithGranted);
       })
     );
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize, Subject, switchMap, takeUntil } from 'rxjs';
@@ -11,7 +11,6 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
-
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -20,17 +19,18 @@ import { NzFormatEmitEvent } from 'ng-zorro-antd/tree';
 // Services
 import { PermissionService } from '../../../core/services/permission.service';
 import { RoleService } from '../../../core/services/role.service';
+
+// Components
 import { AssignPermissionModalComponent } from '../../../shared/components/assign-permission-modal/assign-permission-modal';
 import { PaginationComponent } from '../../../shared/components/pagination-component/pagination-component';
 
-// Models and Interfaces
+// Models
 import { Role } from '../../../core/models/role';
 import { Permission } from '../../../core/models/permission';
 import { TreeNode } from '../../../core/models/tree-node';
 import { RolePermissionsResponse } from './role-permission-respose.model';
+import { ApiResponse } from '../../../core/models/ApiResponse';
 
-
-// ================== Component ==================
 @Component({
   selector: 'app-roles',
   standalone: true,
@@ -79,24 +79,19 @@ export class RolesComponent implements OnInit, OnDestroy {
   currentPage = 1;
   searchQuery = '';
 
-  // CheckAll
-  allChecked = false;
-
   // RxJS destroy
   private destroy$ = new Subject<void>();
 
   // Inject services
   private permissionService = inject(PermissionService);
   private roleService = inject(RoleService);
-  private cdr = inject(ChangeDetectorRef);
   private zone = inject(NgZone);
   private msg = inject(NzMessageService);
   private modal: NzModalService = inject(NzModalService);
 
-  // ================== Lifecycle ==================
   ngOnInit(): void {
     this.loadPermissions();
-    this.loadRoles();
+    this.loadPagedRoles();
   }
 
   ngOnDestroy(): void {
@@ -117,17 +112,15 @@ export class RolesComponent implements OnInit, OnDestroy {
           this.zone.run(() => {
             const modules = [...new Set(data.map((p) => p.module))];
 
-            // group permissions theo module
             this.groupedPermissions = modules.map((module) => ({
               module,
               permissions: data.filter((p) => p.module === module),
             }));
 
-            // chọn module đầu tiên mặc định
             if (modules.length > 0) {
               this.selectedModule = modules[0];
             }
-            // giữ lại treeData nếu vẫn cần cho NzTree
+
             this.treeData = modules.map((module) => ({
               key: module,
               title: module,
@@ -142,27 +135,32 @@ export class RolesComponent implements OnInit, OnDestroy {
                   id: perm.id,
                 })),
             }));
-
-            this.cdr.detectChanges();
           });
         },
-        error: (error) => console.error('Lỗi khi load permissions:', error),
+        error: (error) => {
+          console.error('Lỗi khi load permissions:', error);
+          this.msg.error('Không thể tải danh sách quyền');
+        },
       });
   }
 
-  private loadRoles(): void {
+  private loadPagedRoles(): void {
     this.roleService
-      .getAllRoles()
+      .getPagedRoles(this.currentPage, this.pageSize)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (data) => {
-          this.zone.run(() => {
-            this.roles = data;
-            this.totalItems = data.length;
-            this.cdr.detectChanges();
-          });
+        next: (res: ApiResponse<{ items: Role[]; totalItems: number }>) => {
+          if (res.success && res.data) {
+            this.zone.run(() => {
+              this.roles = res.data.items;
+              this.totalItems = res.data.totalItems;
+            });
+          }
         },
-        error: (error) => console.error('Lỗi khi load roles:', error),
+        error: (error) => {
+          console.error('Lỗi khi load roles:', error);
+          this.msg.error('Không thể tải danh sách vai trò');
+        },
       });
   }
 
@@ -185,18 +183,16 @@ export class RolesComponent implements OnInit, OnDestroy {
     save$
       .pipe(
         takeUntil(this.destroy$),
-        finalize(() => {
-          // luôn reset loading kể cả khi success hay error
-          this.isConfirmLoading = false;
-          this.cdr.detectChanges();
-        })
+        finalize(() => (this.isConfirmLoading = false))
       )
       .subscribe({
-        next: () => {
-          const message = this.selectedRoleId
-            ? 'Cập nhật vai trò thành công'
-            : 'Tạo vai trò thành công';
-          this.afterSaveSuccess(message, 'create');
+        next: (res: ApiResponse<{ id: number; name: string }>) => {
+          if (res.success) {
+            const message = this.selectedRoleId
+              ? 'Cập nhật vai trò thành công'
+              : 'Tạo vai trò thành công';
+            this.afterSaveSuccess(message, 'create');
+          }
         },
         error: (err) => this.afterSaveError(err),
       });
@@ -214,33 +210,45 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.selectedRoleId = role.id;
     this.selectedRole = role;
 
-    this.roleService.getPermissionsByRole(role.id).subscribe((resp: RolePermissionsResponse) => {
-      this.originalPermissions = resp.permissions.map((p) => ({
-        id: p.id,
-        granted: p.granted ?? false,
-      }));
+    this.roleService
+      .getPermissionsByRole(role.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: ApiResponse<any>) => {
+          if (res.success && res.data) {
+            // Cast dữ liệu chính xác
+            const resp: RolePermissionsResponse = {
+              roleId: res.data.roleId,
+              permissions: res.data.permissions,
+            };
 
-      const originalMap = new Map<number, boolean>();
-      this.originalPermissions.forEach((p) => originalMap.set(p.id, p.granted));
+            this.originalPermissions = resp.permissions.map((p) => ({
+              id: p.id,
+              granted: p.granted ?? false,
+            }));
 
-      // Gán lại trạng thái granted cho groupedPermissions
-      this.groupedPermissions = this.groupedPermissions.map((group) => ({
-        ...group,
-        permissions: group.permissions.map((perm) => ({
-          ...perm,
-          granted: originalMap.get(perm.id) ?? false,
-        })),
-      }));
+            const originalMap = new Map<number, boolean>();
+            this.originalPermissions.forEach((p) => originalMap.set(p.id, p.granted));
 
-      this.cdr.detectChanges();
-    });
+            this.zone.run(() => {
+              this.groupedPermissions = this.groupedPermissions.map((group) => ({
+                ...group,
+                permissions: group.permissions.map((perm) => ({
+                  ...perm,
+                  granted: originalMap.get(perm.id) ?? false,
+                })),
+              }));
+            });
+          }
+        },
+        error: (error) => console.error('Lỗi khi tải quyền:', error),
+      });
   }
 
   handleAssignOk(payload: Permission[]): void {
     if (!this.selectedRoleId) return;
     this.isConfirmLoading = true;
 
-    // Chuyển payload sang dạng {id, granted} nếu cần
     const assignPayload = payload.map((p) => ({
       id: p.id,
       granted: !!p.granted,
@@ -250,26 +258,25 @@ export class RolesComponent implements OnInit, OnDestroy {
       .assignPermissionsToRole(this.selectedRoleId, assignPayload)
       .pipe(
         takeUntil(this.destroy$),
-        finalize(() => {
-          this.isConfirmLoading = false;
-          this.cdr.detectChanges();
-        })
+        finalize(() => (this.isConfirmLoading = false))
       )
       .subscribe({
-        next: (resp) => {
-          // Cập nhật lại groupedPermissions theo resp nếu muốn
-          const updatedMap = new Map<number, boolean>();
-          resp.permissions.forEach((p: any) => updatedMap.set(p.id, p.granted));
+        next: (res: ApiResponse<RolePermissionsResponse>) => {
+          if (res.success && res.data) {
+            const updatedMap = new Map<number, boolean>();
+            res.data.permissions.forEach((p) => updatedMap.set(p.id, p.granted ?? false));
 
-          this.groupedPermissions = this.groupedPermissions.map((group) => ({
-            ...group,
-            permissions: group.permissions.map((perm) => ({
-              ...perm,
-              granted: updatedMap.get(perm.id) ?? false,
-            })),
-          }));
-
-          this.afterSaveSuccess('Gán quyền thành công', 'assign');
+            this.zone.run(() => {
+              this.groupedPermissions = this.groupedPermissions.map((group) => ({
+                ...group,
+                permissions: group.permissions.map((perm) => ({
+                  ...perm,
+                  granted: updatedMap.get(perm.id) ?? false,
+                })),
+              }));
+              this.afterSaveSuccess('Gán quyền thành công', 'assign');
+            });
+          }
         },
         error: (err) => this.afterSaveError(err),
       });
@@ -287,9 +294,8 @@ export class RolesComponent implements OnInit, OnDestroy {
       if (type === 'create') this.isCreateVisible = false;
       if (type === 'assign') this.isAssignVisible = false;
 
-      this.loadRoles();
+      this.loadPagedRoles();
       this.msg.success(message);
-      this.cdr.detectChanges();
     });
   }
 
@@ -298,28 +304,30 @@ export class RolesComponent implements OnInit, OnDestroy {
       this.isConfirmLoading = false;
       console.error('Lỗi khi lưu:', error);
 
-      // Kiểm tra nếu backend trả về duplicate
       if (error?.error?.errorCode === 'ROLE_DUPLICATE') {
         this.msg.warning('Tên vai trò đã tồn tại, vui lòng nhập tên khác');
         this.roleNameExists = true;
-        this.cdr.detectChanges();
         setTimeout(() => {
-          const input = document.querySelector<HTMLInputElement>('#roleNameInput');
+          const input = document.querySelector<HTMLInputElement>('#roleName');
           input?.focus();
         });
       } else {
         this.roleNameExists = false;
         this.msg.error('Có lỗi xảy ra, vui lòng thử lại');
       }
-
-      this.cdr.detectChanges();
     });
   }
 
   // ================== Tree ==================
   onCheck(event: NzFormatEmitEvent): void {
+    // Cập nhật checked state đúng
+    const updateChecked = (nodes: TreeNode[]) => {
+      nodes.forEach((node) => {
+        if (node.children) updateChecked(node.children);
+      });
+    };
+    updateChecked(this.treeData);
     this.treeData = [...this.treeData];
-    this.cdr.detectChanges();
   }
 
   // ================== Xóa role ==================
@@ -334,9 +342,11 @@ export class RolesComponent implements OnInit, OnDestroy {
           .deleteRole(role.id)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
-            next: () => {
-              this.msg.success('Xóa vai trò thành công');
-              this.loadRoles();
+            next: (res: ApiResponse<{ roleId: number }>) => {
+              if (res.success) {
+                this.msg.success('Xóa vai trò thành công');
+                this.loadPagedRoles();
+              }
             },
             error: (err) => {
               console.error('Lỗi khi xóa vai trò:', err);
@@ -345,10 +355,7 @@ export class RolesComponent implements OnInit, OnDestroy {
           });
       },
       nzCancelText: 'Hủy',
-      nzOnCancel: () => {
-        this.msg.info('Hủy xóa vai trò');
-        return;
-      },
+      nzOnCancel: () => this.msg.info('Hủy xóa vai trò'),
     });
   }
 
@@ -387,35 +394,37 @@ export class RolesComponent implements OnInit, OnDestroy {
 
   onPageChange(page: number): void {
     this.currentPage = page;
-    this.cdr.detectChanges();
+    this.loadPagedRoles();
   }
 
-  filterRoles(): void {
+    filterRoles(): void {
     if (!this.searchQuery) {
-      this.loadRoles();
+      this.loadPagedRoles();
       return;
     }
 
     this.roleService
       .searchRoles(this.searchQuery)
       .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (roles) => {
-          this.roles = roles;
-          this.cdr.detectChanges();
+      .subscribe(
+        (res: ApiResponse<Role[]>) => {
+          if (res.success && res.data) {
+            this.zone.run(() => {
+              this.roles = res.data;
+              this.totalItems = res.data.length;
+            });
+          }
         },
-        error: (err) => {
+        (err: any) => {
           console.error('Lỗi khi tìm kiếm vai trò:', err);
           this.msg.error('Tìm kiếm vai trò thất bại');
-        },
-      });
+        }
+      );
   }
 
   onRoleNameChange(value: string): void {
-    // reset cờ duplicate khi user gõ lại
     if (this.roleNameExists) {
       this.roleNameExists = false;
-      this.cdr.detectChanges();
     }
   }
 }

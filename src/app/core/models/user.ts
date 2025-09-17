@@ -7,5 +7,5 @@ export interface User {
   password: string | null;
   isActive: boolean;
   isDeleted: boolean;
-  roleName: string;
+  roleName?: string[];
 }

@@ -1,9 +1,5 @@
-<nz-modal [(nzVisible)]="visible" nzTitle="Permissions"
-  (nzOnCancel)="handleCancel()"
-  (nzOnOk)="handleSave()"
-  nzWidth="800px"
-  nzWrapClassName="permissions-modal"
->
+<nz-modal [(nzVisible)]="visible" nzTitle="Permissions" (nzOnCancel)="handleCancel()" (nzOnOk)="handleSave()"
+  nzWidth="800px" nzWrapClassName="permissions-modal">
   <div *nzModalContent>
     <div class="permissions-header">
       <input nz-input placeholder="Tìm kiếm quyền..." />
@@ -15,9 +11,8 @@
     <div class="permissions-container">
       <div class="permissions-sidebar">
         <ul>
-          <li *ngFor="let group of groupedPermissions"
-              [class.active]="group.module === selectedModule"
-              (click)="selectedModule = group.module">
+          <li *ngFor="let group of groupedPermissions" [class.active]="group.module === selectedModule"
+            (click)="selectedModule = group.module">
             {{ group.module }}
           </li>
         </ul>
@@ -27,18 +22,18 @@
         <h4>{{ selectedModule }}</h4>
 
         <label nz-checkbox [ngModel]="isAllSelected(selectedModule)"
-               (ngModelChange)="toggleAllPermissions($event, selectedModule)">
+          (ngModelChange)="toggleAllPermissions($event, selectedModule)">
           Select all
         </label>
 
         <ul>
           <li *ngFor="let perm of getPermissionsByModule(selectedModule)">
-            <label nz-checkbox [(ngModel)]="perm.granted"
-                   (ngModelChange)="allChecked = isAllSelected()">
+            <label nz-checkbox [(ngModel)]="perm.granted" (ngModelChange)="allChecked = isAllSelected()">
               {{ perm.description }}
             </label>
           </li>
         </ul>
+
       </div>
     </div>
   </div>
