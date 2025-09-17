@@ -4,6 +4,8 @@ import { BehaviorSubject, map, Observable, throwError } from 'rxjs';
 import { ApiResponse } from '../models/ApiResponse';
 import { LoginResponse } from '../models/LoginResponse';
 import { UserDTO } from '../../features/admin/users/user.dto';
+import { PagedResult } from '../../features/admin/users/PagedResult';
+import { User } from '../models/user';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +22,13 @@ export class UserService {
   }
 
   // ========== AUTH ==========
-  signUp(userData: { fullname: string; phoneNumber: string; username: string; email: string; password: string }): Observable<any> {
+  signUp(userData: {
+    fullname: string;
+    phoneNumber: string;
+    username: string;
+    email: string;
+    password: string;
+  }): Observable<any> {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/Auth/register`, userData).pipe(
       map((res) => {
         if (res.success) return res.data;
@@ -77,24 +85,24 @@ export class UserService {
     );
   }
 
-  getUsersPaged(params: any): Observable<any> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/User/paged`, { params }).pipe(
-      map((res) => {
-        if (res.success) return res.data;
-        throw res;
-      })
-    );
-  }
-
-  searchUsers(keyword: string): Observable<any> {
+  getUsersPaged(params: any): Observable<PagedResult<User>> {
     return this.http
-      .get<ApiResponse<any>>(`${this.apiUrl}/User/search?keyword=${keyword}`)
+      .get<ApiResponse<PagedResult<User>>>(`${this.apiUrl}/User/paged`, { params })
       .pipe(
         map((res) => {
           if (res.success) return res.data;
           throw res;
         })
       );
+  }
+
+  searchUsers(keyword: string): Observable<any> {
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/User/search?keyword=${keyword}`).pipe(
+      map((res) => {
+        if (res.success) return res.data;
+        throw res;
+      })
+    );
   }
 
   createUser(userData: UserDTO): Observable<any> {
@@ -167,14 +175,12 @@ export class UserService {
 
   // ========== PERMISSION ==========
   getUserPermissions(userId: number): Observable<any> {
-    return this.http
-      .get<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/permissions`)
-      .pipe(
-        map((res) => {
-          if (res.success) return res.data;
-          throw res;
-        })
-      );
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/permissions`).pipe(
+      map((res) => {
+        if (res.success) return res.data;
+        throw res;
+      })
+    );
   }
 
   assignPermissions(userId: number, permissions: any[]): Observable<any> {

@@ -1,4 +1,12 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectorRef, NgZone, inject } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectorRef,
+  NgZone,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -40,7 +48,7 @@ export interface GroupedPermissions {
     NzTreeModule,
   ],
   templateUrl: './assign-permission-modal.html',
-  styleUrls: ['./assign-permission-modal.scss']
+  styleUrls: ['./assign-permission-modal.scss'],
 })
 export class AssignPermissionModalComponent {
   @Input() visible = false;
@@ -57,8 +65,11 @@ export class AssignPermissionModalComponent {
   private cdr = inject(ChangeDetectorRef);
 
   ngOnChanges(): void {
-    if (this.groupedPermissions.length > 0 && !this.selectedModule) {
-      this.selectedModule = this.groupedPermissions[0].module;
+    if (this.groupedPermissions.length > 0) {
+      // Nếu chưa có module được chọn thì chọn module đầu tiên
+      this.selectedModule = this.selectedModule || this.groupedPermissions[0].module;
+      this.allChecked = this.isAllSelected();
+      this.cdr.detectChanges(); // cập nhật UI
     }
   }
 
@@ -81,15 +92,16 @@ export class AssignPermissionModalComponent {
     if (module) {
       this.groupedPermissions = this.groupedPermissions.map((group) =>
         group.module === module
-          ? { ...group, permissions: group.permissions.map((perm) => ({ ...perm, granted: checked })) }
+          ? { ...group, permissions: group.permissions.map((p) => ({ ...p, granted: checked })) }
           : group
       );
     } else {
       this.groupedPermissions = this.groupedPermissions.map((group) => ({
         ...group,
-        permissions: group.permissions.map((perm) => ({ ...perm, granted: checked })),
+        permissions: group.permissions.map((p) => ({ ...p, granted: checked })),
       }));
     }
+
     this.allChecked = this.isAllSelected();
     this.cdr.detectChanges();
   }
