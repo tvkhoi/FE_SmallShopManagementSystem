@@ -2,84 +2,124 @@
   <h2>Audit logs</h2>
 
   <!-- Bộ lọc -->
-<div class="filter-section">
-  <div nz-row [nzGutter]="16">
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
-      <nz-date-picker [(ngModel)]="startDate" nzPlaceHolder="Start date"></nz-date-picker>
-    </div>
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
-      <nz-date-picker [(ngModel)]="endDate" nzPlaceHolder="End date"></nz-date-picker>
-    </div>
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
-      <input nz-input placeholder="User name" [(ngModel)]="userName" />
-    </div>
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
-      <input nz-input placeholder="URL" [(ngModel)]="url" />
-    </div>
+  <div class="filter-container">
+    <form nz-form nzLayout="vertical" class="filter-grid">
+      <!-- Row 1 -->
+      <nz-form-item>
+        <nz-form-label>Start Date</nz-form-label>
+        <nz-form-control>
+          <nz-date-picker [(ngModel)]="startDate" name="startDate"></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>End Date</nz-form-label>
+        <nz-form-control>
+          <nz-date-picker [(ngModel)]="endDate" name="endDate"></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>User Name</nz-form-label>
+        <nz-form-control>
+          <input nz-input [(ngModel)]="userName" name="userName" placeholder="User name" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>URL</nz-form-label>
+        <nz-form-control>
+          <input nz-input [(ngModel)]="url" name="url" placeholder="URL" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Row 2 -->
+      <nz-form-item>
+        <nz-form-label>Min Duration</nz-form-label>
+        <nz-form-control>
+          <nz-input-number [(ngModel)]="minDuration" name="minDuration"></nz-input-number>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>Max Duration</nz-form-label>
+        <nz-form-control>
+          <nz-input-number [(ngModel)]="maxDuration" name="maxDuration"></nz-input-number>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>HTTP Method</nz-form-label>
+        <nz-form-control>
+          <nz-select [(ngModel)]="httpMethod" name="httpMethod">
+            <nz-option nzValue="" nzLabel="-"></nz-option>
+            <nz-option nzValue="GET" nzLabel="GET"></nz-option>
+            <nz-option nzValue="POST" nzLabel="POST"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>HTTP Status</nz-form-label>
+        <nz-form-control>
+          <nz-select [(ngModel)]="httpStatusCode" name="httpStatusCode">
+            <nz-option nzValue="" nzLabel="-"></nz-option>
+            <nz-option nzValue="200" nzLabel="200"></nz-option>
+            <nz-option nzValue="404" nzLabel="404"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Row 3 -->
+      <nz-form-item>
+        <nz-form-label>Application Name</nz-form-label>
+        <nz-form-control>
+          <input nz-input [(ngModel)]="applicationName" name="applicationName" placeholder="Application name" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>Client IP</nz-form-label>
+        <nz-form-control>
+          <input nz-input [(ngModel)]="clientIp" name="clientIp" placeholder="Client IP" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>Correlation Id</nz-form-label>
+        <nz-form-control>
+          <input nz-input [(ngModel)]="correlationId" name="correlationId" placeholder="Correlation Id" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>Has Exception</nz-form-label>
+        <nz-form-control>
+          <nz-select [(ngModel)]="hasException" name="hasException">
+            <nz-option nzValue="" nzLabel="-"></nz-option>
+            <nz-option nzValue="true" nzLabel="Yes"></nz-option>
+            <nz-option nzValue="false" nzLabel="No"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Buttons -->
+      <nz-form-item class="filter-buttons" style="grid-column: span 4;">
+        <button nz-button nzType="primary" (click)="filterLogs()" style="margin-right: 8px;">Refresh</button>
+        <button nz-button nzType="default" (click)="exportToExcel()">Export to Excel</button>
+      </nz-form-item>
+    </form>
   </div>
 
-  <div nz-row [nzGutter]="16" class="mt-2">
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
-      <nz-input-number [(ngModel)]="minDuration" nzPlaceHolder="Min Duration"></nz-input-number>
-    </div>
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
-      <nz-input-number [(ngModel)]="maxDuration" nzPlaceHolder="Max Duration"></nz-input-number>
-    </div>
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
-      <nz-select [(ngModel)]="httpMethod" nzPlaceHolder="HTTP method" style="width: 100%">
-        <nz-option nzValue="" nzLabel="-"></nz-option>
-        <nz-option nzValue="GET" nzLabel="GET"></nz-option>
-        <nz-option nzValue="POST" nzLabel="POST"></nz-option>
-      </nz-select>
-    </div>
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
-      <nz-select [(ngModel)]="httpStatusCode" nzPlaceHolder="HTTP status code" style="width: 100%">
-        <nz-option nzValue="" nzLabel="-"></nz-option>
-        <nz-option nzValue="200" nzLabel="200"></nz-option>
-        <nz-option nzValue="404" nzLabel="404"></nz-option>
-      </nz-select>
-    </div>
-  </div>
 
-  <div nz-row [nzGutter]="16" class="mt-2">
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
-      <input nz-input placeholder="Application name" [(ngModel)]="applicationName" />
-    </div>
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
-      <input nz-input placeholder="Client IP Address" [(ngModel)]="clientIp" />
-    </div>
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
-      <input nz-input placeholder="Correlation Id" [(ngModel)]="correlationId" />
-    </div>
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
-      <nz-select [(ngModel)]="hasException" nzPlaceHolder="Has exception" style="width: 100%">
-        <nz-option nzValue="" nzLabel="-"></nz-option>
-        <nz-option nzValue="true" nzLabel="Yes"></nz-option>
-        <nz-option nzValue="false" nzLabel="No"></nz-option>
-      </nz-select>
-    </div>
-  </div>
 
-  <div nz-row [nzJustify]="'end'" class="mt-3">
-    <button nz-button nzType="primary" (click)="filterLogs()" [nzLoading]="loading" class="mr-2">
-      Refresh
-    </button>
-    <button nz-button nzType="default" (click)="exportToExcel()" [nzLoading]="loading">
-      Export to Excel
-    </button>
-  </div>
-</div>
+
+
 
 
   <!-- Bảng audit logs -->
-  <nz-table
-    #auditTable
-    [nzData]="auditLogs.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
-    nzSize="small"
-    [nzScroll]="{ x: '100%', y: 'calc(100vh - 400px)' }"
-    class="audit-table"
-    [nzLoading]="loading"
-  >
+  <nz-table #auditTable [nzData]="auditLogs.slice((currentPage - 1) * pageSize, currentPage * pageSize)" nzSize="small"
+    [nzScroll]="{ x: '100%', y: 'calc(100vh - 400px)' }" class="audit-table" [nzLoading]="loading" nzShowPagination="false">
     <thead>
       <tr>
         <th nzShowSort nzSortKey="action">Actions</th>
@@ -106,13 +146,8 @@
 
   <!-- Phân trang -->
   <div class="pagination-container">
-    <nz-pagination
-      [nzTotal]="totalItems"
-      [(nzPageIndex)]="currentPage"
-      [nzPageSize]="pageSize"
-      (nzPageIndexChange)="onPageChange($event)"
-      nzShowSizeChanger="true"
-      [nzPageSizeOptions]="[5, 10, 20]"
-    ></nz-pagination>
+    <nz-pagination [nzTotal]="totalItems" [(nzPageIndex)]="currentPage" [nzPageSize]="pageSize"
+      (nzPageIndexChange)="onPageChange($event)" nzShowSizeChanger="true"
+      [nzPageSizeOptions]="[5, 10, 20]"></nz-pagination>
   </div>
 </div>
