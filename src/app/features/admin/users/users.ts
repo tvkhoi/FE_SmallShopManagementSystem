@@ -154,8 +154,7 @@ export class UsersComponent implements OnInit {
     this.roleService.getAllRoles().subscribe({
       next: (data) => {
         this.zone.run(() => {
-          // Thêm thuộc tính checked cho mỗi role
-          this.roles = data.data.map((role: Role) => ({
+          this.roles = data.map((role: Role) => ({
             ...role,
             checked: false,
           }));
