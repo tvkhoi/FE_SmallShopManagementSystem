@@ -126,22 +126,34 @@ export class RoleService {
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
 
-    return this.http
-      .get<ApiResponse<{ items: Role[]; totalItems: number }>>(`${this.apiUrl}/search`, { params })
-      .pipe(map((res) => this.handleResponse(res)));
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/search`, { params }).pipe(
+      map((res) => {
+        const data = this.handleResponse(res);
+        return {
+          items: data.items,
+          totalItems: data.totalCount, 
+        };
+      })
+    );
   }
 
   // ===== PAGED ROLES =====
   getPagedRoles(
     pageNumber: number = 1,
-    pageSize: number = 10
+    pageSize: number = 7
   ): Observable<{ items: Role[]; totalItems: number }> {
     const params = new HttpParams()
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
 
-    return this.http
-      .get<ApiResponse<{ items: Role[]; totalItems: number }>>(`${this.apiUrl}/paged`, { params })
-      .pipe(map((res) => this.handleResponse(res)));
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/paged`, { params }).pipe(
+      map((res) => {
+        const data = this.handleResponse(res);
+        return {
+          items: data.items,
+          totalItems: data.totalCount, 
+        };
+      })
+    );
   }
 }
