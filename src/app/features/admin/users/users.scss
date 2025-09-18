@@ -107,11 +107,15 @@
     padding: 16px;
 
     .search-bar {
-      flex-direction: column;
+      //flex-direction: column;
       gap: 12px;
 
       nz-input-group {
         width: 100%;
+      }
+      button {
+        font-size: 11px;
+        padding: 4px 3px;
       }
     }
 
@@ -153,6 +157,78 @@
       width: 30%;
       color: #555;
       background-color: #fafafa;
+    }
+  }
+}
+
+.ellipsis {
+  display: inline-block;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.address-cell {
+  white-space: normal !important;
+  word-break: break-word;
+  max-width: 200px;
+}
+
+.filter-container {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    nz-form-item {
+      flex: 1 1 220px;
+      margin: 0;
+
+      nz-form-label {
+        font-weight: 500;
+        color: #444;
+      }
+
+      nz-form-control {
+        width: 100%;
+
+        input[nz-input],
+        nz-select {
+          width: 100%;
+        }
+      }
+    }
+
+    button {
+      align-self: flex-end;
+      margin-top: 4px;
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filter-container {
+    padding: 12px;
+
+    form {
+      flex-direction: column;
+
+      nz-form-item {
+        flex: 1 1 100%;
+      }
+
+      button {
+        width: 100%;
+      }
     }
   }
 }

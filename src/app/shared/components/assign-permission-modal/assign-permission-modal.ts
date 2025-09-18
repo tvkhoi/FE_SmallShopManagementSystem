@@ -93,7 +93,7 @@ export class AssignPermissionModalComponent {
       this.groupedPermissions = this.groupedPermissions.map((group) =>
         group.module === module
           ? { ...group, permissions: group.permissions.map((p) => ({ ...p, granted: checked })) }
-          : group
+          : group,
       );
     } else {
       this.groupedPermissions = this.groupedPermissions.map((group) => ({
