@@ -96,13 +96,42 @@ export class UserService {
       );
   }
 
-  searchUsers(keyword: string): Observable<any> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/User/search?keyword=${keyword}`).pipe(
-      map((res) => {
-        if (res.success) return res.data;
-        throw res;
+  getUsersPagedWithFilter(params: {
+    isActive?: boolean;
+    email?: string;
+    username?: string;
+    phone?: string;
+    fullName?: string;
+    atDress?: string;
+    createdAt?: string;
+    pageNumber?: number;
+    pageSize?: number;
+  }): Observable<PagedResult<User>> {
+    return this.http
+      .get<ApiResponse<PagedResult<User>>>(`${this.apiUrl}/User/paged`, { params })
+      .pipe(
+        map((res) => {
+          if (res.success) return res.data;
+          throw res;
+        })
+      );
+  }
+
+  searchUsers(
+    keyword: string,
+    pageNumber: number = 1,
+    pageSize: number = 10
+  ): Observable<PagedResult<User>> {
+    return this.http
+      .get<ApiResponse<PagedResult<User>>>(`${this.apiUrl}/User/search`, {
+        params: { keyword, pageNumber, pageSize },
       })
-    );
+      .pipe(
+        map((res) => {
+          if (res.success) return res.data;
+          throw res;
+        })
+      );
   }
 
   createUser(userData: UserDTO): Observable<any> {
@@ -165,6 +194,20 @@ export class UserService {
   removeRole(userId: number, roleId: number): Observable<any> {
     return this.http
       .delete<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/remove-role/${roleId}`)
+      .pipe(
+        map((res) => {
+          if (res.success) return res.data;
+          throw res;
+        })
+      );
+  }
+
+  setPassword(
+    userId: number,
+    payload: { currentPassword?: string; newPassword: string }
+  ): Observable<any> {
+    return this.http
+      .put<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/set-password`, payload)
       .pipe(
         map((res) => {
           if (res.success) return res.data;

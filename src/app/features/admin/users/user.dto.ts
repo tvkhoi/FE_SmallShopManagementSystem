@@ -4,7 +4,9 @@ export interface UserDTO {
   email: string;
   fullName?: string;
   phoneNumber?: string;
-  password: string;   
+  password: string;
+  address?: string;
+  createdAt: Date;
   isActive: boolean;
   isDeleted: boolean;
   RoleName?: string[];

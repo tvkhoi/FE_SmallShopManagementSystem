@@ -30,6 +30,8 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { Role } from '../../../core/models/role';
 import { RoleService } from '../../../core/services/role.service';
 import { UserDTO } from './user.dto';
+import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
+import { NzSelectModule } from 'ng-zorro-antd/select';
 
 @Component({
   selector: 'app-users',
@@ -52,6 +54,8 @@ import { UserDTO } from './user.dto';
     AssignPermissionModalComponent,
     NzTabsModule,
     NzSwitchModule,
+    NzTooltipModule,
+    NzSelectModule,
   ],
   templateUrl: './users.html',
   styleUrls: ['./users.scss'],
@@ -75,13 +79,25 @@ export class UsersComponent implements OnInit {
     fullName: '',
     phoneNumber: '',
     password: '',
+    address: '',
+    createdAt: new Date(),
     isActive: true,
     isDeleted: false,
     RoleName: [],
   };
 
+  filters: any = {
+    isActive: undefined,
+    email: '',
+    username: '',
+    phone: '',
+    fullName: '',
+    atDress: '',
+    createdAt: '',
+  };
+
   totalItems = 0;
-  pageSize: number = 10;
+  pageSize: number = 7;
   currentPage: number = 1;
 
   // Modal states
@@ -91,7 +107,11 @@ export class UsersComponent implements OnInit {
   isViewDetailsVisible = false;
   submitted = false;
   passwordVisible: boolean = false;
+  confirmPasswordVisible = false;
+  confirmPassword: string = '';
   isEditMode: boolean = false;
+  isChangePasswordVisible = false;
+  changePassword = { newPassword: '' };
 
   userId: number | null = null;
   selectedUserId: number | null = null;
@@ -170,29 +190,49 @@ export class UsersComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  /** Xử lý tìm kiếm user */
-  filterUsers(): void {
+  filterUsers(page: number = 1): void {
     const term = this.searchQuery.trim();
+
+    // Nếu không có từ khóa → quay lại loadUsers bình thường
     if (!term) {
+      this.currentPage = page;
       this.loadUsers();
       return;
     }
-    this.userService.searchUsers(term).subscribe({
-      next: (data) => {
+
+    this.userService.searchUsers(term, page, this.pageSize).subscribe({
+      next: (pagedResult) => {
         this.zone.run(() => {
-          this.users = data;
-          this.totalItems = data.length;
-          this.currentPage = 1;
+          this.users = pagedResult.items;
+          this.totalItems = pagedResult.totalItems;
+          this.pageSize = pagedResult.pageSize;
+          this.currentPage = pagedResult.pageNumber;
           this.cdr.detectChanges();
         });
       },
       error: (e) => console.error('Lỗi search users:', e),
     });
   }
-
   onPageChange(page: number): void {
     this.currentPage = page;
-    this.loadUsers();
+
+    if (this.searchQuery.trim()) {
+      // Nếu đang search theo từ khóa
+      this.filterUsers(page);
+    } else if (
+      this.filters.email ||
+      this.filters.username ||
+      this.filters.phone ||
+      this.filters.fullName ||
+      this.filters.atDress ||
+      this.filters.createdAt !== '' ||
+      this.filters.isActive !== undefined
+    ) {
+      this.applyFilter();
+    } else {
+      this.loadUsers();
+    }
+
     this.cdr.detectChanges();
   }
 
@@ -211,6 +251,8 @@ export class UsersComponent implements OnInit {
       fullName: '',
       phoneNumber: '',
       password: '',
+      address: '',
+      createdAt: new Date(),
       isActive: true,
       isDeleted: false,
       RoleName: [],
@@ -233,6 +275,11 @@ export class UsersComponent implements OnInit {
   }
 
   handleOk(): void {
+    if (!this.isEditMode && this.newUser.password !== this.confirmPassword) {
+      this.msg.error('Mật khẩu và Nhập lại mật khẩu không khớp!');
+      return;
+    }
+
     this.submitted = true;
     this.isConfirmLoading = true;
 
@@ -247,6 +294,8 @@ export class UsersComponent implements OnInit {
         email: this.newUser.email,
         fullName: this.newUser.fullName,
         phoneNumber: this.newUser.phoneNumber,
+        address: this.newUser.address,
+        createdAt: this.newUser.createdAt,
         isActive: this.newUser.isActive,
         isDeleted: true,
         roleName: this.selectedNames,
@@ -378,6 +427,8 @@ export class UsersComponent implements OnInit {
           email: res.email,
           fullName: res.fullName,
           phoneNumber: res.phoneNumber,
+          address: res.address,
+          createdAt: res.createdAt,
           isActive: res.isActive,
           isDeleted: res.isDeleted,
           RoleName: res.roleName ?? [], // map từ roleName (BE) sang RoleName (FE)
@@ -500,5 +551,69 @@ export class UsersComponent implements OnInit {
     const leaves: any[] = [];
     this.treeData.forEach((m) => m.children?.forEach((c) => leaves.push(c)));
     this.allChecked = leaves.length > 0 && leaves.every((l) => !!l.checked);
+  }
+
+  showChangePasswordModal(user: User): void {
+    this.selectedUser = user;
+    this.isChangePasswordVisible = true;
+    this.changePassword = { newPassword: '' };
+    this.confirmPassword = '';
+  }
+
+  handleOkChangePassword(): void {
+    if (this.changePassword.newPassword !== this.confirmPassword) {
+      this.msg.error('Mật khẩu xác nhận không khớp');
+      return;
+    }
+
+    const userId = this.selectedUser!.id;
+    this.userService
+      .setPassword(userId, { newPassword: this.changePassword.newPassword })
+      .subscribe({
+        next: () => {
+          this.msg.success('Đổi mật khẩu thành công');
+          this.handleCancelChangePassword();
+        },
+        error: () => {},
+      });
+  }
+
+  handleCancelChangePassword(): void {
+    this.isChangePasswordVisible = false;
+    this.changePassword = { newPassword: '' };
+    this.confirmPassword = '';
+    this.passwordVisible = false;
+    this.confirmPasswordVisible = false;
+    this.cdr.detectChanges();
+  }
+
+  applyFilter() {
+    const payload: any = {
+      pageNumber: this.currentPage,
+      pageSize: this.pageSize,
+    };
+
+    Object.keys(this.filters).forEach((key) => {
+      const value = this.filters[key];
+      if (value !== undefined && value !== null && value.toString().trim() !== '') {
+        payload[key] = value.toString().trim();
+      }
+    });
+
+    this.userService.getUsersPagedWithFilter(payload).subscribe({
+      next: (res) => {
+        this.users = res.items;
+        this.totalItems = res.totalItems;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Lỗi filter', err);
+      },
+    });
+  }
+
+  resetFilter() {
+    this.filters = {};
+    this.applyFilter();
   }
 }
