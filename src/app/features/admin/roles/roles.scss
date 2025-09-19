@@ -6,47 +6,41 @@
     input {
       margin-right: 8px;
     }
-
-
-    :host ::ng-deep .ant-btn {
-      border-radius: 8px !important;
-      background: #1677ff;
-      color: white;
-    }
-
   }
 
-  .roles-header {
-    .error-msg {
-      color: red;
-      font-size: 12px;
-      margin-top: 4px;
-    }
+}
 
-    .permissions-list {
-      max-height: 200px;
-      overflow-y: auto;
-      border: 1px solid #f0f0f0;
-      padding: 8px;
-      border-radius: 4px;
-
-    }
-
-
+.roles-header {
+  .error-msg {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
   }
 
-  .action-dropdown {
-    border: none;
-    color: white;
-    padding: 4px 8px;
-    background-color: #40A9FF;
+  .permissions-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #f0f0f0;
+    padding: 8px;
     border-radius: 4px;
 
-    &:hover {
-      background-color: darken(#40A9FF, 10%);
-    }
+  }
+
+
+}
+
+.action-dropdown {
+  border: none;
+  color: white;
+  padding: 4px 8px;
+  background-color: #40A9FF;
+  border-radius: 8px;
+
+  &:hover {
+    background-color: darken(#40A9FF, 10%);
   }
 }
+
 
 ::ng-deep .custom-table tr {
   white-space: nowrap !important;
@@ -58,8 +52,4 @@
 
 ::ng-deep .custom-role-modal .ant-modal-header {
   border-radius: 15px !important;
-}
-
-::ng-deep .custom-role-modal .ant-btn {
-  border-radius: 8px !important;
 }

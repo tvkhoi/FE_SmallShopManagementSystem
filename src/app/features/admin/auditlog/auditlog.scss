@@ -27,102 +27,79 @@
   /* Filter Section */
   .filter-container {
     background: #fff;
-    padding: 20px;
+    padding: 16px;
     border-radius: 8px;
     margin-bottom: 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
     .filter-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      align-items: start;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      /* Tăng min-width để đảm bảo đủ không gian */
+      gap: 12px;
+      align-items: flex-start;
 
       nz-form-item {
         margin-bottom: 0;
         width: 100%;
+        min-width: 0;
 
         nz-form-label {
           font-weight: 500;
           color: #444;
-          margin-bottom: 8px;
+          margin-bottom: 4px;
           display: block;
           font-size: 14px;
-          line-height: 1.4;
+          line-height: 1.2;
         }
 
         nz-form-control {
           width: 100%;
 
-          input[nz-input] {
+          input[nz-input],
+          nz-date-picker ::ng-deep .ant-picker,
+          nz-input-number ::ng-deep .ant-input-number,
+          nz-select ::ng-deep .ant-select-selector {
             width: 100%;
-            height: 32px;
+            height: 36px;
+            min-width: 180px;
+            /* Tăng min-width để tránh co nhỏ */
             border: 1px solid #d9d9d9;
             border-radius: 4px;
-            padding: 4px 11px;
+            padding: 4px 10px;
             font-size: 14px;
+            transition: border-color 0.3s, box-shadow 0.3s;
 
             &:focus {
               border-color: #40a9ff;
               box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
             }
 
-            &::placeholder {
+            &::placeholder,
+            .ant-select-selection-placeholder {
               color: #bfbfbf;
             }
           }
 
-          nz-date-picker {
+          nz-date-picker ::ng-deep .ant-picker {
+            min-width: 180px !important;
+            /* Đảm bảo date-picker không co nhỏ */
             width: 100%;
-            display: block;
+          }
 
-            ::ng-deep .ant-picker {
-              width: 100%;
+          nz-select ::ng-deep .ant-select-selector {
+            .ant-select-selection-search-input {
               height: 32px;
-              border: 1px solid #d9d9d9;
-              border-radius: 4px;
+            }
+
+            .ant-select-selection-item {
+              line-height: 32px;
             }
           }
 
-          nz-input-number {
-            width: 100%;
-            display: block;
-
-            ::ng-deep .ant-input-number {
-              width: 100%;
-              height: 32px;
-              border: 1px solid #d9d9d9;
-              border-radius: 4px;
-            }
-          }
-
-          nz-select {
-            width: 100%;
-            display: block;
-
-            ::ng-deep .ant-select-selector {
-              height: 32px !important;
-              border: 1px solid #d9d9d9;
-              border-radius: 4px;
-
-              .ant-select-selection-search-input {
-                height: 30px;
-              }
-
-              .ant-select-selection-item {
-                line-height: 30px;
-              }
-
-              .ant-select-selection-placeholder {
-                line-height: 30px;
-                color: #bfbfbf;
-              }
-            }
-
-            &.ant-select-focused ::ng-deep .ant-select-selector {
-              border-color: #40a9ff;
-              box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
-            }
+          nz-select.ant-select-focused ::ng-deep .ant-select-selector {
+            border-color: #40a9ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
           }
         }
       }
@@ -133,12 +110,12 @@
         justify-content: flex-end;
         align-items: center;
         gap: 8px;
-        margin-top: 16px;
-        padding-top: 16px;
-        border-top: 1px solid #f0f0f0;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #e8e8e8;
 
         button {
-          min-width: 120px;
+          min-width: 100px;
           height: 36px;
           font-weight: 500;
           border-radius: 4px;
@@ -171,24 +148,67 @@
       }
     }
 
-    /* Tablet responsive */
+    /* Tablet responsive (1200px) */
     @media (max-width: 1200px) {
-      .filter-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-      }
+      padding: 12px;
 
-      .filter-buttons {
-        grid-column: span 3;
+      .filter-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        /* Điều chỉnh min-width */
+        gap: 8px;
+
+        nz-form-item {
+          nz-form-label {
+            font-size: 13px;
+            margin-bottom: 3px;
+          }
+
+          nz-form-control {
+
+            input[nz-input],
+            nz-date-picker ::ng-deep .ant-picker,
+            nz-input-number ::ng-deep .ant-input-number,
+            nz-select ::ng-deep .ant-select-selector {
+              height: 34px;
+              padding: 3px 8px;
+              min-width: 160px;
+              /* Giảm min-width nhưng vẫn đủ lớn */
+            }
+
+            nz-date-picker ::ng-deep .ant-picker {
+              min-width: 160px !important;
+              /* Đảm bảo date-picker không co nhỏ */
+            }
+          }
+        }
+
+        .filter-buttons {
+          grid-column: span 3;
+          justify-content: center;
+          gap: 6px;
+          margin-top: 10px;
+          padding-top: 10px;
+
+          button {
+            min-width: 90px;
+            height: 34px;
+            font-size: 13px;
+          }
+        }
       }
     }
 
+    /* Tablet nhỏ (992px) */
     @media (max-width: 992px) {
-      padding: 16px;
+      padding: 10px;
 
       .filter-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 6px;
+
+        nz-form-item nz-form-label {
+          font-size: 12px;
+        }
 
         .filter-buttons {
           grid-column: span 2;
@@ -197,71 +217,76 @@
       }
     }
 
+    /* Mobile (768px) */
     @media (max-width: 768px) {
-      padding: 16px;
+      padding: 8px;
 
       .filter-grid {
-        gap: 16px;
+        gap: 6px;
 
         nz-form-item {
           nz-form-label {
-            font-size: 14px;
-            margin-bottom: 6px;
+            font-size: 12px;
+            margin-bottom: 2px;
           }
 
           nz-form-control {
 
             input[nz-input],
-            ::ng-deep .ant-picker,
-            ::ng-deep .ant-input-number,
-            ::ng-deep .ant-select-selector {
-              height: 36px !important;
+            nz-date-picker ::ng-deep .ant-picker,
+            nz-input-number ::ng-deep .ant-input-number,
+            nz-select ::ng-deep .ant-select-selector {
+              height: 32px;
+              padding: 2px 6px;
+              min-width: 140px;
+            }
 
-              input {
-                height: 34px !important;
-              }
+            nz-date-picker ::ng-deep .ant-picker {
+              min-width: 140px !important;
             }
           }
         }
 
         .filter-buttons {
+          margin-top: 8px;
+          padding-top: 8px;
+
           button {
-            min-width: 100px;
-            height: 40px;
+            min-width: 80px;
+            height: 32px;
           }
         }
       }
     }
 
-    /* Mobile responsive */
+    /* Mobile nhỏ (576px) */
     @media (max-width: 576px) {
-      padding: 16px;
-      margin-bottom: 16px;
+      padding: 6px;
+      margin-bottom: 6px;
 
       .filter-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
+        gap: 4px;
 
         nz-form-item {
           nz-form-label {
-            font-size: 14px;
-            margin-bottom: 6px;
-            font-weight: 500;
+            font-size: 11px;
+            margin-bottom: 2px;
           }
 
           nz-form-control {
 
             input[nz-input],
-            ::ng-deep .ant-picker,
-            ::ng-deep .ant-input-number,
-            ::ng-deep .ant-select-selector {
-              height: 40px !important;
-              font-size: 16px; // Prevent zoom on iOS
+            nz-date-picker ::ng-deep .ant-picker,
+            nz-input-number ::ng-deep .ant-input-number,
+            nz-select ::ng-deep .ant-select-selector {
+              height: 30px;
+              font-size: 12px;
+              min-width: 120px;
+            }
 
-              input {
-                height: 38px !important;
-                font-size: 16px;
-              }
+            nz-date-picker ::ng-deep .ant-picker {
+              min-width: 120px !important;
             }
           }
         }
@@ -269,67 +294,58 @@
         .filter-buttons {
           grid-column: span 1;
           flex-direction: column;
-          align-items: stretch;
-          gap: 12px;
-          margin-top: 20px;
+          align-items: center;
+          gap: 6px;
+          margin-top: 6px;
+          padding-top: 6px;
 
           button {
             width: 100%;
-            min-width: auto;
-            height: 44px;
-            font-size: 16px;
+            min-width: 0;
+            height: 34px;
+            font-size: 12px;
           }
         }
       }
     }
 
     @media (max-width: 320px) {
-      padding: 8px;
+      padding: 4px;
 
       .filter-grid {
-        gap: 8px;
+        gap: 3px;
 
         nz-form-item {
           nz-form-label {
-            font-size: 13px;
+            font-size: 10px;
+          }
+
+          nz-form-control {
+
+            input[nz-input],
+            nz-date-picker ::ng-deep .ant-picker,
+            nz-input-number ::ng-deep .ant-input-number,
+            nz-select ::ng-deep .ant-select-selector {
+              height: 28px;
+              padding: 1px 4px;
+              min-width: 100px;
+            }
+
+            nz-date-picker ::ng-deep .ant-picker {
+              min-width: 100px !important;
+            }
+          }
+        }
+
+        .filter-buttons {
+          button {
+            height: 30px;
+            font-size: 11px;
           }
         }
       }
     }
   }
-
-
-  .audit-detail-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-
-  .detail-item {
-    display: flex;
-    flex-direction: column;
-
-    .label {
-      font-weight: 600;
-      color: #555;
-      margin-bottom: 4px;
-      font-size: 14px;
-    }
-
-    .value {
-      font-size: 14px;
-      color: #000;
-      word-break: break-word;
-    }
-  }
-
-  // Nếu màn hình nhỏ hơn 768px thì 1 cột
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-
 
   /* Audit Table */
   .audit-table {
@@ -338,6 +354,19 @@
     overflow-x: auto;
     border: 1px solid #ddd;
     background: #fff;
+    table-layout: fixed;
+
+    .nowrap-table {
+      .ant-table {
+        white-space: nowrap; // Không cho xuống dòng
+      }
+
+      .ant-table-cell {
+        white-space: nowrap; // Cell không xuống dòng
+        overflow: hidden;
+        text-overflow: ellipsis; // Nếu text quá dài thì cắt bằng ...
+      }
+    }
 
     th {
       background: #fafafa;
@@ -347,10 +376,12 @@
       text-align: left;
       border-bottom: 1px solid #eee;
       white-space: nowrap;
+      font-size: 14px;
     }
 
     td {
-      padding: 12px;
+      padding: 10px;
+      margin: 0;
       color: #000;
       border-bottom: 1px solid #eee;
       text-align: left;
@@ -366,6 +397,21 @@
         line-height: 1.2;
         transition: color 0.2s, transform 0.2s;
       }
+
+      // .request-status,
+      // .request-method {
+      //   display: inline-block;
+      //   min-width: 60px;
+      //   text-align: center;
+      //   padding: 2px 6px;
+      //   border-radius: 8px;
+      //   font-weight: 400;
+      //   white-space: nowrap;
+      //   color: #ffffff;
+      //   font-size: 11px;
+      //   margin-right: 10px;
+      // }
+
 
       a {
         color: #007bff;
@@ -421,35 +467,158 @@
     }
 
     .audit-table {
-      th {
-        display: none;
+      font-size: 13px;
+
+      thead {
+        tr {
+          th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+            text-align: left;
+            padding: 10px;
+            white-space: nowrap;
+            font-size: 11px;
+          }
+        }
       }
 
-      tr {
-        display: block;
-        margin-bottom: 12px;
-        border: 1px solid #ddd;
+      tbody {
+        tr {
+          &:nth-child(even) {
+            background: #fafafa;
+          }
+
+          &:hover {
+            background: #e6f7ff;
+          }
+
+          td {
+            font-size: 11px;
+            padding: 8px 10px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f0f0f0;
+
+            &:nth-child(4) {
+              white-space: nowrap;
+            }
+
+            &:last-child {
+              max-width: 300px;
+              word-wrap: break-word;
+              white-space: normal;
+            }
+          }
+        }
+      }
+
+      .view-detail-button {
+        padding: 2px 10px;
+        font-size: 12px;
         border-radius: 4px;
-        padding: 10px;
-      }
-
-      td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 6px 10px;
-        border-bottom: 1px solid #eee;
-
-        &:last-child {
-          border-bottom: none;
-        }
-
-        &:before {
-          content: attr(data-label);
-          font-weight: 600;
-          color: #555;
-        }
       }
     }
   }
+
+  .audit-pagination {
+    margin-top: 16px;
+    text-align: left;
+
+    .ant-pagination-options {
+      margin-right: 16px;
+    }
+
+    .ant-pagination-item {
+      border-radius: 4px;
+      border: 1px solid #d9d9d9;
+      margin: 0 4px;
+
+      &:hover {
+        border-color: #40a9ff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      }
+    }
+
+    .ant-pagination-item-active {
+      background-color: #1890ff;
+      border-color: #1890ff;
+      color: white;
+
+      &:hover {
+        background-color: #40a9ff;
+        border-color: #40a9ff;
+      }
+    }
+
+    .ant-pagination-prev,
+    .ant-pagination-next {
+      border-radius: 4px;
+      border: 1px solid #d9d9d9;
+
+      &:hover {
+        border-color: #40a9ff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      }
+    }
+
+    .ant-pagination-options-selector {
+      height: 32px;
+
+      .ant-select-selector {
+        height: 32px !important;
+        border-radius: 4px;
+
+        .ant-select-selection-search-input {
+          height: 30px;
+        }
+
+        .ant-select-selection-item {
+          line-height: 30px;
+        }
+
+        .ant-select-selection-placeholder {
+          line-height: 30px;
+          color: #bfbfbf;
+        }
+      }
+
+      &.ant-select-focused .ant-select-selector {
+        border-color: #40a9ff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      }
+    }
+  }
+}
+
+/* Modal Styles */
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: top;
+
+    &.label {
+      font-weight: 600;
+      width: 30%;
+      color: #555;
+      background-color: #fafafa;
+    }
+  }
+}
+
+.request-status,
+.request-method {
+  display: inline-block;
+  min-width: 60px;
+  text-align: center;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-weight: 400;
+  white-space: nowrap;
+  color: #ffffff;
+  font-size: 11px;
+  margin-right: 10px;
 }

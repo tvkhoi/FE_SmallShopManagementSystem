@@ -6,10 +6,13 @@ export interface SystemLogDto {
   id: number;
   userId: number | null;
   userName: string | null;
+  method: string;
+  path: string;
+  statusCode: number;
   action: string;
   createdAt: string;
-  duration?: number;
-  applicationName?: string;
+  duration: number;
+  applicationName: string;
   data?: string | null;
 }
 
@@ -21,17 +24,15 @@ export interface PagedResult<T> {
 }
 
 export interface SystemLogFilterRequest {
-  userId?: number | null;
   userName?: string | null;
   action?: string | null;
+  method?: string | null;      
+  statusCode?: number | null;
   fromDate?: string | null;
   toDate?: string | null;
   minDuration?: number | null;
   maxDuration?: number | null;
-  pageNumber?: number | null;
-  pageSize?: number;
 }
-
 
 @Injectable({ providedIn: 'root' })
 export class SystemLogsService {
@@ -54,7 +55,9 @@ export class SystemLogsService {
     pageNumber = 1,
     pageSize = 10
   ): Observable<PagedResult<SystemLogDto>> {
-    let params = new HttpParams().set('pageNumber', pageNumber).set('pageSize', pageSize);
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
 
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
@@ -67,7 +70,7 @@ export class SystemLogsService {
 
   // Xóa nhiều logs theo ids
   deleteRange(ids: number[]): Observable<any> {
-    return this.http.request('delete', `${this.apiUrl}/xóa 1 hoặc nhiều theo id`, { body: ids });
+    return this.http.request('delete', `${this.apiUrl}/delete-range`, { body: ids });
   }
 
   // Xóa tất cả logs
