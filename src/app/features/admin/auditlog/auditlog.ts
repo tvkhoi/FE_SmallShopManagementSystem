@@ -1,3 +1,4 @@
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { Component, inject, NgZone, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -16,9 +17,11 @@ import {
   SystemLogDto,
   SystemLogFilterRequest,
 } from '../../../core/services/system-logs.service';
-import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzIconDirective } from 'ng-zorro-antd/icon';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
 
 @Component({
   selector: 'app-auditlog',
@@ -36,6 +39,8 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
     NzModalModule,
     NzIconDirective,
     NzSelectModule,
+    NzDropDownModule,
+    NzMenuModule,
   ],
   templateUrl: './auditlog.html',
   styleUrls: ['./auditlog.scss'],
@@ -44,6 +49,8 @@ export class Auditlog implements OnInit, OnDestroy {
   private logsService = inject(SystemLogsService);
   private zone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
+  private message = inject(NzMessageService);
+  private modal: NzModalService = inject(NzModalService);
 
   // === Filters ===
   userId: number | null = null;
@@ -55,6 +62,10 @@ export class Auditlog implements OnInit, OnDestroy {
   toDate: Date | null = null;
   minDuration: number | null = null;
   maxDuration: number | null = null;
+
+  // === Clear old logs ===
+  isClearOldVisible = false;
+  clearOldDays = 30;
 
   // === Selected Log for Detail View ===
   selectedLog: any = null;
@@ -183,5 +194,41 @@ export class Auditlog implements OnInit, OnDestroy {
     this.method = value || '';
     this.currentPage = 1;
     this.loadLogs();
+  }
+
+  clearAllLogs() {
+    this.modal.confirm({
+      nzTitle: 'Bạn có chắc muốn xóa lịch sử hệ thống này?',
+      nzOkText: 'Xóa',
+      nzOkType: 'primary',
+      nzOkDanger: true,
+      nzOnOk: () =>
+        this.logsService.clearAll().subscribe({
+          next: (res: any) => {
+            this.message.success(res.message || 'Đã xóa toàn bộ log');
+            this.loadLogs();
+          },
+          error: () => this.message.error('Xóa log thất bại'),
+        }),
+      nzCancelText: 'Hủy',
+      nzOnCancel: () => this.message.info('Hủy xóa log hệ thống'),
+    });
+  }
+
+  openClearOldModal() {
+    this.isClearOldVisible = true;
+  }
+
+  confirmClearOld() {
+    this.logsService.clearOldLogs(this.clearOldDays).subscribe({
+      next: (res: any) => {
+        this.message.success(res.message || `Đã xóa log cũ hơn ${this.clearOldDays} ngày`);
+        this.loadLogs();
+      },
+      error: (err) => {
+        this.message.error(err.error || 'Không thể xóa log theo ngày');
+      },
+    });
+    this.isClearOldVisible = false;
   }
 }

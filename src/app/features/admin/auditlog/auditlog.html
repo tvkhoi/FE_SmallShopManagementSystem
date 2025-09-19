@@ -46,15 +46,38 @@
         </nz-form-control>
       </nz-form-item>
 
+
       <nz-form-item class="filter-buttons" style="grid-column: span 4;">
         <button nz-button nzType="primary" (click)="filterLogs()" style="margin-right: 8px;">Làm mới</button>
+        <button nzType="primary" style="background-color: red; border: none; transition: opacity 0.2s;"
+          onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1" nz-button nz-dropdown
+          [nzDropdownMenu]="menu">
+          Xóa <nz-icon nzType="down"></nz-icon>
+        </button>
+
+        <!-- Dropdown xóa log -->
+        <nz-dropdown-menu #menu="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item (click)="clearAllLogs()">Xóa hết</li>
+            <li nz-menu-item (click)="openClearOldModal()">Xóa theo ngày</li>
+          </ul>
+        </nz-dropdown-menu>
+
+        <nz-modal [(nzVisible)]="isClearOldVisible" nzTitle="Xóa log theo ngày" (nzOnCancel)="isClearOldVisible = false"
+          (nzOnOk)="confirmClearOld()">
+          <div *nzModalContent>
+            <label>Số ngày giữ lại (VD: 30)</label>
+            <input nz-input type="number" [(ngModel)]="clearOldDays" min="1" />
+          </div>
+        </nz-modal>
       </nz-form-item>
+
 
       <nz-form-item>
         <nz-form-label>Phương thức HTTP</nz-form-label>
-        <nz-form-control >
+        <nz-form-control>
           <nz-select [(ngModel)]="method" name="method" nzAllowClear placeholder="Chọn phương thức"
-          (ngModelChange)="onMethodChange($event)">
+            (ngModelChange)="onMethodChange($event)">
             <nz-option nzValue="GET" nzLabel="GET"></nz-option>
             <nz-option nzValue="POST" nzLabel="POST"></nz-option>
             <nz-option nzValue="PUT" nzLabel="PUT"></nz-option>
