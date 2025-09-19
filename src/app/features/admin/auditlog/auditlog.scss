@@ -26,277 +26,307 @@
 
   /* Filter Section */
   .filter-container {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
-  .filter-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    align-items: start;
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      align-items: start;
 
-    nz-form-item {
-      margin-bottom: 0;
-      width: 100%;
-
-      nz-form-label {
-        font-weight: 500;
-        color: #444;
-        margin-bottom: 8px;
-        display: block;
-        font-size: 14px;
-        line-height: 1.4;
-      }
-
-      nz-form-control {
+      nz-form-item {
+        margin-bottom: 0;
         width: 100%;
 
-        input[nz-input] {
-          width: 100%;
-          height: 32px;
-          border: 1px solid #d9d9d9;
-          border-radius: 4px;
-          padding: 4px 11px;
+        nz-form-label {
+          font-weight: 500;
+          color: #444;
+          margin-bottom: 8px;
+          display: block;
           font-size: 14px;
-          
-          &:focus {
-            border-color: #40a9ff;
-            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
-          }
-          
-          &::placeholder {
-            color: #bfbfbf;
-          }
+          line-height: 1.4;
         }
 
-        nz-date-picker {
+        nz-form-control {
           width: 100%;
-          display: block;
-          
-          ::ng-deep .ant-picker {
+
+          input[nz-input] {
             width: 100%;
             height: 32px;
             border: 1px solid #d9d9d9;
             border-radius: 4px;
-          }
-        }
+            padding: 4px 11px;
+            font-size: 14px;
 
-        nz-input-number {
-          width: 100%;
-          display: block;
-          
-          ::ng-deep .ant-input-number {
-            width: 100%;
-            height: 32px;
-            border: 1px solid #d9d9d9;
-            border-radius: 4px;
-          }
-        }
+            &:focus {
+              border-color: #40a9ff;
+              box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+            }
 
-        nz-select {
-          width: 100%;
-          display: block;
-          
-          ::ng-deep .ant-select-selector {
-            height: 32px !important;
-            border: 1px solid #d9d9d9;
-            border-radius: 4px;
-            
-            .ant-select-selection-search-input {
-              height: 30px;
-            }
-            
-            .ant-select-selection-item {
-              line-height: 30px;
-            }
-            
-            .ant-select-selection-placeholder {
-              line-height: 30px;
+            &::placeholder {
               color: #bfbfbf;
             }
           }
-          
-          &.ant-select-focused ::ng-deep .ant-select-selector {
-            border-color: #40a9ff;
-            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+
+          nz-date-picker {
+            width: 100%;
+            display: block;
+
+            ::ng-deep .ant-picker {
+              width: 100%;
+              height: 32px;
+              border: 1px solid #d9d9d9;
+              border-radius: 4px;
+            }
           }
-        }
-      }
-    }
 
-    .filter-buttons {
-      grid-column: span 4;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 8px;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid #f0f0f0;
+          nz-input-number {
+            width: 100%;
+            display: block;
 
-      button {
-        min-width: 120px;
-        height: 36px;
-        font-weight: 500;
-        border-radius: 4px;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.3s;
-        
-        &[nzType="primary"] {
-          background-color: #1890ff;
-          border-color: #1890ff;
-          color: white;
-          
-          &:hover {
-            background-color: #40a9ff;
-            border-color: #40a9ff;
+            ::ng-deep .ant-input-number {
+              width: 100%;
+              height: 32px;
+              border: 1px solid #d9d9d9;
+              border-radius: 4px;
+            }
           }
-        }
-        
-        &[nzType="default"] {
-          background-color: white;
-          border: 1px solid #d9d9d9;
-          color: rgba(0, 0, 0, 0.85);
-          
-          &:hover {
-            color: #40a9ff;
-            border-color: #40a9ff;
-          }
-        }
-      }
-    }
-  }
 
-  /* Tablet responsive */
-  @media (max-width: 1200px) {
-    .filter-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    
-    .filter-buttons {
-      grid-column: span 3;
-    }
-  }
+          nz-select {
+            width: 100%;
+            display: block;
 
-  @media (max-width: 992px) {
-    padding: 16px;
-    
-    .filter-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
+            ::ng-deep .ant-select-selector {
+              height: 32px !important;
+              border: 1px solid #d9d9d9;
+              border-radius: 4px;
 
-      .filter-buttons {
-        grid-column: span 2;
-        justify-content: center;
-      }
-    }
-  }
+              .ant-select-selection-search-input {
+                height: 30px;
+              }
 
-  @media (max-width: 768px) {
-    padding: 16px;
-    
-    .filter-grid {
-      gap: 16px;
+              .ant-select-selection-item {
+                line-height: 30px;
+              }
 
-      nz-form-item {
-        nz-form-label {
-          font-size: 14px;
-          margin-bottom: 6px;
-        }
-        
-        nz-form-control {
-          input[nz-input],
-          ::ng-deep .ant-picker,
-          ::ng-deep .ant-input-number,
-          ::ng-deep .ant-select-selector {
-            height: 36px !important;
-            
-            input {
-              height: 34px !important;
+              .ant-select-selection-placeholder {
+                line-height: 30px;
+                color: #bfbfbf;
+              }
+            }
+
+            &.ant-select-focused ::ng-deep .ant-select-selector {
+              border-color: #40a9ff;
+              box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
             }
           }
         }
       }
 
-      .filter-buttons {        
+      .filter-buttons {
+        grid-column: span 4;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #f0f0f0;
+
         button {
-          min-width: 100px;
-          height: 40px;
-        }
-      }
-    }
-  }
-
-  /* Mobile responsive */
-  @media (max-width: 576px) {
-    padding: 16px;
-    margin-bottom: 16px;
-    
-    .filter-grid {
-      grid-template-columns: 1fr;
-      gap: 16px;
-
-      nz-form-item {
-        nz-form-label {
-          font-size: 14px;
-          margin-bottom: 6px;
+          min-width: 120px;
+          height: 36px;
           font-weight: 500;
-        }
+          border-radius: 4px;
+          font-size: 14px;
+          cursor: pointer;
+          transition: all 0.3s;
 
-        nz-form-control {
-          input[nz-input],
-          ::ng-deep .ant-picker,
-          ::ng-deep .ant-input-number,
-          ::ng-deep .ant-select-selector {
-            height: 40px !important;
-            font-size: 16px; // Prevent zoom on iOS
-            
-            input {
-              height: 38px !important;
-              font-size: 16px;
+          &[nzType="primary"] {
+            background-color: #1890ff;
+            border-color: #1890ff;
+            color: white;
+
+            &:hover {
+              background-color: #40a9ff;
+              border-color: #40a9ff;
+            }
+          }
+
+          &[nzType="default"] {
+            background-color: white;
+            border: 1px solid #d9d9d9;
+            color: rgba(0, 0, 0, 0.85);
+
+            &:hover {
+              color: #40a9ff;
+              border-color: #40a9ff;
             }
           }
         }
       }
+    }
+
+    /* Tablet responsive */
+    @media (max-width: 1200px) {
+      .filter-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
 
       .filter-buttons {
-        grid-column: span 1;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-        margin-top: 20px;
+        grid-column: span 3;
+      }
+    }
 
-        button {
-          width: 100%;
-          min-width: auto;
-          height: 44px;
-          font-size: 16px;
+    @media (max-width: 992px) {
+      padding: 16px;
+
+      .filter-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+
+        .filter-buttons {
+          grid-column: span 2;
+          justify-content: center;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 16px;
+
+      .filter-grid {
+        gap: 16px;
+
+        nz-form-item {
+          nz-form-label {
+            font-size: 14px;
+            margin-bottom: 6px;
+          }
+
+          nz-form-control {
+
+            input[nz-input],
+            ::ng-deep .ant-picker,
+            ::ng-deep .ant-input-number,
+            ::ng-deep .ant-select-selector {
+              height: 36px !important;
+
+              input {
+                height: 34px !important;
+              }
+            }
+          }
+        }
+
+        .filter-buttons {
+          button {
+            min-width: 100px;
+            height: 40px;
+          }
+        }
+      }
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 576px) {
+      padding: 16px;
+      margin-bottom: 16px;
+
+      .filter-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+
+        nz-form-item {
+          nz-form-label {
+            font-size: 14px;
+            margin-bottom: 6px;
+            font-weight: 500;
+          }
+
+          nz-form-control {
+
+            input[nz-input],
+            ::ng-deep .ant-picker,
+            ::ng-deep .ant-input-number,
+            ::ng-deep .ant-select-selector {
+              height: 40px !important;
+              font-size: 16px; // Prevent zoom on iOS
+
+              input {
+                height: 38px !important;
+                font-size: 16px;
+              }
+            }
+          }
+        }
+
+        .filter-buttons {
+          grid-column: span 1;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 12px;
+          margin-top: 20px;
+
+          button {
+            width: 100%;
+            min-width: auto;
+            height: 44px;
+            font-size: 16px;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 320px) {
+      padding: 8px;
+
+      .filter-grid {
+        gap: 8px;
+
+        nz-form-item {
+          nz-form-label {
+            font-size: 13px;
+          }
         }
       }
     }
   }
 
-  @media (max-width: 320px) {
-    padding: 8px;
-    
-    .filter-grid {
-      gap: 8px;
-      
-      nz-form-item {
-        nz-form-label {
-          font-size: 13px;
-        }
-      }
+
+  .audit-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+
+    .label {
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 4px;
+      font-size: 14px;
     }
+
+    .value {
+      font-size: 14px;
+      color: #000;
+      word-break: break-word;
+    }
+  }
+
+  // Nếu màn hình nhỏ hơn 768px thì 1 cột
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
   }
 }
-
-
 
 
 
@@ -325,6 +355,17 @@
       border-bottom: 1px solid #eee;
       text-align: left;
       word-break: break-word;
+
+      .view-detail-button {
+        color: #fff;
+        padding: 4px 8px;
+        border: none;
+        background-color: #1890ff;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 1.2;
+        transition: color 0.2s, transform 0.2s;
+      }
 
       a {
         color: #007bff;

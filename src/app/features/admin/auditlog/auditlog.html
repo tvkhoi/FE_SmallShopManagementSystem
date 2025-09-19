@@ -1,153 +1,136 @@
 <div class="audit-log-container">
-  <h2>Audit logs</h2>
+  <h2>Nhật ký hệ thống</h2>
 
-  <!-- Bộ lọc -->
   <div class="filter-container">
     <form nz-form nzLayout="vertical" class="filter-grid">
-      <!-- Row 1 -->
       <nz-form-item>
-        <nz-form-label>Start Date</nz-form-label>
+        <nz-form-label>Tên người dùng</nz-form-label>
         <nz-form-control>
-          <nz-date-picker [(ngModel)]="startDate" name="startDate"></nz-date-picker>
+          <input nz-input [(ngModel)]="userName" name="userName" placeholder="Tên người dùng" />
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label>End Date</nz-form-label>
+        <nz-form-label>Hành động</nz-form-label>
         <nz-form-control>
-          <nz-date-picker [(ngModel)]="endDate" name="endDate"></nz-date-picker>
+          <input nz-input [(ngModel)]="action" name="action" placeholder="Hành động" />
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label>User Name</nz-form-label>
+        <nz-form-label>Từ ngày</nz-form-label>
         <nz-form-control>
-          <input nz-input [(ngModel)]="userName" name="userName" placeholder="User name" />
+          <nz-date-picker [(ngModel)]="fromDate" name="fromDate"></nz-date-picker>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label>URL</nz-form-label>
+        <nz-form-label>Đến ngày</nz-form-label>
         <nz-form-control>
-          <input nz-input [(ngModel)]="url" name="url" placeholder="URL" />
-        </nz-form-control>
-      </nz-form-item>
-
-      <!-- Row 2 -->
-      <nz-form-item>
-        <nz-form-label>Min Duration</nz-form-label>
-        <nz-form-control>
-          <nz-input-number [(ngModel)]="minDuration" name="minDuration"></nz-input-number>
+          <nz-date-picker [(ngModel)]="toDate" name="toDate"></nz-date-picker>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label>Max Duration</nz-form-label>
+        <nz-form-label>Thời lượng tối thiểu</nz-form-label>
         <nz-form-control>
-          <nz-input-number [(ngModel)]="maxDuration" name="maxDuration"></nz-input-number>
+          <input nz-input type="number" [(ngModel)]="minDuration" name="minDuration"
+            placeholder="Thời lượng tối thiểu" />
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label>HTTP Method</nz-form-label>
+        <nz-form-label>Thời lượng tối đa</nz-form-label>
         <nz-form-control>
-          <nz-select [(ngModel)]="httpMethod" name="httpMethod">
-            <nz-option nzValue="" nzLabel="-"></nz-option>
-            <nz-option nzValue="GET" nzLabel="GET"></nz-option>
-            <nz-option nzValue="POST" nzLabel="POST"></nz-option>
-          </nz-select>
+          <input nz-input type="number" [(ngModel)]="maxDuration" name="maxDuration" placeholder="Thời lượng tối đa" />
         </nz-form-control>
       </nz-form-item>
 
-      <nz-form-item>
-        <nz-form-label>HTTP Status</nz-form-label>
-        <nz-form-control>
-          <nz-select [(ngModel)]="httpStatusCode" name="httpStatusCode">
-            <nz-option nzValue="" nzLabel="-"></nz-option>
-            <nz-option nzValue="200" nzLabel="200"></nz-option>
-            <nz-option nzValue="404" nzLabel="404"></nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-
-      <!-- Row 3 -->
-      <nz-form-item>
-        <nz-form-label>Application Name</nz-form-label>
-        <nz-form-control>
-          <input nz-input [(ngModel)]="applicationName" name="applicationName" placeholder="Application name" />
-        </nz-form-control>
-      </nz-form-item>
-
-      <nz-form-item>
-        <nz-form-label>Client IP</nz-form-label>
-        <nz-form-control>
-          <input nz-input [(ngModel)]="clientIp" name="clientIp" placeholder="Client IP" />
-        </nz-form-control>
-      </nz-form-item>
-
-      <nz-form-item>
-        <nz-form-label>Correlation Id</nz-form-label>
-        <nz-form-control>
-          <input nz-input [(ngModel)]="correlationId" name="correlationId" placeholder="Correlation Id" />
-        </nz-form-control>
-      </nz-form-item>
-
-      <nz-form-item>
-        <nz-form-label>Has Exception</nz-form-label>
-        <nz-form-control>
-          <nz-select [(ngModel)]="hasException" name="hasException">
-            <nz-option nzValue="" nzLabel="-"></nz-option>
-            <nz-option nzValue="true" nzLabel="Yes"></nz-option>
-            <nz-option nzValue="false" nzLabel="No"></nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-
-      <!-- Buttons -->
       <nz-form-item class="filter-buttons" style="grid-column: span 4;">
-        <button nz-button nzType="primary" (click)="filterLogs()" style="margin-right: 8px;">Refresh</button>
-        <button nz-button nzType="default" (click)="exportToExcel()">Export to Excel</button>
+        <button nz-button nzType="primary" (click)="filterLogs()" style="margin-right: 8px;">Làm mới</button>
       </nz-form-item>
     </form>
   </div>
 
+  <!-- Modal: Xem chi tiết audit log -->
+  <nz-modal [(nzVisible)]="isViewAuditDetailVisible" nzTitle="Chi tiết Audit Log" (nzOnCancel)="handleViewAuditDetailCancel()"
+    [nzWidth]="800" [nzBodyStyle]="{ 'max-height': '60vh', 'overflow-y': 'auto', 'padding': '16px' }"
+    [nzFooter]="auditDetailFooter">
+    <div *nzModalContent class="audit-detail-grid">
+      <div class="detail-item">
+        <span class="label">ID người dùng:</span>
+        <span class="value">{{ selectedLog?.userId }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Tên người dùng:</span>
+        <span class="value">{{ selectedLog?.userName }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Yêu cầu:</span>
+        <span class="value">{{ selectedLog?.action }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Ngày tạo:</span>
+        <span class="value">{{ selectedLog?.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Thời gian (ms):</span>
+        <span class="value">{{ selectedLog?.duration }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Tên ứng dụng:</span>
+        <span class="value">{{ selectedLog?.applicationName }}</span>
+      </div>
+      <div class="detail-item" style="grid-column: span 2;">
+        <span class="label">Dữ liệu:</span>
+        <span class="value" style="white-space: pre-wrap;">{{ selectedLog?.data }}</span>
+      </div>
+    </div>
+  </nz-modal>
+
+  <ng-template #auditDetailFooter>
+    <button nz-button nzType="primary" (click)="handleViewAuditDetailCancel()">Đóng</button>
+  </ng-template>
 
 
-
-
-
-
-  <!-- Bảng audit logs -->
-  <nz-table #auditTable [nzData]="auditLogs.slice((currentPage - 1) * pageSize, currentPage * pageSize)" nzSize="small"
-    [nzScroll]="{ x: '100%', y: 'calc(100vh - 400px)' }" class="audit-table" [nzLoading]="loading" nzShowPagination="false">
+  <nz-table [nzData]="auditLogs" nzSize="small" [nzScroll]="{ x: '100%', y: 'calc(100vh - 400px)' }" class="audit-table"
+    [nzLoading]="loading" nzShowPagination="false">
     <thead>
       <tr>
-        <th nzShowSort nzSortKey="action">Actions</th>
-        <th nzShowSort nzSortKey="status">HTTP Request</th>
-        <th nzShowSort nzSortKey="user">User</th>
-        <th nzShowSort nzSortKey="ip">IP Address</th>
-        <th nzShowSort nzSortKey="date">Date</th>
-        <th nzShowSort nzSortKey="duration">Duration</th>
-        <th nzShowSort nzSortKey="app">Application Name</th>
+        <th>Hành động</th>
+        <th>Yêu cầu</th>
+        <th>Người dùng</th>
+        <th>Ngày</th>
+        <th>Thời gian</th>
+        <th>Tên ứng dụng</th>
+        <th>Dữ liệu</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let log of auditTable.data">
-        <td><a nz-button nzType="link">Detail</a></td>
-        <td>{{ log.status }} {{ log.action }}</td>
-        <td>{{ log.user }}</td>
-        <td>{{ log.ip }}</td>
-        <td>{{ log.date }}</td>
+      <tr *ngFor="let log of auditLogs">
+        <td>
+          <button nz-button class="view-detail-button" nzType="primary" (click)="viewAuditDetail(log)">Xem chi
+            tiết</button>
+        </td>
+        <td>{{ log.action }}</td>
+        <td>{{ log.userName }}</td>
+        <td>{{ log.createdAt | date: "dd-MM-yyyy HH:mm:ss" }}</td>
         <td>{{ log.duration }}</td>
-        <td>{{ log.app }}</td>
+        <td>{{ log.applicationName }}</td>
+        <td>
+          <span nz-tooltip [nzTooltipTitle]="log.data ?? ''">
+            {{ log.data ? (log.data | slice:0:50) : '' }}
+            <span *ngIf="log.data && log.data.length > 50">...</span>
+          </span>
+        </td>
+
+
       </tr>
     </tbody>
   </nz-table>
 
-  <!-- Phân trang -->
-  <div class="pagination-container">
-    <nz-pagination [nzTotal]="totalItems" [(nzPageIndex)]="currentPage" [nzPageSize]="pageSize"
-      (nzPageIndexChange)="onPageChange($event)" nzShowSizeChanger="true"
-      [nzPageSizeOptions]="[5, 10, 20]"></nz-pagination>
-  </div>
+  <nz-pagination [nzTotal]="totalItems" [(nzPageIndex)]="currentPage" [nzPageSize]="pageSize"
+    (nzPageIndexChange)="onPageChange($event)" (nzPageSizeChange)="onPageSizeChange($event)" nzShowSizeChanger
+    [nzPageSizeOptions]="[5,10,20]">
+  </nz-pagination>
 </div>
