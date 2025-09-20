@@ -33,18 +33,21 @@
     "@angular/ssr": "^20.2.0",
     "chart.js": "^4.5.0",
     "express": "^5.1.0",
+    "file-saver": "^2.0.5",
     "jwt-decode": "^4.0.0",
     "ng-zorro-antd": "20.2.x",
     "ng2-charts": "^8.0.0",
     "rxjs": "~7.8.0",
     "simple-keyboard": "^3.8.81",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@angular/build": "^20.2.0",
     "@angular/cli": "^20.2.0",
     "@angular/compiler-cli": "^20.2.0",
     "@types/express": "^5.0.1",
+    "@types/file-saver": "^2.0.7",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.17.19",
     "jasmine-core": "~5.9.0",

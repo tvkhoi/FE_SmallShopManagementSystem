@@ -22,6 +22,7 @@ import { NzIconDirective } from 'ng-zorro-antd/icon';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { ExcelExportService } from '../../../core/services/excel-export.service';
 
 @Component({
   selector: 'app-auditlog',
@@ -51,6 +52,7 @@ export class Auditlog implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private message = inject(NzMessageService);
   private modal: NzModalService = inject(NzModalService);
+  private excelExportService = inject(ExcelExportService);
 
   // === Filters ===
   userId: number | null = null;
@@ -230,5 +232,13 @@ export class Auditlog implements OnInit, OnDestroy {
       },
     });
     this.isClearOldVisible = false;
+  }
+
+  exportLogs(): void {
+    if (this.auditLogs.length === 0) {
+      this.message.warning('Không có log để xuất');
+      return;
+    }
+    this.excelExportService.exportAsExcelFile(this.auditLogs, 'system_logs');
   }
 }
