@@ -97,6 +97,7 @@
         <!-- Buttons -->
         <div nz-col [nzSpan]="24" class="filter-buttons">
           <button nz-button nzType="primary" (click)="filterLogs()" style="margin-right: 8px;">Làm mới</button>
+          <button nz-button nzType="primary" (click)="exportLogs()" style="margin-right: 8px;">Xuất Excel</button>
           <button nz-button nzType="primary" style="background-color: red; border: none; transition: opacity 0.2s;"
             onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1" nz-dropdown [nzDropdownMenu]="menu">
             Xóa <nz-icon nzType="down"></nz-icon>
