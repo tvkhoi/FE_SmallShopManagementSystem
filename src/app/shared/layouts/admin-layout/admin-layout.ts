@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
@@ -7,15 +8,18 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { filter } from 'rxjs';
 import { AuthService } from '../../../auth/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 
 @Component({
   selector: 'app-admin-layout',
   imports: [
+    CommonModule,
     RouterModule,
     NzLayoutModule,
     NzMenuModule,
     NzIconModule,
-    NzButtonModule
+    NzButtonModule,
+    NzDropDownModule
   ],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.scss',
@@ -28,6 +32,7 @@ export class AdminLayout implements OnInit {
 
   isCollapsed = false;
   sidebarOpen = false;
+  isProfileCardOpen = false;
 
   currentTitle: string = 'Dashboard';
   currentIcon: string = 'dashboard';
@@ -59,5 +64,10 @@ export class AdminLayout implements OnInit {
     this.authService.clearTokens();
     this.router.navigate(['/login']);
     this.messageService.success('Đăng xuất thành công');
+  }
+
+  toggleProfileCard() {
+    this.isProfileCardOpen = !this.isProfileCardOpen;
+    console.log("Profile card:", this.isProfileCardOpen);
   }
 }

@@ -202,9 +202,6 @@
           }
         }
 
-        @media (max-width: 768px) {
-          display: none;
-        }
       }
 
     }
@@ -216,9 +213,10 @@
 :host {
   ::ng-deep {
     .admin-layout {
-      
+
       button[nzType="primary"] {
         border-radius: 8px !important;
+
         &:hover {
           background-color: #40a9ff !important;
         }

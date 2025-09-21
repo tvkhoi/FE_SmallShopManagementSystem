@@ -88,11 +88,57 @@
 
   <!-- Sidebar phải (Toolbar) -->
   <nz-sider nzTheme="dark" nzWidth="60" class="right-toolbar">
-    <div class="toolbar-item">
+    <!-- Toolbar Profile với Dropdown -->
+    <nz-dropdown nz-dropdown [nzDropdownMenu]="profileMenu" nzTrigger="click" class="toolbar-item admin-profile" [nzOverlayClassName]="'profile-dropdown'" [nzPlacement]="'bottomRight'">
       <div class="toolbar-item__icon">
         <span nz-icon nzType="user"></span>
       </div>
       <div class="label">Quản trị viên</div>
-    </div>
+    </nz-dropdown>
+
+    <!-- Nội dung Profile Card -->
+    <nz-dropdown-menu #profileMenu="nzDropdownMenu">
+      <!-- <div class="profile-dropdown"> -->
+        <div class="profile-header">
+          <div class="avatar"><span nz-icon nzType="user"></span></div>
+          <div class="info">
+            <div class="role">quản trị viên</div>
+            <div class="email">tvkhoi123456@gmail.com</div>
+          </div>
+        </div>
+
+        <div class="profile-menu">
+          <div class="menu-item">
+            <span class="icon">🕒</span>
+            <span>Phiên họp</span>
+          </div>
+          <div class="menu-item">
+            <span class="icon">🔗</span>
+            <span>Tài khoản được liên kết</span>
+          </div>
+          <div class="menu-item">
+            <span class="icon">👥</span>
+            <span>Ủy quyền</span>
+          </div>
+          <div class="menu-item">
+            <span class="icon">⚙️</span>
+            <span>Tài khoản của tôi</span>
+          </div>
+          <div class="menu-item">
+            <span class="icon">📋</span>
+            <span>Nhật ký bảo mật</span>
+          </div>
+        </div>
+
+        <div class="profile-footer">
+          <div class="menu-item logout">
+            <span>
+              <button (click)="logout()">Đăng xuất</button>
+            </span>
+          </div>
+        </div>
+      <!-- </div> -->
+    </nz-dropdown-menu>
+
   </nz-sider>
 </nz-layout>
