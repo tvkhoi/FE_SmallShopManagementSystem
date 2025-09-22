@@ -66,6 +66,30 @@ export class UserService {
     );
   }
 
+  // ========== AUTH PASSWORD RESET ==========
+  forgotPassword(email: string): Observable<string> {
+    return this.http
+      .post<ApiResponse<{ email: string }>>(`${this.apiUrl}/User/forgot-password`, { email })
+      .pipe(
+        map((res) => {
+          if (res.success) {
+            // BE trả về data.Email
+            return res.data?.email || '';
+          }
+          throw new Error(res.message || 'Gửi email thất bại');
+        })
+      );
+  }
+
+  resetPassword(payload: { email: string; code: string; newPassword: string }): Observable<string> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/User/reset-password`, payload).pipe(
+      map((res) => {
+        if (res.success) return res.message || 'Đặt lại mật khẩu thành công';
+        throw res;
+      })
+    );
+  }
+
   // ========== USER ==========
   getAllUsers(): Observable<any> {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/User`).pipe(

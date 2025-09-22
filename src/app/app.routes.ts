@@ -8,11 +8,15 @@ import { AdminLayout } from './shared/layouts/admin-layout/admin-layout';
 import { Auditlog } from './features/admin/auditlog/auditlog';
 import { UsersComponent } from './features/admin/users/users';
 import {RolesComponent } from './features/admin/roles/roles';
+import { ForgotPassword } from './shared/components/forgot-password/forgot-password';
+import { ResetPassword } from './shared/components/reset-password/reset-password';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, canActivate: [loginGuard] },
   { path: 'sign-up', component: SignUpComponent, canActivate: [loginGuard] },
+  { path: 'forgot-password', component: ForgotPassword, canActivate: [loginGuard] },
+  { path: 'reset-password', component: ResetPassword, pathMatch: 'full' },
   { path: 'admin',
           component: AdminLayout,
           canActivate: [authGuard] ,

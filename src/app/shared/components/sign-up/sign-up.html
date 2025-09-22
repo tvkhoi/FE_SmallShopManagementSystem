@@ -23,8 +23,14 @@
           <div nz-col [nzSpan]="12">
             <nz-form-item>
               <nz-form-label [nzSpan]="24">Số điện thoại</nz-form-label>
-              <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập số điện thoại hợp lệ!">
-                <input nz-input formControlName="phoneNumber" placeholder="Nhập số điện thoại" />
+              <nz-form-control [nzSpan]="24" [nzErrorTip]="phoneErrorTpl">
+                <input nz-input type="tel" inputmode="numeric" maxlength="10" formControlName="phoneNumber"
+                  placeholder="Nhập số điện thoại" />
+                <ng-template #phoneErrorTpl let-control>
+                  <ng-container *ngIf="control.hasError('pattern')">
+                    Số điện thoại phải bắt đầu bằng 0 và có đúng 10 số!
+                  </ng-container>
+                </ng-template>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -51,6 +57,14 @@
             </nz-form-item>
           </div>
         </div>
+
+        <!-- Địa chỉ -->
+        <nz-form-item>
+          <nz-form-label [nzSpan]="24">Địa chỉ</nz-form-label>
+          <nz-form-control [nzSpan]="24">
+            <input nz-input formControlName="address" placeholder="Nhập địa chỉ" />
+          </nz-form-control>
+        </nz-form-item>
 
         <div nz-row [nzGutter]="16">
           <!-- Mật khẩu -->
