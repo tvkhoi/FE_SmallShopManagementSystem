@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Component, inject, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -25,9 +25,9 @@ import { CommonModule } from '@angular/common';
     NzInputModule,
     NzButtonModule,
     RouterModule,
-    CommonModule
+    CommonModule,
   ],
-  standalone: true
+  standalone: true,
 })
 export class SignUpComponent implements OnInit {
   signUpForm!: FormGroup;
@@ -41,12 +41,13 @@ export class SignUpComponent implements OnInit {
   ngOnInit(): void {
     this.signUpForm = this.fb.group(
       {
-        fullname: ['', [Validators.required]],
-        phoneNumber: ['', [Validators.required, Validators.pattern(/^0[0-9]{9}$/)]],
+        fullname: [''],
+        phoneNumber: ['', [Validators.pattern(/^0\d{9}$/)]],
         username: ['', [Validators.required]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
-        c_password: ['', [Validators.required]]
+        c_password: ['', [Validators.required]],
+        address: [''],
       },
       { validators: this.passwordMatchValidator }
     );
@@ -62,7 +63,7 @@ export class SignUpComponent implements OnInit {
 
   signUp(): void {
     if (this.signUpForm.invalid) {
-      Object.values(this.signUpForm.controls).forEach(control => {
+      Object.values(this.signUpForm.controls).forEach((control) => {
         control.markAsDirty();
         control.updateValueAndValidity({ onlySelf: true });
       });
@@ -85,7 +86,8 @@ export class SignUpComponent implements OnInit {
         error: (err) => {
           console.error('Đăng ký thất bại:', err);
           this.message.error(err.error?.message || 'Đăng ký thất bại, vui lòng thử lại!');
-        }
+        },
       });
   }
+
 }
