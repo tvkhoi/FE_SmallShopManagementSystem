@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -7,6 +7,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { UserService } from '../../../core/services/user.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzTabLinkTemplateDirective } from 'ng-zorro-antd/tabs';
 
 @Component({
   selector: 'app-forgot-password',
@@ -18,6 +19,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
     NzInputModule,
     NzButtonModule,
     RouterLink,
+    NzTabLinkTemplateDirective,
   ],
   templateUrl: './forgot-password.html',
   styleUrls: ['./forgot-password.scss'],
@@ -25,26 +27,30 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 export class ForgotPassword {
   private userService = inject(UserService);
   private message = inject(NzMessageService);
-  private router = inject(Router); // inject Router
+  private router = inject(Router);
+  private cdj = inject(ChangeDetectorRef);
+
+  isLoading = false;
 
   formGroup = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email])
+    email: new FormControl('', [Validators.required, Validators.email]),
   });
 
   sendResetLink() {
-    if (this.formGroup.invalid) {
-      this.message.error('Vui lòng nhập email hợp lệ');
-      return;
-    }
-
+    if (this.isLoading) return;
     const email = this.formGroup.get('email')?.value?.toString().trim() || '';
-
+    this.isLoading = true;
     this.userService.forgotPassword(email).subscribe({
       next: (res: any) => {
         this.message.success('Đã gửi email đặt lại mật khẩu!');
-        this.router.navigate(['/reset-password'], { queryParams: { email } });
+        const encodedEmail = btoa(email);
+        this.router.navigate(['/reset-password'], { queryParams: { e: encodedEmail } });
+        this.isLoading = false;
       },
-      error: (err: any) => this.message.error(err.error?.message || 'Lỗi!'),
+      error: (err: any) => {
+        console.error('Error occurred while sending reset link:', err);
+        this.cdj.markForCheck();
+      },
     });
   }
 }

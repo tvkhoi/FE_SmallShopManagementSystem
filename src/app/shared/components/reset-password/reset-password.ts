@@ -1,6 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import {
+  ReactiveFormsModule,
+  FormControl,
+  Validators,
+  FormGroup,
+  ValidationErrors,
+  AbstractControl,
+} from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -8,6 +15,9 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { UserService } from '../../../core/services/user.service';
+import { NzTabLinkTemplateDirective } from 'ng-zorro-antd/tabs';
+import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-reset-password',
@@ -20,6 +30,8 @@ import { UserService } from '../../../core/services/user.service';
     NzButtonModule,
     NzIconModule,
     RouterLink,
+    NzTabLinkTemplateDirective,
+    NzTooltipDirective,
   ],
   templateUrl: './reset-password.html',
   styleUrls: ['./reset-password.scss'],
@@ -29,27 +41,42 @@ export class ResetPassword implements OnInit {
   private message = inject(NzMessageService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private cdRef = inject(ChangeDetectorRef);
 
   email: string = '';
 
-  // state toggle con mắt
   showNewPassword = false;
   showConfirmPassword = false;
+  isLoading = false;
 
-  formGroup = new FormGroup({
-    code: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]),
-    newPassword: new FormControl('', [Validators.required, Validators.minLength(6)]),
-    confirmPassword: new FormControl('', [Validators.required]),
-  });
+  formGroup = new FormGroup(
+    {
+      code: new FormControl('', [Validators.required, Validators.pattern(/^\d{6}$/)]),
+      newPassword: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      confirmPassword: new FormControl('', [Validators.required]),
+    },
+    { validators: this.passwordsMatchValidator.bind(this) } // gán validator cho cả FormGroup
+  );
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      this.email = params['email'] || '';
+    this.route.queryParams.subscribe((params) => {
+      const encodedEmail = params['e'] || '';
+      this.email = encodedEmail ? atob(encodedEmail) : '';
       if (!this.email) {
         this.message.error('Liên kết không hợp lệ hoặc thiếu email!');
         this.router.navigate(['/forgot-password']);
       }
     });
+  }
+
+  passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const group = control as FormGroup;
+    const newPassword = group.get('newPassword')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
+
+    if (!newPassword || !confirmPassword) return null;
+
+    return newPassword === confirmPassword ? null : { mismatch: true };
   }
 
   toggleNewPassword() {
@@ -62,31 +89,34 @@ export class ResetPassword implements OnInit {
 
   resetPassword() {
     if (this.formGroup.invalid) {
-      this.message.error('Vui lòng điền đầy đủ thông tin');
+      this.message.error('Vui lòng điền đầy đủ thông tin hợp lệ!');
       return;
     }
 
-    const code = this.formGroup.get('code')?.value?.toString().trim() || '';
-    const newPassword = this.formGroup.get('newPassword')?.value?.toString().trim() || '';
-    const confirmPassword = this.formGroup.get('confirmPassword')?.value?.toString().trim() || '';
+    const { code, newPassword } = this.formGroup.value;
 
-    if (newPassword !== confirmPassword) {
-      this.message.error('Mật khẩu xác nhận không khớp');
-      return;
-    }
-
-    this.userService.resetPassword({
-      email: this.email,
-      code: code,
-      newPassword: newPassword
-    }).subscribe({
-      next: () => {
-        this.message.success('Đặt lại mật khẩu thành công!');
-        this.router.navigate(['/login']);
-      },
-      error: (err: any) => {
-        this.message.error(err.error?.message || 'Lỗi khi đặt lại mật khẩu!');
-      }
-    });
+    this.userService
+      .resetPassword({
+        email: this.email,
+        code: code?.toString().trim() || '',
+        newPassword: newPassword?.toString().trim() || '',
+      })
+      .pipe(
+        finalize(() => {
+          setTimeout(() => {
+            this.isLoading = false;
+            this.cdRef.detectChanges();
+          }, 2000);
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.message.success('Đặt lại mật khẩu thành công!');
+          this.router.navigate(['/login']);
+        },
+        error: (err: any) => {
+          console.error('Error occurred while resetting password:', err);
+        },
+      });
   }
 }

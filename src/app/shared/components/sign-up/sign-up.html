@@ -41,8 +41,11 @@
           <div nz-col [nzSpan]="12">
             <nz-form-item>
               <nz-form-label [nzSpan]="24" nzRequired>Tên đăng nhập</nz-form-label>
-              <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập tên đăng nhập!">
+              <nz-form-control [nzSpan]="24" [nzErrorTip]="usernameErrorTpl">
                 <input nz-input formControlName="username" placeholder="Nhập tên đăng nhập" />
+                <ng-template #usernameErrorTpl let-control>
+                  <ng-container *ngIf="control.hasError('required')">Vui lòng nhập tên đăng nhập!</ng-container>
+                </ng-template>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -51,8 +54,12 @@
           <div nz-col [nzSpan]="12">
             <nz-form-item>
               <nz-form-label [nzSpan]="24" nzRequired>Email</nz-form-label>
-              <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập email hợp lệ!">
+              <nz-form-control [nzSpan]="24" [nzErrorTip]="emailErrorTpl">
                 <input nz-input formControlName="email" placeholder="Nhập email" />
+                <ng-template #emailErrorTpl let-control>
+                  <ng-container *ngIf="control.hasError('required')">Vui lòng nhập email!</ng-container>
+                  <ng-container *ngIf="control.hasError('email')">Email không hợp lệ!</ng-container>
+                </ng-template>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -71,8 +78,22 @@
           <div nz-col [nzSpan]="12">
             <nz-form-item>
               <nz-form-label [nzSpan]="24" nzRequired>Mật khẩu</nz-form-label>
-              <nz-form-control [nzSpan]="24" nzErrorTip="Mật khẩu phải có ít nhất 6 ký tự!">
-                <input nz-input type="password" formControlName="password" placeholder="********" />
+              <nz-form-control [nzSpan]="24" [nzErrorTip]="passwordErrorTpl">
+                <div class="password-wrapper">
+                  <input nz-input [type]="passwordVisible ? 'text' : 'password'" formControlName="password"
+                    placeholder="********" />
+                  <span class="toggle-eye" (click)="passwordVisible = !passwordVisible">
+                    <nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" nzTheme="outline"></nz-icon>
+                  </span>
+                  <ng-template #passwordErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('required')">
+                      Vui lòng nhập mật khẩu!
+                    </ng-container>
+                    <ng-container *ngIf="control.hasError('minlength')">
+                      Mật khẩu phải có ít nhất 6 ký tự!
+                    </ng-container>
+                  </ng-template>
+                </div>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -82,7 +103,13 @@
             <nz-form-item>
               <nz-form-label [nzSpan]="24" nzRequired>Xác nhận mật khẩu</nz-form-label>
               <nz-form-control [nzSpan]="24" [nzErrorTip]="confirmTpl">
-                <input nz-input type="password" formControlName="c_password" placeholder="********" />
+                <div class="password-wrapper">
+                  <input nz-input [type]="confirmPasswordVisible ? 'text' : 'password'" formControlName="c_password"
+                    placeholder="********" />
+                  <span class="toggle-eye" (click)="confirmPasswordVisible = !confirmPasswordVisible">
+                    <nz-icon [nzType]="confirmPasswordVisible ? 'eye-invisible' : 'eye'" nzTheme="outline"></nz-icon>
+                  </span>
+                </div>
                 <ng-template #confirmTpl let-control>
                   <ng-container *ngIf="control.hasError('required')">Vui lòng xác nhận mật khẩu!</ng-container>
                   <ng-container *ngIf="signUpForm.hasError('notSame')">Mật khẩu không khớp!</ng-container>

@@ -60,6 +60,28 @@
   }
 }
 
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    width: 100%;
+    padding-right: 35px; // chừa chỗ cho icon
+  }
+
+  .toggle-eye {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: #999;
+
+    &:hover {
+      color: #1890ff;
+    }
+  }
+}
+
 /* Responsive */
 @media (max-width: 576px) {
   .login-container {

@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, #001529, #003a8c); 
+  background: linear-gradient(135deg, #001529, #003a8c);
 }
 
 .auth {
@@ -105,10 +105,34 @@
         text-decoration: none;
         font-weight: 600;
         transition: color 0.2s;
+
         &:hover {
           color: #0050b3;
         }
       }
+    }
+  }
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    width: 100%;
+    padding-right: 36px;
+  }
+
+  .toggle-eye {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: #999;
+    font-size: 18px;
+
+    &:hover {
+      color: #1890ff;
     }
   }
 }
