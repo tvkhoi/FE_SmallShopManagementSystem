@@ -9,17 +9,36 @@
 
       <!-- Email -->
       <nz-form-item>
-        <nz-form-label [nzSpan]="24" nzFor="email">Email</nz-form-label>
-        <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập email hợp lệ!">
+        <nz-form-label [nzSpan]="24" nzFor="email" nzRequired="true">Email</nz-form-label>
+        <nz-form-control [nzSpan]="24" [nzErrorTip]="emailErrorTpl">
           <input nz-input id="email" formControlName="email" placeholder="Nhập email" />
+          <ng-template #emailErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">
+              Vui lòng nhập email!
+            </ng-container>
+            <ng-container *ngIf="control.hasError('email')">
+              Email không hợp lệ!
+            </ng-container>
+          </ng-template>
         </nz-form-control>
       </nz-form-item>
 
       <!-- Mật khẩu -->
       <nz-form-item>
-        <nz-form-label [nzSpan]="24" nzFor="password">Mật khẩu</nz-form-label>
-        <nz-form-control [nzSpan]="24">
-          <input nz-input type="password" id="password" formControlName="password" placeholder="********" />
+        <nz-form-label [nzSpan]="24" nzFor="password" nzRequired="true">Mật khẩu</nz-form-label>
+        <nz-form-control [nzSpan]="24" [nzErrorTip]="passwordErrorTpl">
+          <div class="password-wrapper">
+            <input nz-input [type]="passwordVisible ? 'text' : 'password'" id="password" formControlName="password"
+              placeholder="********" />
+            <ng-template #passwordErrorTpl let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                Vui lòng nhập mật khẩu!
+              </ng-container>
+            </ng-template>
+            <span class="toggle-eye" (click)="passwordVisible = !passwordVisible">
+              <nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" nzTheme="outline"></nz-icon>
+            </span>
+          </div>
           <div class="forget-pass">
             <a [routerLink]="['/forgot-password']">Quên mật khẩu?</a>
           </div>

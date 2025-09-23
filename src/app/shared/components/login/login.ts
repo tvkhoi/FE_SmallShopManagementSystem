@@ -15,6 +15,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { CommonModule } from '@angular/common';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { finalize } from 'rxjs';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,7 @@ import { finalize } from 'rxjs';
   styleUrls: ['./login.scss'],
   standalone: true,
   imports: [
+    NzIconModule,
     FormsModule,
     ReactiveFormsModule,
     NzFormModule,
@@ -41,6 +43,8 @@ export class LoginComponent implements OnInit {
   private authService = inject(AuthService);
   private message = inject(NzMessageService);
 
+  passwordVisible = false;
+
   ngOnInit() {
     // Tạo form reactive
     this.loginForm = this.fb.group({
@@ -50,6 +54,7 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
+    if (this.isLoading) return;
     if (this.loginForm.invalid) {
       this.message.warning('Vui lòng nhập email và mật khẩu');
       return;
@@ -60,8 +65,10 @@ export class LoginComponent implements OnInit {
       .login(this.loginForm.value)
       .pipe(
         finalize(() => {
-          this.isLoading = false;
-          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          }, 2000);
         })
       )
       .subscribe({

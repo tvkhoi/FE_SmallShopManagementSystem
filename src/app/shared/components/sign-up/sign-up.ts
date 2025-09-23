@@ -1,6 +1,13 @@
 import { Router } from '@angular/router';
-import { Component, inject, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
+import { ChangeDetectorRef, Component, inject, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -11,6 +18,7 @@ import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { CommonModule } from '@angular/common';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
   selector: 'app-sign-up',
@@ -26,6 +34,7 @@ import { CommonModule } from '@angular/common';
     NzButtonModule,
     RouterModule,
     CommonModule,
+    NzIconModule
   ],
   standalone: true,
 })
@@ -37,6 +46,10 @@ export class SignUpComponent implements OnInit {
   private userService = inject(UserService);
   private router = inject(Router);
   private message = inject(NzMessageService);
+  private cdjf = inject(ChangeDetectorRef);
+
+  passwordVisible = false;
+  confirmPasswordVisible = false;
 
   ngOnInit(): void {
     this.signUpForm = this.fb.group(
@@ -76,7 +89,7 @@ export class SignUpComponent implements OnInit {
 
     this.userService
       .signUp({ fullname, phoneNumber, username, email, password })
-      .pipe(finalize(() => (this.isLoading = false)))
+      .pipe(finalize(() => { this.isLoading = false; setTimeout(() => this.cdjf.detectChanges(),2000); }))
       .subscribe({
         next: (res: any) => {
           console.log('Đăng ký thành công:', res);
@@ -85,9 +98,8 @@ export class SignUpComponent implements OnInit {
         },
         error: (err) => {
           console.error('Đăng ký thất bại:', err);
-          this.message.error(err.error?.message || 'Đăng ký thất bại, vui lòng thử lại!');
+          //this.message.error(err.error?.message || 'Đăng ký thất bại, vui lòng thử lại!');
         },
       });
   }
-
 }
