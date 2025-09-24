@@ -9,6 +9,7 @@ import { filter } from 'rxjs';
 import { AuthService } from '../../../auth/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { SidebarLeft } from "../sidebar-left/sidebar-left";
 
 @Component({
   selector: 'app-admin-layout',
@@ -20,7 +21,8 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
     NzIconModule,
     NzButtonModule,
     NzDropDownModule,
-  ],
+    SidebarLeft
+],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.scss',
   standalone: true,
@@ -43,6 +45,14 @@ export class AdminLayout implements OnInit {
     '/admin/roles': { title: 'Quản lý vai trò', icon: 'role' },
     '/admin/audit_log': { title: 'Nhật ký hệ thống', icon: 'audit' },
   };
+
+  menuItems = [
+    { label: 'Trang chủ', icon: 'dashboard', route: '/admin/dashboard' },
+    { label: 'Quản lý người dùng', icon: 'user', route: '/admin/users' },
+    { label: 'Quản lý vai trò', icon: 'team', route: '/admin/roles' },
+    { label: 'Nhật ký hệ thống', icon: 'audit', route: '/admin/audit_log' },
+    { label: 'Cài đặt', icon: 'setting', route: '/admin/settings' },
+  ];
 
   ngOnInit(): void {
     this.router.events
@@ -71,5 +81,12 @@ export class AdminLayout implements OnInit {
   toggleProfileCard() {
     this.isProfileCardOpen = !this.isProfileCardOpen;
     console.log('Profile card:', this.isProfileCardOpen);
+  }
+  getEmail(): string {
+    return this.authService.getEmail() || 'Chưa có email';
+  }
+
+  getName(): string {
+    return this.authService.getName() || 'Chưa có tên';
   }
 }
