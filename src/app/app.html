@@ -1,6 +1,6 @@
 <div class="container-fluid">
 	<main class="main">
-		<router-outlet>
-		</router-outlet>
+		<app-loading *ngIf="isLoading()"></app-loading>
+		<router-outlet *ngIf="!isLoading()"></router-outlet>
 	</main>
 </div>
