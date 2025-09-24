@@ -64,7 +64,7 @@ export class RolesComponent implements OnInit, OnDestroy {
 
   // Pagination & search
   totalItems = 0;
-  pageSize = 7;
+  pageSize = 5;
   currentPage = 1;
   searchQuery = '';
 
@@ -138,7 +138,6 @@ export class RolesComponent implements OnInit, OnDestroy {
               this.cdr.detectChanges();
             });
           },
-          error: () => this.msg.error('Không thể tải danh sách vai trò'),
         });
     } else {
       this.roleService
@@ -152,7 +151,6 @@ export class RolesComponent implements OnInit, OnDestroy {
               this.cdr.detectChanges();
             });
           },
-          error: () => this.msg.error('Không thể tải danh sách vai trò'),
         });
     }
   }
@@ -320,6 +318,12 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.loadRoles();
   }
 
+  onPageSizeChange(size: number): void {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.loadRoles();
+  }
+
   filterRoles(): void {
     this.loadRoles();
   }
@@ -348,4 +352,12 @@ export class RolesComponent implements OnInit, OnDestroy {
       (r) => r.name.toLowerCase() === value.toLowerCase() && r !== this.selectedRole
     );
   }
+
+  sortByName = (a: Role, b: Role): number => {
+    return a.name.localeCompare(b.name);
+  };
+
+  sortByUserCount = (a: Role, b: Role): number => {
+    return a.userCount - b.userCount;
+  };
 }
