@@ -11,30 +11,17 @@
     </nz-row>
 
     <!-- Modal Tạo / Sửa vai trò -->
-    <nz-modal
-      [(nzVisible)]="isCreateVisible"
-      nzTitle="{{ selectedRole ? 'Sửa vai trò' : 'Tạo vai trò' }}"
-      (nzOnCancel)="handleCreateCancel()"
-      [nzOkLoading]="isConfirmLoading"
-      [nzFooter]="createFooter"
-      nzClassName="custom-role-modal"
-    >
+    <nz-modal [(nzVisible)]="isCreateVisible" nzTitle="{{ selectedRole ? 'Sửa vai trò' : 'Tạo vai trò' }}"
+      (nzOnCancel)="handleCreateCancel()" [nzOkLoading]="isConfirmLoading" [nzFooter]="createFooter"
+      nzClassName="custom-role-modal">
       <div *nzModalContent>
         <form #createRoleForm="ngForm">
           <nz-form-item>
             <nz-form-label [nzRequired]="true" nzFor="roleName">Tên vai trò</nz-form-label>
             <nz-form-control [nzErrorTip]="'Tên vai trò là bắt buộc và không được trùng lặp.'">
-              <input
-                nz-input
-                id="roleName"
-                name="roleName"
-                [(ngModel)]="roleName"
-                #roleNameInput="ngModel"
-                required
-                placeholder="Nhập tên vai trò"
-                [ngClass]="{'input-error': roleNameExists}"
-                (ngModelChange)="onRoleNameChange($event)"
-              />
+              <input nz-input id="roleName" name="roleName" [(ngModel)]="roleName" #roleNameInput="ngModel" required
+                placeholder="Nhập tên vai trò" [ngClass]="{'input-error': roleNameExists}"
+                (ngModelChange)="onRoleNameChange($event)" />
             </nz-form-control>
           </nz-form-item>
         </form>
@@ -42,13 +29,9 @@
     </nz-modal>
 
     <!-- Modal Gán quyền -->
-    <app-assign-permission-modal
-      [visible]="isAssignVisible"
-      [role]="selectedRole"
-      [groupedPermissions]="groupedPermissions"
-      (cancel)="handleAssignCancel()"
-      (save)="handleAssignOk($event)"
-    ></app-assign-permission-modal>
+    <app-assign-permission-modal [visible]="isAssignVisible" [role]="selectedRole"
+      [groupedPermissions]="groupedPermissions" (cancel)="handleAssignCancel()"
+      (save)="handleAssignOk($event)"></app-assign-permission-modal>
 
     <!-- Footer Modal -->
     <ng-template #createFooter>
@@ -62,22 +45,26 @@
 
   <!-- Search box -->
   <div class="roles-search">
-    <input nz-input placeholder="Tìm kiếm vai trò..." [(ngModel)]="searchQuery" />
+    <input nz-input placeholder="Tìm kiếm tên vai trò" [(ngModel)]="searchQuery" />
     <button class="search-button" nz-button nzType="default" (click)="filterRoles()">Tìm kiếm</button>
   </div>
 
   <!-- Table roles -->
-  <nz-table [nzData]="roles" [nzFrontPagination]="false" ngClass="custom-table">
+  <nz-table #table [nzData]="roles" [nzFrontPagination]="false" ngClass="custom-table">
 
     <thead>
       <tr>
         <th nzWidth="15%">Hành động</th>
-        <th nzWidth="60%">Tên vai trò</th>
-        <th nzWidth="25%">Số người dùng</th>
+        <th nzWidth="60%" nzShowSort [nzSortFn]="sortByName" nzSortKey="name">
+          Tên vai trò
+        </th>
+        <th nzWidth="25%" nzShowSort [nzSortFn]="sortByUserCount" nzSortKey="userCount">
+          Số người dùng
+        </th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let role of roles">
+      <tr *ngFor="let role of table.data">
         <td>
           <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu">
             <nz-icon nzType="setting" nzTheme="outline" style="font-size: 16px; padding-right: 5px;"></nz-icon>Hành động
@@ -85,10 +72,12 @@
           <nz-dropdown-menu #menu="nzDropdownMenu">
             <ul nz-menu>
               <li nz-menu-item>
-                <button nz-button nzType="link" (click)="showAssignModal(role)" [disabled]="role.name === 'Admin'">Gán quyền</button>
+                <button nz-button nzType="link" (click)="showAssignModal(role)" [disabled]="role.name === 'Admin'">Gán
+                  quyền</button>
               </li>
               <li nz-menu-item>
-                <button nz-button nzType="link" (click)="deleteRole(role)" [disabled]="role.name === 'Admin'">Xóa</button>
+                <button nz-button nzType="link" (click)="deleteRole(role)"
+                  [disabled]="role.name === 'Admin'">Xóa</button>
               </li>
               <li nz-menu-item>
                 <button nz-button nzType="link" (click)="editRole(role)" [disabled]="role.name === 'Admin'">Sửa</button>
@@ -103,10 +92,6 @@
   </nz-table>
 
   <!-- Pagination -->
-  <app-pagination
-    [total]="totalItems"
-    [pageSize]="pageSize"
-    [pageIndex]="currentPage"
-    (pageChange)="onPageChange($event)"
-  ></app-pagination>
+  <app-pagination [total]="totalItems" [pageSize]="pageSize" [pageIndex]="currentPage"
+    (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)"></app-pagination>
 </div>

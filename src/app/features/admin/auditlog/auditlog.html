@@ -9,27 +9,31 @@
           <nz-form-item>
             <nz-form-label>Tên người dùng</nz-form-label>
             <nz-form-control>
-              <input nz-input [(ngModel)]="userName" name="userName" placeholder="Tên người dùng" />
+              <input nz-input [(ngModel)]="userName" name="userName" placeholder="Tên người dùng"
+                [ngModelOptions]="{standalone: true}" />
             </nz-form-control>
           </nz-form-item>
         </div>
 
         <!-- Hành động -->
-        <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6">
+        <!-- <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6">
           <nz-form-item>
             <nz-form-label>Hành động</nz-form-label>
             <nz-form-control>
-              <input nz-input [(ngModel)]="action" name="action" placeholder="Hành động" />
+              <input nz-input [(ngModel)]="action" name="action" placeholder="Hành động"
+                [ngModelOptions]="{standalone: true}" />
             </nz-form-control>
           </nz-form-item>
-        </div>
+        </div> -->
 
         <!-- Từ ngày -->
         <div nz-col [nzXs]="12" [nzSm]="12" [nzMd]="8" [nzLg]="6">
           <nz-form-item>
             <nz-form-label>Từ ngày</nz-form-label>
             <nz-form-control>
-              <nz-date-picker [(ngModel)]="fromDate" name="fromDate"></nz-date-picker>
+              <nz-date-picker nzPlaceHolder="Chọn ngày" [(ngModel)]="fromDate" name="fromDate"
+                [ngModelOptions]="{ standalone: true }" nzFormat="dd-MM-yyyy">
+              </nz-date-picker>
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -39,7 +43,9 @@
           <nz-form-item>
             <nz-form-label>Đến ngày</nz-form-label>
             <nz-form-control>
-              <nz-date-picker [(ngModel)]="toDate" name="toDate"></nz-date-picker>
+              <nz-date-picker nzPlaceHolder="Chọn ngày" [(ngModel)]="toDate" name="toDate"
+                [ngModelOptions]="{ standalone: true }" nzFormat="dd-MM-yyyy">
+              </nz-date-picker>
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -71,8 +77,8 @@
           <nz-form-item>
             <nz-form-label>Phương thức HTTP</nz-form-label>
             <nz-form-control>
-              <nz-select nzSize="large" style="width: 100%;" [(ngModel)]="method" name="method" nzAllowClear placeholder="Chọn phương thức"
-                (ngModelChange)="onMethodChange($event)">
+              <nz-select nzSize="large" style="width: 100%;" [(ngModel)]="method" name="method" nzAllowClear
+                placeholder="Chọn phương thức" (ngModelChange)="onMethodChange($event)">
                 <nz-option nzValue="GET" nzLabel="GET"></nz-option>
                 <nz-option nzValue="POST" nzLabel="POST"></nz-option>
                 <nz-option nzValue="PUT" nzLabel="PUT"></nz-option>
@@ -96,27 +102,11 @@
 
         <!-- Buttons -->
         <div nz-col [nzSpan]="24" class="filter-buttons">
-          <button nz-button nzType="primary" (click)="filterLogs()" style="margin-right: 8px;">Làm mới</button>
-          <button nz-button nzType="primary" (click)="exportLogs()" style="margin-right: 8px;">Xuất Excel</button>
-          <button nz-button nzType="primary" style="background-color: red; border: none; transition: opacity 0.2s;"
-            onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1" nz-dropdown [nzDropdownMenu]="menu">
-            Xóa <nz-icon nzType="down"></nz-icon>
-          </button>
-
-          <nz-dropdown-menu #menu="nzDropdownMenu">
-            <ul nz-menu>
-              <li nz-menu-item (click)="clearAllLogs()">Xóa hết</li>
-              <li nz-menu-item (click)="openClearOldModal()">Xóa theo ngày</li>
-            </ul>
-          </nz-dropdown-menu>
-
-          <nz-modal [(nzVisible)]="isClearOldVisible" nzTitle="Xóa log theo ngày"
-            (nzOnCancel)="isClearOldVisible = false" (nzOnOk)="confirmClearOld()">
-            <div *nzModalContent>
-              <label>Số ngày giữ lại (VD: 30)</label>
-              <input nz-input type="number" [(ngModel)]="clearOldDays" min="1" />
-            </div>
-          </nz-modal>
+          <button nz-button nzType="primary" type="button" (click)="resetFilters()" style="margin-right: 8px;">Làm
+            mới</button>
+          <button nz-button nzType="primary" type="button" (click)="exportLogs()" style="margin-right: 8px;">Xuất
+            Excel</button>
+          <button nz-button nzType="primary" type="button" (click)="filterLogs()">Lọc</button>
         </div>
       </div>
     </form>
@@ -187,24 +177,24 @@
   </ng-template>
 
 
-  <nz-table [nzData]="auditLogs" nzSize="small" [nzScroll]="{ x: '100%', y: 'calc(100vh - 200px)' }"
+  <nz-table #table [nzData]="auditLogs" nzSize="small" [nzScroll]="{ x: '100%', y: 'calc(100vh - 200px)' }"
     class="audit-table nowrap-table" [nzLoading]="loading" nzShowPagination="false">
 
     <thead>
       <tr>
         <th nzWidth="120px">Hành động</th>
-        <th nzWidth="600px">Yêu cầu</th>
-        <th nzWidth="150px">Người dùng</th>
-        <th nzWidth="180px">Ngày</th>
-        <th nzWidth="100px">Thời gian</th>
-        <th nzWidth="120px">Dữ liệu</th>
-        <th nzWidth="200px">Tên ứng dụng</th>
+        <th nzWidth="600px" nzShowSort [nzSortFn]="sortByRequest">Yêu cầu</th>
+        <th nzWidth="150px" nzShowSort [nzSortFn]="sortByUserName">Người dùng</th>
+        <th nzWidth="180px" nzShowSort [nzSortFn]="sortByDate">Ngày</th>
+        <th nzWidth="100px" nzShowSort [nzSortFn]="sortByDuration">Thời gian</th>
+        <th nzWidth="120px" nzShowSort [nzSortFn]="sortByData">Dữ liệu</th>
+        <th nzWidth="200px" nzShowSort [nzSortFn]="sortByAppName">Tên ứng dụng</th>
       </tr>
     </thead>
 
 
     <tbody>
-      <tr *ngFor="let log of auditLogs">
+      <tr *ngFor="let log of table.data">
         <td>
           <button nz-button nzType="primary" class="view-detail-button" nzType="primary" (click)="viewAuditDetail(log)">
             <span nz-icon nzType="eye" nzTheme="outline"></span>
@@ -237,10 +227,7 @@
     </tbody>
   </nz-table>
 
-
-
-  <nz-pagination class="audit-pagination" [nzTotal]="totalItems" [(nzPageIndex)]="currentPage" [nzPageSize]="pageSize"
-    (nzPageIndexChange)="onPageChange($event)" (nzPageSizeChange)="onPageSizeChange($event)" nzShowSizeChanger
-    [nzPageSizeOptions]="[5,10,20]">
-  </nz-pagination>
+  <!-- Pagination -->
+  <app-pagination [total]="totalItems" [pageSize]="pageSize" [pageIndex]="currentPage"
+    (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)"></app-pagination>
 </div>

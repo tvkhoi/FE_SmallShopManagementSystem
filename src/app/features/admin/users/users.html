@@ -49,9 +49,10 @@
                         <!-- Số điện thoại -->
                         <nz-form-item>
                             <nz-form-label nzFor="phoneNumber">Số điện thoại</nz-form-label>
-                            <nz-form-control>
-                                <input nz-input type="tel" id="phoneNumber" name="phoneNumber"
-                                    [(ngModel)]="newUser.phoneNumber" placeholder="Nhập số điện thoại" />
+                            <nz-form-control [nzErrorTip]="'Số điện thoại phải có 10 số và bắt đầu bằng 0'">
+                                <input nz-input type="text" id="phoneNumber" name="phoneNumber" required minlength="10"
+                                    maxlength="10" pattern="^0[0-9]{9}$" [(ngModel)]="newUser.phoneNumber"
+                                    placeholder="Nhập số điện thoại" />
                             </nz-form-control>
                         </nz-form-item>
 
@@ -245,7 +246,7 @@
     <!-- Search -->
     <div class="search-bar" style="display: flex; gap: 8px; align-items: center; margin-bottom: 16px;">
         <nz-input-group>
-            <input type="text" nz-input placeholder="Tìm kiếm" [(ngModel)]="searchQuery" />
+            <input type="text" nz-input placeholder="Tìm kiếm theo tên đăng nhập và email" [(ngModel)]="searchQuery" />
         </nz-input-group>
         <button nz-button nzType="primary" (click)="filterUsers()">
             <i nz-icon nzType="search"></i> Tìm kiếm
@@ -275,7 +276,8 @@
             <nz-form-item>
                 <nz-form-label>SĐT</nz-form-label>
                 <nz-form-control>
-                    <input nz-input [(ngModel)]="filters.phone" name="phone" placeholder="Nhập số điện thoại" />
+                    <input type="number" nz-input [(ngModel)]="filters.phone" name="phone"
+                        placeholder="Nhập số điện thoại" />
                 </nz-form-control>
             </nz-form-item>
 
@@ -326,17 +328,43 @@
 
 
     <!-- Table -->
-    <nz-table #userTable [nzData]="users" [nzFrontPagination]="false" class="user-table">
+    <nz-table #userTable [nzData]="users" [nzFrontPagination]="false" class="user-table" [nzLoading]="loading">
         <thead>
             <tr>
-                <th nzWidth="10%">Hành động</th>
-                <th nzWidth="12%">Tên người dùng</th>
-                <th nzWidth="14%">Họ và tên</th>
-                <th nzWidth="18%">Địa chỉ email</th>
-                <th nzWidth="12%">Số điện thoại</th>
-                <th nzWidth="14%">Địa chỉ</th>
-                <th nzWidth="12%">Ngày tạo</th>
-                <th nzWidth="8%">Trạng thái</th>
+                <th nzWidth="10%" nzColumnKey="username">Hành động</th>
+                <th nzWidth="12%" nzColumnKey="username" [nzSortFn]="true"
+                    (nzSortOrderChange)="onSort('username', $event)">
+                    Tên người dùng
+                </th>
+
+                <th nzWidth="14%" nzColumnKey="fullName" [nzSortFn]="true"
+                    (nzSortOrderChange)="onSort('fullName', $event)">
+                    Họ và tên
+                </th>
+
+                <th nzWidth="18%" nzColumnKey="email" [nzSortFn]="true" (nzSortOrderChange)="onSort('email', $event)">
+                    Địa chỉ email
+                </th>
+
+                <th nzWidth="12%" nzColumnKey="phoneNumber" [nzSortFn]="true"
+                    (nzSortOrderChange)="onSort('phoneNumber', $event)">
+                    Số điện thoại
+                </th>
+
+                <th nzWidth="14%" nzColumnKey="address" [nzSortFn]="true"
+                    (nzSortOrderChange)="onSort('address', $event)">
+                    Địa chỉ
+                </th>
+
+                <th nzWidth="12%" nzColumnKey="createdAt" [nzSortFn]="true"
+                    (nzSortOrderChange)="onSort('createdAt', $event)">
+                    Ngày tạo
+                </th>
+
+                <th nzWidth="8%" nzColumnKey="isActive" [nzSortFn]="true"
+                    (nzSortOrderChange)="onSort('isActive', $event)">
+                    Trạng thái
+                </th>
 
             </tr>
         </thead>
@@ -394,5 +422,5 @@
 
     <!-- Pagination -->
     <app-pagination [total]="totalItems" [pageSize]="pageSize" [pageIndex]="currentPage"
-        (pageChange)="onPageChange($event)"></app-pagination>
+        (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)"></app-pagination>
 </div>

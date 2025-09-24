@@ -23,6 +23,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { ExcelExportService } from '../../../core/services/excel-export.service';
+import { PaginationComponent } from "../../../shared/components/pagination-component/pagination-component";
 
 @Component({
   selector: 'app-auditlog',
@@ -42,7 +43,8 @@ import { ExcelExportService } from '../../../core/services/excel-export.service'
     NzSelectModule,
     NzDropDownModule,
     NzMenuModule,
-  ],
+    PaginationComponent
+],
   templateUrl: './auditlog.html',
   styleUrls: ['./auditlog.scss'],
 })
@@ -100,9 +102,9 @@ export class Auditlog implements OnInit, OnDestroy {
     this.loading = true;
 
     const filters: SystemLogFilterRequest = {
-      userName: this.userName || undefined,
-      action: this.action || undefined,
-      method: this.method || undefined,
+      userName: this.userName?.trim() || undefined,
+      action: this.action?.trim() || undefined,
+      method: this.method?.trim() || undefined,
       statusCode: this.statusCode ?? undefined,
       fromDate: this.fromDate ? this.fromDate.toISOString() : undefined,
       toDate: this.toDate ? this.toDate.toISOString() : undefined,
@@ -110,6 +112,7 @@ export class Auditlog implements OnInit, OnDestroy {
       maxDuration: this.maxDuration ?? undefined,
     };
 
+    // Bỏ các field null/undefined/chuỗi rỗng
     const filteredRequest: SystemLogFilterRequest = Object.fromEntries(
       Object.entries(filters).filter(([_, value]) => {
         if (value === null || value === undefined) return false;
@@ -123,7 +126,6 @@ export class Auditlog implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
-          console.log('API response:', res);
           this.zone.run(() => {
             this.auditLogs = res.items || [];
             this.totalItems = res.totalCount || 0;
@@ -140,6 +142,20 @@ export class Auditlog implements OnInit, OnDestroy {
   }
 
   filterLogs(): void {
+    this.currentPage = 1;
+    this.loadLogs();
+  }
+
+  resetFilters(): void {
+    this.userId = null;
+    this.userName = '';
+    this.action = '';
+    this.method = '';
+    this.statusCode = null;
+    this.fromDate = null;
+    this.toDate = null;
+    this.minDuration = null;
+    this.maxDuration = null;
     this.currentPage = 1;
     this.loadLogs();
   }
@@ -241,4 +257,25 @@ export class Auditlog implements OnInit, OnDestroy {
     }
     this.excelExportService.exportAsExcelFile(this.auditLogs, 'system_logs');
   }
+
+  sortByRequest = (a: SystemLogDto, b: SystemLogDto): number => {
+    if (a.statusCode !== b.statusCode) return a.statusCode - b.statusCode;
+    if (a.method !== b.method) return a.method.localeCompare(b.method);
+    return a.path.localeCompare(b.path);
+  };
+
+  sortByUserName = (a: SystemLogDto, b: SystemLogDto): number =>
+    (a.userName || '').localeCompare(b.userName || '');
+
+  sortByDate = (a: SystemLogDto, b: SystemLogDto): number =>
+    new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+
+  sortByDuration = (a: SystemLogDto, b: SystemLogDto): number =>
+    (a.duration || 0) - (b.duration || 0);
+
+  sortByData = (a: SystemLogDto, b: SystemLogDto): number =>
+    (a.data || '').localeCompare(b.data || '');
+
+  sortByAppName = (a: SystemLogDto, b: SystemLogDto): number =>
+    (a.applicationName || '').localeCompare(b.applicationName || '');
 }

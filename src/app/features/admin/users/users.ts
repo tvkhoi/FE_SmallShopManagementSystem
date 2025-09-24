@@ -97,7 +97,7 @@ export class UsersComponent implements OnInit {
   };
 
   totalItems = 0;
-  pageSize: number = 7;
+  pageSize: number = 5;
   currentPage: number = 1;
 
   // Modal states
@@ -111,6 +111,7 @@ export class UsersComponent implements OnInit {
   confirmPassword: string = '';
   isEditMode: boolean = false;
   isChangePasswordVisible = false;
+  loading: boolean = false;
   changePassword = { newPassword: '' };
 
   userId: number | null = null;
@@ -236,6 +237,13 @@ export class UsersComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  onPageSizeChange(size: number): void {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.onPageChange(this.currentPage);
+    this.cdr.detectChanges();
+  }
+
   /** Modal: tạo user + gán quyền */
   showModal(): void {
     this.isVisible = true;
@@ -320,17 +328,10 @@ export class UsersComponent implements OnInit {
           this.msg.success(this.userId ? 'Cập nhật user thành công' : 'Tạo user thành công');
           this.isVisible = false;
           this.loadUsers();
-          this.cdr.detectChanges(); // 🔥 Bắt buộc cập nhật lại UI để modal đóng
+          this.cdr.detectChanges();
         },
         error: (err: any) => {
           console.error('Lỗi khi lưu user:', err);
-          if (err.error && typeof err.error === 'string') {
-            this.msg.error(err.error);
-          } else if (err.error?.errors) {
-            this.msg.error(Object.values(err.error.errors).flat().join(', '));
-          } else {
-            this.msg.error('Không thể lưu user');
-          }
         },
       });
   }
@@ -588,6 +589,7 @@ export class UsersComponent implements OnInit {
   }
 
   applyFilter() {
+    this.loading = true;
     const payload: any = {
       pageNumber: this.currentPage,
       pageSize: this.pageSize,
@@ -604,10 +606,12 @@ export class UsersComponent implements OnInit {
       next: (res) => {
         this.users = res.items;
         this.totalItems = res.totalItems;
+        this.loading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Lỗi filter', err);
+        this.loading = false;
       },
     });
   }
@@ -615,5 +619,34 @@ export class UsersComponent implements OnInit {
   resetFilter() {
     this.filters = {};
     this.applyFilter();
+  }
+
+  sortField: string | null = null;
+  sortOrder: string | null = null;
+
+  onSort(field: string, order: string | null): void {
+    this.sortField = field;
+    this.sortOrder = order;
+
+    if (!order) {
+      // Nếu bỏ sort -> load lại dữ liệu gốc
+      this.loadUsers();
+      return;
+    }
+
+    this.users = [...this.users].sort((a, b) => {
+      let valueA = a[field as keyof User];
+      let valueB = b[field as keyof User];
+
+      // Nếu là ngày thì convert sang timestamp
+      if (field === 'createdAt') {
+        valueA = new Date(valueA as any).getTime();
+        valueB = new Date(valueB as any).getTime();
+      }
+
+      if (valueA! < valueB!) return order === 'ascend' ? -1 : 1;
+      if (valueA! > valueB!) return order === 'ascend' ? 1 : -1;
+      return 0;
+    });
   }
 }
