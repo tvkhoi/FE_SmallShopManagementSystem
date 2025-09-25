@@ -12,6 +12,9 @@ interface JwtPayload {
   email: string;
   exp: number;
   'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'?: string | string[];
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'?: string | null;
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'?: string | null;
+
 }
 
 @Injectable({ providedIn: 'root' })
@@ -74,6 +77,27 @@ export class AuthService {
     return msRole ? (Array.isArray(msRole) ? msRole : [msRole]) : [];
   }
 
+  getEmail(): string | null {
+    const decoded = this.getDecodedToken();
+    if (!decoded) return null;
+    return (
+      decoded.email ||
+      decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ||
+      decoded.unique_name ||
+      null
+    );
+  }
+
+  getName(): string | null {
+    const decoded = this.getDecodedToken();
+    if (!decoded) return null;
+    return (
+      decoded.nameid ||
+      decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ||
+      null
+    );
+  }
+
   isAccessTokenValid(): boolean {
     const decoded = this.getDecodedToken();
     if (!decoded || !decoded.exp) return false;
@@ -97,7 +121,9 @@ export class AuthService {
     const refresh = this.getRefreshToken();
     if (!refresh) return throwError(() => 'No refresh token');
     return this.http
-      .post<{ accessToken: string; refreshToken: string }>('/api/auth/refresh', { refreshToken: refresh })
+      .post<{ accessToken: string; refreshToken: string }>('/api/auth/refresh', {
+        refreshToken: refresh,
+      })
       .pipe(
         switchMap((resp) => {
           this.saveTokens(resp.accessToken, resp.refreshToken);

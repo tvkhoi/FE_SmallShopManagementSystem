@@ -1,0 +1,41 @@
+:host ::ng-deep .ant-layout-sider {
+  background: #1f2937 !important; 
+  transition: all 0.3s ease;
+  z-index: 1000;
+  height: 100vh; 
+}
+
+:host ::ng-deep .ant-layout-sider-collapsed {
+  flex: 0 0 80px !important;
+  max-width: 80px !important;
+  min-width: 80px !important;
+  width: 80px !important;
+}
+
+:host ::ng-deep .ant-layout-sider .logo {
+  padding: 16px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 1px solid #374151;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:host ::ng-deep .ant-layout-sider .ant-menu {
+  background: transparent !important;
+  border-right: none;
+}
+
+:host ::ng-deep .ant-layout-sider .ant-menu-item {
+  font-size: 15px;
+  padding-left: 20px !important;
+  transition: background 0.3s ease;
+}
+
+:host ::ng-deep .ant-layout-sider .ant-menu-item-selected {
+  background: #2563eb !important;
+  color: #fff !important;
+}

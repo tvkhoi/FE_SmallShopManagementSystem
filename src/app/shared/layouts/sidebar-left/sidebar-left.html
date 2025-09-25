@@ -1,0 +1,17 @@
+<nz-layout>
+  <nz-sider nzCollapsible [nzCollapsed]="isCollapsed" [nzWidth]="220" [nzCollapsedWidth]="80" class="admin-sider"
+    nzTheme="dark" (nzCollapsedChange)="onCollapse($event)">
+    <div class="logo">
+      <img src="https://st.quantrimang.com/photos/image/2021/09/05/Co-Vietnam.png" width="50" height="auto"
+        style="padding-right: 10px;">
+      <span *ngIf="!isCollapsed">QUẢN TRỊ VIÊN</span>
+    </div>
+    <ul nz-menu nzTheme="dark" nzMode="inline">
+      <li *ngFor="let item of menuItems" nz-menu-item [routerLink]="item.route"
+        routerLinkActive="ant-menu-item-selected">
+        <span nz-icon [nzType]="item.icon"></span>
+        <span>{{ item.label }}</span>
+      </li>
+    </ul>
+  </nz-sider>
+</nz-layout>

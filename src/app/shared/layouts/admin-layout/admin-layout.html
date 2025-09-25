@@ -1,6 +1,6 @@
 <nz-layout class="admin-layout">
   <!-- Sidebar -->
-  <nz-sider nzCollapsible [nzCollapsed]="isCollapsed" [nzWidth]="220" class="admin-sider" (nzCollapsedChange)="onCollapse($event)">
+  <!-- <nz-sider nzCollapsible [nzCollapsed]="isCollapsed" [nzWidth]="220" class="admin-sider" (nzCollapsedChange)="onCollapse($event)">
     <div class="logo">
       <img src="https://st.quantrimang.com/photos/image/2021/09/05/Co-Vietnam.png" width="50" height="auto"
         style="padding-right: 10px;">
@@ -28,7 +28,8 @@
         <span>Cài đặt</span>
       </li>
     </ul>
-  </nz-sider>
+  </nz-sider> -->
+  <app-sidebar-left [menuItems]="menuItems" [isCollapsed]="isCollapsed" (collapseChange)="onCollapse($event)" ></app-sidebar-left>
 
   <!-- Main Layout -->
   <nz-layout>
@@ -104,8 +105,8 @@
       <div class="profile-header">
         <div class="avatar"><span nz-icon nzType="user"></span></div>
         <div class="info">
-          <div class="role">quản trị viên</div>
-          <div class="email">tvkhoi123456@gmail.com</div>
+          <div class="name">{{ getName() }}</div>
+          <div class="email">{{ getEmail() }}</div>
         </div>
       </div>
 
