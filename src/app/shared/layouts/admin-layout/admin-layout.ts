@@ -48,6 +48,7 @@ export class AdminLayout implements OnInit {
     '/admin/users': { title: 'Quản lý người dùng', icon: 'user' },
     '/admin/roles': { title: 'Quản lý vai trò', icon: 'role' },
     '/admin/audit_log': { title: 'Nhật ký hệ thống', icon: 'audit' },
+    '/admin/settings': { title: 'Cài đặt', icon: 'setting' },
   };
 
   menuItemsLeft = [
