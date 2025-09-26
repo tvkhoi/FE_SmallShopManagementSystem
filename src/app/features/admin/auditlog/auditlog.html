@@ -176,56 +176,58 @@
     <button style="width: 100%;" nz-button nzType="primary" (click)="handleViewAuditDetailCancel()">Đóng</button>
   </ng-template>
 
+  <div class="audit-table-container">
+    <nz-table #table [nzData]="auditLogs" nzSize="small" [nzScroll]="{ x: '1200px', y: 'calc(100vh - 200px)' }"
+      class="audit-table nowrap-table" [nzLoading]="loading" nzShowPagination="false">
 
-  <nz-table #table [nzData]="auditLogs" nzSize="small" [nzScroll]="{ x: '100%', y: 'calc(100vh - 200px)' }"
-    class="audit-table nowrap-table" [nzLoading]="loading" nzShowPagination="false">
-
-    <thead>
-      <tr>
-        <th nzWidth="120px">Hành động</th>
-        <th nzWidth="600px" nzShowSort [nzSortFn]="sortByRequest">Yêu cầu</th>
-        <th nzWidth="150px" nzShowSort [nzSortFn]="sortByUserName">Người dùng</th>
-        <th nzWidth="180px" nzShowSort [nzSortFn]="sortByDate">Ngày</th>
-        <th nzWidth="100px" nzShowSort [nzSortFn]="sortByDuration">Thời gian</th>
-        <th nzWidth="120px" nzShowSort [nzSortFn]="sortByData">Dữ liệu</th>
-        <th nzWidth="200px" nzShowSort [nzSortFn]="sortByAppName">Tên ứng dụng</th>
-      </tr>
-    </thead>
+      <thead>
+        <tr>
+          <th nzWidth="120px">Hành động</th>
+          <th nzWidth="600px" nzShowSort [nzSortFn]="sortByRequest">Yêu cầu</th>
+          <th nzWidth="150px" nzShowSort [nzSortFn]="sortByUserName">Người dùng</th>
+          <th nzWidth="180px" nzShowSort [nzSortFn]="sortByDate">Ngày</th>
+          <th nzWidth="100px" nzShowSort [nzSortFn]="sortByDuration">Thời gian</th>
+          <th nzWidth="120px" nzShowSort [nzSortFn]="sortByData">Dữ liệu</th>
+          <th nzWidth="200px" nzShowSort [nzSortFn]="sortByAppName">Tên ứng dụng</th>
+        </tr>
+      </thead>
 
 
-    <tbody>
-      <tr *ngFor="let log of table.data">
-        <td>
-          <button nz-button nzType="primary" class="view-detail-button" nzType="primary" (click)="viewAuditDetail(log)">
-            <span nz-icon nzType="eye" nzTheme="outline"></span>
-            Chi tiết
-          </button>
-        </td>
+      <tbody>
+        <tr *ngFor="let log of table.data">
+          <td>
+            <button nz-button nzType="primary" class="view-detail-button" nzType="primary"
+              (click)="viewAuditDetail(log)">
+              <span nz-icon nzType="eye" nzTheme="outline"></span>
+              Chi tiết
+            </button>
+          </td>
 
-        <td class="request-cell">
-          <span class="request-status" [ngStyle]="{ 'background-color': getStatusColor(log.statusCode) }">
-            {{ log.statusCode }}
-          </span>
+          <td class="request-cell">
+            <span class="request-status" [ngStyle]="{ 'background-color': getStatusColor(log.statusCode) }">
+              {{ log.statusCode }}
+            </span>
 
-          <span class="request-method" [ngStyle]="{ 'background-color': getMethodColor(log.method) }">
-            {{ log.method }}
-          </span>
+            <span class="request-method" [ngStyle]="{ 'background-color': getMethodColor(log.method) }">
+              {{ log.method }}
+            </span>
 
-          <span class="request-path">{{ log.path }}</span>
-        </td>
+            <span class="request-path">{{ log.path }}</span>
+          </td>
 
-        <td>{{ log.userName }}</td>
-        <td>{{ log.createdAt | date: "dd-MM-yyyy HH:mm:ss" }}</td>
-        <td>{{ log.duration }}</td>
-        <td>
-          <span nz-tooltip [nzTooltipTitle]="log.data ?? ''">
-            {{ log.data ? (log.data | slice:0:8) : '' }}
-          </span>
-        </td>
-        <td>{{ log.applicationName }}</td>
-      </tr>
-    </tbody>
-  </nz-table>
+          <td>{{ log.userName }}</td>
+          <td>{{ log.createdAt | date: "dd-MM-yyyy HH:mm:ss" }}</td>
+          <td>{{ log.duration }}</td>
+          <td>
+            <span nz-tooltip [nzTooltipTitle]="log.data ?? ''">
+              {{ log.data ? (log.data | slice:0:8) : '' }}
+            </span>
+          </td>
+          <td>{{ log.applicationName }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
 
   <!-- Pagination -->
   <app-pagination [total]="totalItems" [pageSize]="pageSize" [pageIndex]="currentPage"

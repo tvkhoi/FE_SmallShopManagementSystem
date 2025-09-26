@@ -7,7 +7,7 @@
       <span *ngIf="!isCollapsed">QUẢN TRỊ VIÊN</span>
     </div>
     <ul nz-menu nzTheme="dark" nzMode="inline">
-      <li *ngFor="let item of menuItems" nz-menu-item [routerLink]="item.route"
+      <li *ngFor="let item of menuItems || []" nz-menu-item [routerLink]="item.route"
         routerLinkActive="ant-menu-item-selected">
         <span nz-icon [nzType]="item.icon"></span>
         <span>{{ item.label }}</span>

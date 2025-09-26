@@ -1,0 +1,41 @@
+<nz-header class="admin-header">
+    <div class="left">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <span nz-icon [nzType]="currentIcon"></span>
+            <span class="page-title">{{ currentTitle }}</span>
+        </div>
+    </div>
+    <ul nz-menu nzMode="horizontal" class="mobile-menu">
+        <li nz-menu-item routerLink="/admin/dashboard" routerLinkActive="ant-menu-item-selected">
+            <div class="menu-mobile-item">
+                <span nz-icon nzType="dashboard"></span>
+                <span class="menu-text">TRANG CHỦ</span>
+            </div>
+        </li>
+        <li nz-menu-item routerLink="/admin/users" routerLinkActive="ant-menu-item-selected">
+            <div class="menu-mobile-item">
+                <span nz-icon nzType="user"></span>
+                <span class="menu-text">NGƯỜI DÙNG</span>
+            </div>
+        </li>
+        <li nz-menu-item routerLink="/admin/roles" routerLinkActive="ant-menu-item-selected">
+            <div class="menu-mobile-item">
+                <span nz-icon nzType="team"></span>
+                <span class="menu-text">VAI TRÒ</span>
+            </div>
+        </li>
+        <li nz-menu-item routerLink="/admin/audit_log" routerLinkActive="ant-menu-item-selected">
+            <div class="menu-mobile-item">
+                <span nz-icon nzType="audit"></span>
+                <span class="menu-text">NHẬT KÝ</span>
+            </div>
+        </li>
+        <li nz-menu-item routerLink="/admin/profile" routerLinkActive="ant-menu-item-selected">
+            <div class="menu-mobile-item">
+                <span nz-icon nzType="user"></span>
+                <span class="menu-text">HỒ SƠ</span>
+            </div>
+        </li>
+    </ul>
+</nz-header>

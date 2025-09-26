@@ -1,0 +1,95 @@
+.admin-header {
+  width: 100%;
+  background: #111827 !important;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: 63px;
+  position: relative;
+
+  .left {
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .page-title {
+      font-weight: 500;
+      font-size: 14px;
+    }
+  }
+
+  /* Mobile menu mặc định ẩn */
+  .mobile-menu {
+    margin: 0 !important;
+    padding: 0 15px!important;
+    width: 100% !important;
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background: #1f2937;
+    border-top: 1px solid #374151;
+    z-index: 1200;
+    height: 70px;
+    list-style: none;
+    justify-content: space-between;
+
+    li {
+      width: 100% !important;
+      height: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border: none !important;
+      background: transparent !important;
+      padding: 0 !important;
+
+      .menu-mobile-item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        .anticon {
+          font-size: 22px;
+          margin-bottom: 2px;
+          color: #d1d5db;
+        }
+
+        .menu-text {
+          font-size: 11px;
+          line-height: 1.2;
+          color: #9ca3af;
+        }
+      }
+
+      &.ant-menu-item-selected {
+        .menu-mobile-item {
+          .anticon,
+          .menu-text {
+            color: #3b82f6 !important;
+          }
+        }
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+    }
+  }
+
+  /* Hiển thị menu khi màn hình nhỏ */
+  @media (max-width: 768px) {
+    .mobile-menu {
+      display: flex;
+    }
+  }
+}
