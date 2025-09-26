@@ -8,7 +8,7 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
   imports: [CommonModule, NzPaginationModule],
   template: `
     <div class="pagination-container">
-      <span style="margin: 10px 0; display: block;">Total: {{ total }}</span>
+      <span style="margin: 10px 0; display: block;">Tổng: {{ total }}</span>
       <nz-pagination
         [nzTotal]="total"
         [(nzPageIndex)]="pageIndex"
