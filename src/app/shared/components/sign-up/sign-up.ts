@@ -7,6 +7,7 @@ import {
   ReactiveFormsModule,
   AbstractControl,
   ValidationErrors,
+  ValidatorFn,
 } from '@angular/forms';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -19,6 +20,8 @@ import { finalize } from 'rxjs';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { CommonModule } from '@angular/common';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { PasswordPolicyService } from '../../../core/services/passwordPolicy.service';
+import { PasswordPolicy } from '../../../core/models/PasswordPolicy';
 
 @Component({
   selector: 'app-sign-up',
@@ -47,23 +50,62 @@ export class SignUpComponent implements OnInit {
   private router = inject(Router);
   private message = inject(NzMessageService);
   private cdjf = inject(ChangeDetectorRef);
+  private policyService = inject(PasswordPolicyService);
 
   passwordVisible = false;
   confirmPasswordVisible = false;
 
+  policy!: PasswordPolicy; 
+
   ngOnInit(): void {
-    this.signUpForm = this.fb.group(
-      {
-        fullname: [''],
-        phoneNumber: ['', [Validators.pattern(/^0\d{9}$/)]],
-        username: ['', [Validators.required]],
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
-        c_password: ['', [Validators.required]],
-        address: [''],
+    this.policyService.getPolicy().subscribe({
+      next: (res) => {
+        this.policy = res;
+
+        // Tạo form khi đã có policy
+        this.signUpForm = this.fb.group(
+          {
+            fullname: [''],
+            phoneNumber: ['', [Validators.pattern(/^0\d{9}$/)]],
+            username: ['', [Validators.required]],
+            email: ['', [Validators.required, Validators.email]],
+            password: ['', [Validators.required, this.passwordPolicyValidator(this.policy)]],
+            c_password: ['', [Validators.required]],
+            address: [''],
+          },
+          { validators: this.passwordMatchValidator }
+        );
       },
-      { validators: this.passwordMatchValidator }
-    );
+      error: () => {
+        this.message.error('Không tải được password policy!');
+      },
+    });
+  }
+
+  passwordPolicyValidator(policy: PasswordPolicy): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+      const value = control.value as string;
+      const errors: any = {};
+
+      if (value.length < policy.requiredLength) {
+        errors.requiredLength = true;
+      }
+      if (policy.requireUppercase && !/[A-Z]/.test(value)) {
+        errors.uppercase = true;
+      }
+      if (policy.requireLowercase && !/[a-z]/.test(value)) {
+        errors.lowercase = true;
+      }
+      if (policy.requireDigit && !/[0-9]/.test(value)) {
+        errors.digit = true;
+      }
+      if (policy.requireNonAlphanumeric && !/[^a-zA-Z0-9]/.test(value)) {
+        errors.nonAlphanumeric = true;
+      }
+
+      return Object.keys(errors).length ? errors : null;
+    };
   }
 
   // Custom validator: check password trùng nhau

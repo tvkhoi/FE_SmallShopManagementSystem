@@ -85,15 +85,20 @@
                   <span class="toggle-eye" (click)="passwordVisible = !passwordVisible">
                     <nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" nzTheme="outline"></nz-icon>
                   </span>
-                  <ng-template #passwordErrorTpl let-control>
-                    <ng-container *ngIf="control.hasError('required')">
-                      Vui lòng nhập mật khẩu!
-                    </ng-container>
-                    <ng-container *ngIf="control.hasError('minlength')">
-                      Mật khẩu phải có ít nhất 6 ký tự!
-                    </ng-container>
-                  </ng-template>
                 </div>
+                <ng-template #passwordErrorTpl let-control>
+                  <ng-container *ngIf="control.hasError('required')">Vui lòng nhập mật khẩu!</ng-container>
+                  <ng-container *ngIf="control.hasError('requiredLength')">
+                    Mật khẩu phải có ít nhất {{ policy?.requiredLength }} ký tự!
+                  </ng-container>
+                  <ng-container *ngIf="control.hasError('uppercase')">Phải chứa ít nhất 1 chữ hoa (A-Z)!</ng-container>
+                  <ng-container *ngIf="control.hasError('lowercase')">Phải chứa ít nhất 1 chữ thường
+                    (a-z)!</ng-container>
+                  <ng-container *ngIf="control.hasError('digit')">Phải chứa ít nhất 1 số (0-9)!</ng-container>
+                  <ng-container *ngIf="control.hasError('nonAlphanumeric')">
+                    Phải chứa ít nhất 1 ký tự đặc biệt (!@#$...)
+                  </ng-container>
+                </ng-template>
               </nz-form-control>
             </nz-form-item>
           </div>
