@@ -12,17 +12,11 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
   templateUrl: './sidebar-left.html',
   styleUrls: ['./sidebar-left.scss'],
 })
-export class SidebarLeft implements OnChanges {
+export class SidebarLeft {
   @Input() menuItems: { label: string; icon: string; route: string }[] = [];
   @Input() isCollapsed: boolean = false;
   @Output() collapseChange = new EventEmitter<boolean>();
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['menuItems']) {
-      console.log('Received menuItems:', this.menuItems);
-      console.log("Is Collapsed:", this.isCollapsed);
-    }
-  }
   onCollapse(collapsed: boolean): void {
     this.isCollapsed = collapsed;
     this.collapseChange.emit(collapsed);

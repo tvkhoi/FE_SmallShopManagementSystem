@@ -1,8 +1,8 @@
-.audit-log-container {
+:host ::ng-deep .audit-log-container {
   color: #000;
+  width: 100%;
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  padding: 24px;
 
   h2 {
     font-size: 24px;
@@ -126,83 +126,87 @@
 
 
   /* Audit Table */
-  .audit-table {
-    width: 100%;
-    border-radius: 6px;
-    overflow-x: auto;
-    border: 1px solid #ddd;
-    background: #fff;
-    table-layout: fixed;
+  .audit-table-container {
+    width: 100% !important;
+    .audit-table {
+      width: 100% !important;
+      border-radius: 6px;
+      overflow-x: auto;
+      border: 1px solid #ddd;
+      background: #fff;
+      table-layout: fixed;
 
-    .nowrap-table {
-      .ant-table {
-        white-space: nowrap; // Không cho xuống dòng
+      .nowrap-table {
+        .ant-table {
+          white-space: nowrap; // Không cho xuống dòng
+        }
+
+        .ant-table-cell {
+          white-space: nowrap; // Cell không xuống dòng
+          overflow: hidden;
+          text-overflow: ellipsis; // Nếu text quá dài thì cắt bằng ...
+        }
       }
 
-      .ant-table-cell {
-        white-space: nowrap; // Cell không xuống dòng
-        overflow: hidden;
-        text-overflow: ellipsis; // Nếu text quá dài thì cắt bằng ...
-      }
-    }
-
-    th {
-      background: #fafafa;
-      color: #000;
-      font-weight: 500;
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-      white-space: nowrap;
-      font-size: 14px;
-    }
-
-    td {
-      padding: 10px;
-      margin: 0;
-      color: #000;
-      border-bottom: 1px solid #eee;
-      text-align: left;
-      word-break: break-word;
-
-      .view-detail-button {
-        color: #fff;
-        padding: 4px 8px;
-        border: none;
-        background-color: #1890ff;
+      th {
+        background: #fafafa;
+        color: #000;
         font-weight: 500;
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+        white-space: nowrap;
         font-size: 14px;
-        line-height: 1.2;
-        transition: color 0.2s, transform 0.2s;
       }
 
+      td {
+        padding: 10px;
+        margin: 0;
+        color: #000;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+        word-break: break-word;
+        overflow: hidden;
 
-      a {
-        color: #007bff;
-        text-decoration: none;
-        transition: color 0.2s;
+        .view-detail-button {
+          color: #fff;
+          padding: 4px 8px;
+          border: none;
+          background-color: #1890ff;
+          font-weight: 500;
+          font-size: 14px;
+          line-height: 1.2;
+          transition: color 0.2s, transform 0.2s;
+        }
 
-        &:hover {
-          color: #0056b3;
-          text-decoration: underline;
+
+        a {
+          color: #007bff;
+          text-decoration: none;
+          transition: color 0.2s;
+
+          &:hover {
+            color: #0056b3;
+            text-decoration: underline;
+          }
+        }
+
+        button {
+          background: transparent;
+          border: none;
+          color: #007bff;
+          padding: 0;
+          line-height: 1;
+
+          &:hover {
+            text-decoration: underline;
+          }
         }
       }
 
-      button {
-        background: transparent;
-        border: none;
-        color: #007bff;
-        padding: 0;
-        line-height: 1;
-
-        &:hover {
-          text-decoration: underline;
-        }
+      tr:last-child td {
+        border-bottom: none;
       }
-    }
-
-    tr:last-child td {
-      border-bottom: none;
     }
   }
 
@@ -283,76 +287,77 @@
       }
     }
   }
+}
 
-  .audit-pagination {
-    margin-top: 16px;
-    text-align: left;
+.audit-pagination {
+  margin-top: 16px;
+  text-align: left;
 
-    .ant-pagination-options {
-      margin-right: 16px;
+  .ant-pagination-options {
+    margin-right: 16px;
+  }
+
+  .ant-pagination-item {
+    border-radius: 4px;
+    border: 1px solid #d9d9d9;
+    margin: 0 4px;
+
+    &:hover {
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
     }
+  }
 
-    .ant-pagination-item {
+  .ant-pagination-item-active {
+    background-color: #1890ff;
+    border-color: #1890ff;
+    color: white;
+
+    &:hover {
+      background-color: #40a9ff;
+      border-color: #40a9ff;
+    }
+  }
+
+  .ant-pagination-prev,
+  .ant-pagination-next {
+    border-radius: 4px;
+    border: 1px solid #d9d9d9;
+
+    &:hover {
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+  }
+
+  .ant-pagination-options-selector {
+    height: 32px;
+
+    .ant-select-selector {
+      height: 32px !important;
       border-radius: 4px;
-      border: 1px solid #d9d9d9;
-      margin: 0 4px;
 
-      &:hover {
-        border-color: #40a9ff;
-        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      .ant-select-selection-search-input {
+        height: 30px;
+      }
+
+      .ant-select-selection-item {
+        line-height: 30px;
+      }
+
+      .ant-select-selection-placeholder {
+        line-height: 30px;
+        color: #bfbfbf;
       }
     }
 
-    .ant-pagination-item-active {
-      background-color: #1890ff;
-      border-color: #1890ff;
-      color: white;
-
-      &:hover {
-        background-color: #40a9ff;
-        border-color: #40a9ff;
-      }
-    }
-
-    .ant-pagination-prev,
-    .ant-pagination-next {
-      border-radius: 4px;
-      border: 1px solid #d9d9d9;
-
-      &:hover {
-        border-color: #40a9ff;
-        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
-      }
-    }
-
-    .ant-pagination-options-selector {
-      height: 32px;
-
-      .ant-select-selector {
-        height: 32px !important;
-        border-radius: 4px;
-
-        .ant-select-selection-search-input {
-          height: 30px;
-        }
-
-        .ant-select-selection-item {
-          line-height: 30px;
-        }
-
-        .ant-select-selection-placeholder {
-          line-height: 30px;
-          color: #bfbfbf;
-        }
-      }
-
-      &.ant-select-focused .ant-select-selector {
-        border-color: #40a9ff;
-        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
-      }
+    &.ant-select-focused .ant-select-selector {
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
     }
   }
 }
+
 
 /* Modal Styles */
 .details-table {

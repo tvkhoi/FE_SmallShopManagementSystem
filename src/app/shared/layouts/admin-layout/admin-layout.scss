@@ -2,188 +2,36 @@
   ::ng-deep {
     .admin-layout {
       height: 100vh;
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
 
-      /* Header */
-      .admin-header {
-        background: #111827 !important;
-        color: #fff;
+      /* Main Layout */
+      nz-layout {
+        flex: 1; // chiếm hết không gian còn lại
+        min-width: 0; // fix lỗi flex tràn ngang
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 20px;
-        height: 63px;
-        position: relative;
+        flex-direction: column;
+        overflow: hidden; // ko để nó tạo scroll ngang
 
-        .left {
-          display: flex;
-          align-items: center;
-        }
-
-        .breadcrumb {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .right {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        /* Mobile menu mặc định ẩn */
-        /* Mobile menu */
-        .mobile-menu {
-          margin: 0 !important;
-          width: 100% !important;
-          display: none;
-          position: fixed;
-          bottom: 0;
-          left: 0;
-          background: #1f2937;
-          border-top: 1px solid #374151;
-          z-index: 1200;
-          height: 70px;
-          justify-content: space-around;
-
-          .ant-menu-item {
-            flex: 1; // chia đều các item
-            height: 100% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            border: none !important;
-            background: transparent !important;
-            padding: 0 !important;
-
-            .menu-mobile-item {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-
-              .anticon {
-                font-size: 22px;
-                margin-bottom: 2px;
-                color: #d1d5db;
-              }
-
-              .menu-text {
-                font-size: 11px;
-                line-height: 1.2;
-                color: #9ca3af;
-              }
-            }
-
-            &.ant-menu-item-selected {
-              .menu-mobile-item {
-
-                .anticon,
-                .menu-text {
-                  color: #3b82f6 !important;
-                }
-              }
-            }
-
-            &:hover {
-              background: rgba(255, 255, 255, 0.05);
-            }
-          }
-        }
-
-        @media (max-width: 768px) {
-          .mobile-menu {
-            display: flex;
-          }
-        }
-
-      }
-
-      /* Content */
-      .admin-content {
-        padding: 24px;
-        background: #f9fafb;
-        overflow-y: auto;
-      }
-
-      /* Footer */
-      .admin-footer {
-        background: #f3f4f6;
-        text-align: center;
-        padding: 12px 0;
-        font-size: 14px;
-        color: #6b7280;
-      }
-
-      /* Responsive */
-      @media (max-width: 768px) {
-        .ant-layout-sider {
-          display: none;
-        }
-
+        /* Content */
         .admin-content {
-          margin-top: 0px;
+          flex: 1;
           padding: 24px;
           background: #f9fafb;
           overflow-y: auto;
+          overflow-x: hidden; // cắt ngang, bảng quá rộng sẽ cuộn riêng
         }
 
-        .admin-header {
-          .mobile-menu {
-            display: flex; // Hiện menu ngang
-            color: #FFF;
-          }
-        }
-      }
-
-      .right-toolbar {
-        background: #1f1f1f;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 15px;
-
-
-        .toolbar-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          color: #fff;
+        /* Footer */
+        .admin-footer {
+          background: #f3f4f6;
           text-align: center;
-          margin: 20px 0;
-          cursor: pointer;
-          font-size: 18px;
-
-          .label {
-            font-size: 11px;
-            margin-top: 4px;
-          }
-
-          &__icon {
-            width: 30px !important;
-            height: 30px !important;
-            background-color: #a8a4a4 !important;
-            border-radius: 20px !important;
-
-            &:hover {
-              border-radius: 8px !important;
-            }
-          }
-        }
-        @media (max-width: 768px) {
-          display: none;
+          padding: 12px 0;
+          font-size: 14px;
+          color: #6b7280;
         }
       }
-
-    }
-  }
-}
-
-
-
-:host {
-  ::ng-deep {
-    .admin-layout {
 
       button[nzType="primary"] {
         border-radius: 8px !important;

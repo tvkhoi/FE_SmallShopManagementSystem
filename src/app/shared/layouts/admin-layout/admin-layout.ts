@@ -10,6 +10,8 @@ import { AuthService } from '../../../auth/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { SidebarLeft } from "../sidebar-left/sidebar-left";
+import { SidebarRight } from "../sidebar-right/sidebar-right";
+import { Header } from "../header/header";
 
 @Component({
   selector: 'app-admin-layout',
@@ -21,7 +23,9 @@ import { SidebarLeft } from "../sidebar-left/sidebar-left";
     NzIconModule,
     NzButtonModule,
     NzDropDownModule,
-    SidebarLeft
+    SidebarLeft,
+    SidebarRight,
+    Header
 ],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.scss',
@@ -39,14 +43,14 @@ export class AdminLayout implements OnInit {
   currentTitle: string = 'Trang chủ';
   currentIcon: string = 'dashboard';
 
-  private routeMap: { [key: string]: { title: string; icon: string } } = {
+   routeMap: { [key: string]: { title: string; icon: string } } = {
     '/admin/dashboard': { title: 'Trang chủ', icon: 'dashboard' },
     '/admin/users': { title: 'Quản lý người dùng', icon: 'user' },
     '/admin/roles': { title: 'Quản lý vai trò', icon: 'role' },
     '/admin/audit_log': { title: 'Nhật ký hệ thống', icon: 'audit' },
   };
 
-  menuItems = [
+  menuItemsLeft = [
     { label: 'Trang chủ', icon: 'dashboard', route: '/admin/dashboard' },
     { label: 'Quản lý người dùng', icon: 'user', route: '/admin/users' },
     { label: 'Quản lý vai trò', icon: 'team', route: '/admin/roles' },
@@ -54,17 +58,22 @@ export class AdminLayout implements OnInit {
     { label: 'Cài đặt', icon: 'setting', route: '/admin/settings' },
   ];
 
+  menuItemsRight = [
+    { label: 'Thông báo', icon: 'notification', route: '/admin/notifications' },
+    { label: 'Hỗ trợ', icon: 'support', route: '/admin/support' },
+  ];
+
   ngOnInit(): void {
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event: any) => {
-        const path = event.urlAfterRedirects;
-        const config = this.routeMap[path];
-        if (config) {
-          this.currentTitle = config.title;
-          this.currentIcon = config.icon;
-        }
-      });
+    // this.router.events
+    //   .pipe(filter((event) => event instanceof NavigationEnd))
+    //   .subscribe((event: any) => {
+    //     const path = event.urlAfterRedirects;
+    //     const config = this.routeMap[path];
+    //     if (config) {
+    //       this.currentTitle = config.title;
+    //       this.currentIcon = config.icon;
+    //     }
+    //   });
   }
 
   onCollapse(collapsed: any): void {
@@ -72,21 +81,20 @@ export class AdminLayout implements OnInit {
     this.cdj.detectChanges();
   }
 
-  logout() {
-    this.authService.clearTokens();
-    this.router.navigate(['/login']);
-    this.messageService.success('Đăng xuất thành công');
-  }
+  // logout() {
+  //   this.authService.clearTokens();
+  //   this.router.navigate(['/login']);
+  //   this.messageService.success('Đăng xuất thành công');
+  // }
 
-  toggleProfileCard() {
+  onToggleProfileCard() {
     this.isProfileCardOpen = !this.isProfileCardOpen;
-    console.log('Profile card:', this.isProfileCardOpen);
   }
-  getEmail(): string {
-    return this.authService.getEmail() || 'Chưa có email';
-  }
+  // getEmail(): string {
+  //   return this.authService.getEmail() || 'Chưa có email';
+  // }
 
-  getName(): string {
-    return this.authService.getName() || 'Chưa có tên';
-  }
+  // getName(): string {
+  //   return this.authService.getName() || 'Chưa có tên';
+  // }
 }

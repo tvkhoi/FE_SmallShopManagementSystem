@@ -27,6 +27,7 @@
 :host ::ng-deep .ant-layout-sider .ant-menu {
   background: transparent !important;
   border-right: none;
+  height: 100vh;
 }
 
 :host ::ng-deep .ant-layout-sider .ant-menu-item {
@@ -38,4 +39,10 @@
 :host ::ng-deep .ant-layout-sider .ant-menu-item-selected {
   background: #2563eb !important;
   color: #fff !important;
+}
+
+@media (max-width: 768px) {
+  :host ::ng-deep .ant-layout-sider {
+    display: none;
+  }
 }
