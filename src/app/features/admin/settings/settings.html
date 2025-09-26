@@ -1,0 +1,45 @@
+<div class="settings-container">
+  <h2>Cài đặt quản trị</h2>
+
+  <!-- Cấu hình độ dài mật khẩu -->
+  <div class="settings-item">
+    <h3>Độ dài mật khẩu</h3>
+    <input
+      nz-input
+      type="number"
+      [(ngModel)]="policy.requiredLength"
+      placeholder="Số ký tự tối thiểu"
+      min="4"
+      max="50"
+      style="width: 150px"
+    />
+  </div>
+
+  <!-- Quy tắc mật khẩu -->
+  <div class="settings-item">
+    <h3>Quy tắc mật khẩu</h3>
+
+    <label nz-checkbox [(ngModel)]="policy.requireUppercase">
+      Bắt buộc có chữ hoa (A-Z)
+    </label>
+    <br />
+
+    <label nz-checkbox [(ngModel)]="policy.requireLowercase">
+      Bắt buộc có chữ thường (a-z)
+    </label>
+    <br />
+
+    <label nz-checkbox [(ngModel)]="policy.requireDigit">
+      Bắt buộc có số (0-9)
+    </label>
+    <br />
+
+    <label nz-checkbox [(ngModel)]="policy.requireNonAlphanumeric">
+      Bắt buộc có ký tự đặc biệt (!@#$...)
+    </label>
+  </div>
+
+  <div class="settings-actions">
+    <button nz-button nzType="primary" (click)="savePolicy()">Lưu</button>
+  </div>
+</div>

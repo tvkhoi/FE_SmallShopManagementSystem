@@ -1,0 +1,79 @@
+.settings-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 24px;
+  background: #fff; 
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  color: #fff;
+
+  .settings-item {
+    margin-bottom: 24px;
+
+    h3 {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      color: #000000;
+    }
+
+    // Input
+    input[nz-input] {
+      background: #ffffff;
+      border: 1px solid #374151;
+      border-radius: 6px;
+      color: #000000;
+      padding: 6px 12px;
+      width: 160px;
+
+      &:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+      }
+    }
+
+    // Checkbox
+    nz-checkbox {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+
+      .ant-checkbox-inner {
+        border-radius: 4px;
+        background-color: #111827;
+        border: 1px solid #4b5563;
+      }
+
+      .ant-checkbox-checked .ant-checkbox-inner {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+      }
+
+      // 👉 Fix màu chữ
+      .ant-checkbox + span {
+        margin-left: 8px;
+        color: #fff !important;   // ép trắng
+        font-size: 14px;
+      }
+    }
+  }
+
+  .settings-actions {
+    text-align: right;
+    margin-top: 28px;
+
+    button[nz-button] {
+      background: #3b82f6;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+
+      &:hover {
+        background: #2563eb;
+      }
+    }
+  }
+}
