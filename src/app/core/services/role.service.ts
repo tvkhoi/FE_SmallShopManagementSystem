@@ -1,22 +1,22 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, map, Observable } from 'rxjs';
-import { ApiResponse } from '../models/ApiResponse';
-import { Role } from '../models/role';
-import { Permission } from '../models/permission';
+import { ApiResponse } from '../models/domain/ApiResponse';
+import { Role } from '../models/domain/role';
+import { Permission } from '../models/domain/permission';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoleService {
-  private apiUrl = 'https://localhost:7277/api/Role';
-  private http = inject(HttpClient);
+  private readonly apiUrl = 'https://localhost:7277/api/Role';
+  private readonly http = inject(HttpClient);
 
   // BehaviorSubjects
-  private rolesSource = new BehaviorSubject<Role[]>([]);
+  private readonly rolesSource = new BehaviorSubject<Role[]>([]);
   roles$ = this.rolesSource.asObservable();
 
-  private rolePermissionsSource = new BehaviorSubject<{
+  private readonly rolePermissionsSource = new BehaviorSubject<{
     roleId: number;
     permissions: Permission[];
   } | null>(null);

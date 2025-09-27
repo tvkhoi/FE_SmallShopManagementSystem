@@ -11,7 +11,7 @@ import { filter } from 'rxjs';
   styleUrls: ['./header.scss']
 })
 export class Header implements OnInit {
-  private router = inject(Router);
+  private readonly router = inject(Router);
   @Input() routeMap: { [key: string]: { title: string; icon: string } } = {};
   @Input() currentTitle: string = '';
   @Input() currentIcon: string = '';

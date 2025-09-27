@@ -35,7 +35,7 @@
                 Vui lòng nhập mật khẩu!
               </ng-container>
             </ng-template>
-            <span class="toggle-eye" (click)="passwordVisible = !passwordVisible">
+            <span (keydown)="onToggleKeydown($event)" class="toggle-eye" (click)="passwordVisible = !passwordVisible">
               <nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" nzTheme="outline"></nz-icon>
             </span>
           </div>

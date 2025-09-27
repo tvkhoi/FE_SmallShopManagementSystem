@@ -36,8 +36,8 @@ export interface SystemLogFilterRequest {
 
 @Injectable({ providedIn: 'root' })
 export class SystemLogsService {
-  private http = inject(HttpClient);
-  private apiUrl = 'https://localhost:7277/api/SystemLogs';
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = 'https://localhost:7277/api/SystemLogs';
 
   // Lấy tất cả logs
   getAll(): Observable<SystemLogDto[]> {

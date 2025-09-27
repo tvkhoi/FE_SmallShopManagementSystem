@@ -19,24 +19,24 @@
   <div class="settings-item">
     <h3>Quy tắc mật khẩu</h3>
 
-    <label nz-checkbox [(ngModel)]="policy.requireUppercase">
+    <nz-form-label nz-checkbox [(ngModel)]="policy.requireUppercase">
       Bắt buộc có chữ hoa (A-Z)
-    </label>
+    </nz-form-label>
     <br />
 
-    <label nz-checkbox [(ngModel)]="policy.requireLowercase">
+    <nz-form-label nz-checkbox [(ngModel)]="policy.requireLowercase">
       Bắt buộc có chữ thường (a-z)
-    </label>
+    </nz-form-label>
     <br />
 
-    <label nz-checkbox [(ngModel)]="policy.requireDigit">
+    <nz-form-label nz-checkbox [(ngModel)]="policy.requireDigit">
       Bắt buộc có số (0-9)
-    </label>
+    </nz-form-label>
     <br />
 
-    <label nz-checkbox [(ngModel)]="policy.requireNonAlphanumeric">
+    <nz-form-label nz-checkbox [(ngModel)]="policy.requireNonAlphanumeric">
       Bắt buộc có ký tự đặc biệt (!@#$...)
-    </label>
+    </nz-form-label>
   </div>
 
   <div class="settings-actions">

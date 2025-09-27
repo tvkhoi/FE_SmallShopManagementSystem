@@ -15,17 +15,6 @@
           </nz-form-item>
         </div>
 
-        <!-- Hành động -->
-        <!-- <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6">
-          <nz-form-item>
-            <nz-form-label>Hành động</nz-form-label>
-            <nz-form-control>
-              <input nz-input [(ngModel)]="action" name="action" placeholder="Hành động"
-                [ngModelOptions]="{standalone: true}" />
-            </nz-form-control>
-          </nz-form-item>
-        </div> -->
-
         <!-- Từ ngày -->
         <div nz-col [nzXs]="12" [nzSm]="12" [nzMd]="8" [nzLg]="6">
           <nz-form-item>
@@ -119,55 +108,59 @@
     [nzBodyStyle]="{ 'max-height': '60vh', 'overflow-y': 'auto', 'padding': '16px' }" [nzFooter]="auditDetailFooter">
     <div *nzModalContent>
       <table class="details-table">
-        <!-- <tr>
-          <td class="label">ID người dùng</td>
-          <td>{{ selectedLog?.userId }}</td>
-        </tr> -->
-        <tr>
-          <td class="label">Tên người dùng</td>
-          <td>{{ selectedLog?.userName }}</td>
-        </tr>
-        <tr>
-          <td class="label">Mã trạng thái HTTP</td>
-          <td>
-            <span class="request-status" [ngStyle]="{ 'background-color': getStatusColor(selectedLog?.statusCode) }">
-              {{ selectedLog?.statusCode }}
-            </span>
-          </td>
-        </tr>
-        <tr>
-          <td class="label">Phương thức HTTP</td>
-          <td>
-            <span class="request-method" [ngStyle]="{ 'background-color': getMethodColor(selectedLog?.method) }">
-              {{ selectedLog?.method }}
-            </span>
-          </td>
+        <thead>
+          <tr>
+            <th>Thuộc tính</th>
+            <th>Giá trị</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label">Tên người dùng</td>
+            <td>{{ selectedLog?.userName }}</td>
+          </tr>
+          <tr>
+            <td class="label">Mã trạng thái HTTP</td>
+            <td>
+              <span class="request-status" [ngStyle]="{ 'background-color': getStatusColor(selectedLog?.statusCode) }">
+                {{ selectedLog?.statusCode }}
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td class="label">Phương thức HTTP</td>
+            <td>
+              <span class="request-method" [ngStyle]="{ 'background-color': getMethodColor(selectedLog?.method) }">
+                {{ selectedLog?.method }}
+              </span>
+            </td>
 
-        </tr>
-        <tr>
-          <td class="label">URL</td>
-          <td><span class="request-path">{{ selectedLog?.path }}</span></td>
-        </tr>
-        <tr>
-          <td class="label">Ngày tạo</td>
-          <td>{{ selectedLog?.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-        </tr>
-        <tr>
-          <td class="label">Thời gian (ms)</td>
-          <td>{{ selectedLog?.duration }}</td>
-        </tr>
-        <tr>
-          <td class="label">Tên ứng dụng</td>
-          <td>{{ selectedLog?.applicationName }}</td>
-        </tr>
-        <tr>
-          <td class="label">Dữ liệu</td>
-          <td class="address-cell">
-            <span nz-tooltip [nzTooltipTitle]="selectedLog?.data ?? ''">
-              {{ selectedLog?.data ? (selectedLog?.data | slice:0:8) : '' }}
-            </span>
-          </td>
-        </tr>
+          </tr>
+          <tr>
+            <td class="label">URL</td>
+            <td><span class="request-path">{{ selectedLog?.path }}</span></td>
+          </tr>
+          <tr>
+            <td class="label">Ngày tạo</td>
+            <td>{{ selectedLog?.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+          </tr>
+          <tr>
+            <td class="label">Thời gian (ms)</td>
+            <td>{{ selectedLog?.duration }}</td>
+          </tr>
+          <tr>
+            <td class="label">Tên ứng dụng</td>
+            <td>{{ selectedLog?.applicationName }}</td>
+          </tr>
+          <tr>
+            <td class="label">Dữ liệu</td>
+            <td class="address-cell">
+              <span nz-tooltip [nzTooltipTitle]="selectedLog?.data ?? ''">
+                {{ selectedLog?.data ? (selectedLog?.data | slice:0:8) : '' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </nz-modal>
@@ -182,13 +175,13 @@
 
       <thead>
         <tr>
-          <th nzWidth="120px">Hành động</th>
-          <th nzWidth="600px" nzShowSort [nzSortFn]="sortByRequest">Yêu cầu</th>
-          <th nzWidth="150px" nzShowSort [nzSortFn]="sortByUserName">Người dùng</th>
-          <th nzWidth="180px" nzShowSort [nzSortFn]="sortByDate">Ngày</th>
-          <th nzWidth="100px" nzShowSort [nzSortFn]="sortByDuration">Thời gian</th>
-          <th nzWidth="120px" nzShowSort [nzSortFn]="sortByData">Dữ liệu</th>
-          <th nzWidth="200px" nzShowSort [nzSortFn]="sortByAppName">Tên ứng dụng</th>
+          <th scope="col" nzWidth="120px">Hành động</th>
+          <th scope="col" nzWidth="600px" nzShowSort [nzSortFn]="sortByRequest">Yêu cầu</th>
+          <th scope="col" nzWidth="150px" nzShowSort [nzSortFn]="sortByUserName">Người dùng</th>
+          <th scope="col" nzWidth="180px" nzShowSort [nzSortFn]="sortByDate">Ngày</th>
+          <th scope="col" nzWidth="100px" nzShowSort [nzSortFn]="sortByDuration">Thời gian</th>
+          <th scope="col" nzWidth="120px" nzShowSort [nzSortFn]="sortByData">Dữ liệu</th>
+          <th scope="col" nzWidth="200px" nzShowSort [nzSortFn]="sortByAppName">Tên ứng dụng</th>
         </tr>
       </thead>
 

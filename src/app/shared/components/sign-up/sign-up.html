@@ -6,15 +6,20 @@
           nzSrc="https://pluspng.com/img-png/user-png-icon-account-avatar-human-male-man-men-people-person-download-svg-download-png-edit-icon-512.png">
         </nz-avatar>
       </div>
-      <form nz-form [formGroup]="signUpForm" (ngSubmit)="signUp()">
 
+      <form nz-form [formGroup]="signUpForm" (ngSubmit)="signUp()">
         <div nz-row [nzGutter]="16">
-          <!-- Họ và Tên -->
+          <!-- Họ và tên -->
           <div nz-col [nzSpan]="12">
             <nz-form-item>
-              <nz-form-label [nzSpan]="24">Họ và Tên</nz-form-label>
-              <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập họ và tên!">
+              <nz-form-label [nzSpan]="24" nzRequired>Họ và Tên</nz-form-label>
+              <nz-form-control [nzSpan]="24">
                 <input nz-input formControlName="fullname" placeholder="Nhập họ và tên" />
+                @if (signUpForm.get('fullname')?.touched && signUpForm.get('fullname')?.hasError('required')) {
+                <div class="text-red-500 text-xs mt-1">
+                  Vui lòng nhập họ và tên!
+                </div>
+                }
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -22,30 +27,31 @@
           <!-- Số điện thoại -->
           <div nz-col [nzSpan]="12">
             <nz-form-item>
-              <nz-form-label [nzSpan]="24">Số điện thoại</nz-form-label>
-              <nz-form-control [nzSpan]="24" [nzErrorTip]="phoneErrorTpl">
+              <nz-form-label [nzSpan]="24" nzRequired>Số điện thoại</nz-form-label>
+              <nz-form-control [nzSpan]="24">
                 <input nz-input type="tel" inputmode="numeric" maxlength="10" formControlName="phoneNumber"
                   placeholder="Nhập số điện thoại" />
-                <ng-template #phoneErrorTpl let-control>
-                  <ng-container *ngIf="control.hasError('pattern')">
-                    Số điện thoại phải bắt đầu bằng 0 và có đúng 10 số!
-                  </ng-container>
-                </ng-template>
+                @if (signUpForm.get('phoneNumber')?.touched && signUpForm.get('phoneNumber')?.hasError('pattern')) {
+                <div class="text-red-500 text-xs mt-1">
+                  Số điện thoại phải bắt đầu bằng 0 và có 10 số!
+                </div>
+                }
               </nz-form-control>
             </nz-form-item>
           </div>
         </div>
 
         <div nz-row [nzGutter]="16">
-          <!-- Tên đăng nhập -->
+          <!-- Username -->
           <div nz-col [nzSpan]="12">
             <nz-form-item>
               <nz-form-label [nzSpan]="24" nzRequired>Tên đăng nhập</nz-form-label>
-              <nz-form-control [nzSpan]="24" [nzErrorTip]="usernameErrorTpl">
+              <nz-form-control [nzSpan]="24">
                 <input nz-input formControlName="username" placeholder="Nhập tên đăng nhập" />
-                <ng-template #usernameErrorTpl let-control>
-                  <ng-container *ngIf="control.hasError('required')">Vui lòng nhập tên đăng nhập!</ng-container>
-                </ng-template>
+                <div *ngIf="signUpForm.get('username')?.touched && signUpForm.get('username')?.hasError('required')"
+                  class="text-red-500 text-xs mt-1">
+                  Vui lòng nhập tên đăng nhập!
+                </div>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -54,12 +60,16 @@
           <div nz-col [nzSpan]="12">
             <nz-form-item>
               <nz-form-label [nzSpan]="24" nzRequired>Email</nz-form-label>
-              <nz-form-control [nzSpan]="24" [nzErrorTip]="emailErrorTpl">
+              <nz-form-control [nzSpan]="24">
                 <input nz-input formControlName="email" placeholder="Nhập email" />
-                <ng-template #emailErrorTpl let-control>
-                  <ng-container *ngIf="control.hasError('required')">Vui lòng nhập email!</ng-container>
-                  <ng-container *ngIf="control.hasError('email')">Email không hợp lệ!</ng-container>
-                </ng-template>
+                <div *ngIf="signUpForm.get('email')?.touched && signUpForm.get('email')?.hasError('required')"
+                  class="text-red-500 text-xs mt-1">
+                  Vui lòng nhập email!
+                </div>
+                <div *ngIf="signUpForm.get('email')?.touched && signUpForm.get('email')?.hasError('email')"
+                  class="text-red-500 text-xs mt-1">
+                  Email không hợp lệ!
+                </div>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -76,65 +86,65 @@
         <div nz-row [nzGutter]="16">
           <!-- Mật khẩu -->
           <div nz-col [nzSpan]="12">
+            <!-- Mật khẩu -->
             <nz-form-item>
               <nz-form-label [nzSpan]="24" nzRequired>Mật khẩu</nz-form-label>
-              <nz-form-control [nzSpan]="24" [nzErrorTip]="passwordErrorTpl">
+              <nz-form-control [nzSpan]="24">
                 <div class="password-wrapper">
                   <input nz-input [type]="passwordVisible ? 'text' : 'password'" formControlName="password"
-                    placeholder="********" />
-                  <span class="toggle-eye" (click)="passwordVisible = !passwordVisible">
-                    <nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" nzTheme="outline"></nz-icon>
-                  </span>
+                    placeholder="********" (focus)="passwordFocused = true" (blur)="passwordFocused = false" />
+                  <button type="button" class="toggle-eye" (click)="passwordVisible = !passwordVisible">
+                    <nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"></nz-icon>
+                  </button>
                 </div>
-                <ng-template #passwordErrorTpl let-control>
-                  <ng-container *ngIf="control.hasError('required')">Vui lòng nhập mật khẩu!</ng-container>
-                  <ng-container *ngIf="control.hasError('requiredLength')">
-                    Mật khẩu phải có ít nhất {{ policy?.requiredLength }} ký tự!
-                  </ng-container>
-                  <ng-container *ngIf="control.hasError('uppercase')">Phải chứa ít nhất 1 chữ hoa (A-Z)!</ng-container>
-                  <ng-container *ngIf="control.hasError('lowercase')">Phải chứa ít nhất 1 chữ thường
-                    (a-z)!</ng-container>
-                  <ng-container *ngIf="control.hasError('digit')">Phải chứa ít nhất 1 số (0-9)!</ng-container>
-                  <ng-container *ngIf="control.hasError('nonAlphanumeric')">
-                    Phải chứa ít nhất 1 ký tự đặc biệt (!@#$...)
-                  </ng-container>
-                </ng-template>
+
+                <!-- Policy -->
+                <div *ngIf="passwordFocused || signUpForm.get('password')?.dirty" class="text-xs mt-1">
+                  <div *ngFor="let rule of passwordRules"
+                    [class.text-green-500]="!signUpForm.get('password')?.hasError(rule.key)"
+                    [class.text-red-500]="signUpForm.get('password')?.hasError(rule.key)">
+                    {{ rule.label }}
+                  </div>
+                </div>
               </nz-form-control>
             </nz-form-item>
+
           </div>
 
           <!-- Xác nhận mật khẩu -->
           <div nz-col [nzSpan]="12">
             <nz-form-item>
               <nz-form-label [nzSpan]="24" nzRequired>Xác nhận mật khẩu</nz-form-label>
-              <nz-form-control [nzSpan]="24" [nzErrorTip]="confirmTpl">
+              <nz-form-control [nzSpan]="24">
                 <div class="password-wrapper">
                   <input nz-input [type]="confirmPasswordVisible ? 'text' : 'password'" formControlName="c_password"
                     placeholder="********" />
-                  <span class="toggle-eye" (click)="confirmPasswordVisible = !confirmPasswordVisible">
-                    <nz-icon [nzType]="confirmPasswordVisible ? 'eye-invisible' : 'eye'" nzTheme="outline"></nz-icon>
-                  </span>
+                  <button type="button" class="toggle-eye" (click)="confirmPasswordVisible = !confirmPasswordVisible"
+                    aria-label="Toggle confirm password visibility">
+                    <nz-icon [nzType]="confirmPasswordVisible ? 'eye-invisible' : 'eye'"></nz-icon>
+                  </button>
                 </div>
-                <ng-template #confirmTpl let-control>
-                  <ng-container *ngIf="control.hasError('required')">Vui lòng xác nhận mật khẩu!</ng-container>
-                  <ng-container *ngIf="signUpForm.hasError('notSame')">Mật khẩu không khớp!</ng-container>
-                </ng-template>
+                <div *ngIf="signUpForm.get('c_password')?.touched && signUpForm.hasError('notSame')"
+                  class="text-red-500 text-xs mt-1">
+                  Mật khẩu không khớp!
+                </div>
+                <div *ngIf="signUpForm.get('c_password')?.touched && signUpForm.get('c_password')?.hasError('required')"
+                  class="text-red-500 text-xs mt-1">
+                  Vui lòng xác nhận mật khẩu!
+                </div>
               </nz-form-control>
             </nz-form-item>
           </div>
         </div>
 
-        <!-- Nút Đăng ký -->
         <div class="mt-3">
-          <button nz-button nzType="primary" nzBlock [disabled]="signUpForm.invalid">
-            {{isLoading ? 'Đang đăng ký...' : 'Đăng Ký'}}
+          <button nz-button nzType="primary" nzBlock [disabled]="signUpForm.invalid || isLoading">
+            {{ isLoading ? 'Đang đăng ký...' : 'Đăng Ký' }}
           </button>
         </div>
 
-        <!-- Chuyển hướng -->
         <div class="text-center mt-3">
-          Bạn đã có tài khoản?
-          <a [routerLink]="['/login']">Đăng Nhập</a> tại đây.
+          Bạn đã có tài khoản? <a [routerLink]="['/login']">Đăng Nhập</a> tại đây.
         </div>
       </form>
     </nz-card>

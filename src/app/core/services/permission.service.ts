@@ -2,16 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { Permission } from '../models/permission';
-import { ApiResponse } from '../models/ApiResponse';
+import { Permission } from '../models/domain/permission';
+import { ApiResponse } from '../models/domain/ApiResponse';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PermissionService {
-  private apiUrl = 'https://localhost:7277/api/Permission';
-  private http = inject(HttpClient);
-  private userDataSource = new BehaviorSubject<any[]>([]);
+  private readonly apiUrl = 'https://localhost:7277/api/Permission';
+  private readonly http = inject(HttpClient);
+  private readonly userDataSource = new BehaviorSubject<any[]>([]);
 
   userData$ = this.userDataSource.asObservable();
 

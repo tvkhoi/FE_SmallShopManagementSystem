@@ -4,8 +4,8 @@ import {
   Output,
   EventEmitter,
   ChangeDetectorRef,
-  NgZone,
   inject,
+  OnChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +13,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzTreeModule } from 'ng-zorro-antd/tree';
-import { User } from '../../../core/models/user';
+import { User } from '../../../../core/models/domain/user';
 
 // ================== Interfaces ==================
 export interface Permission {
@@ -50,26 +50,26 @@ export interface GroupedPermissions {
   templateUrl: './assign-permission-modal.html',
   styleUrls: ['./assign-permission-modal.scss'],
 })
-export class AssignPermissionModalComponent {
+export class AssignPermissionModalComponent implements OnChanges {
   @Input() visible = false;
   @Input() role!: Role | null;
   @Input() user!: User | null;
   @Input() groupedPermissions: GroupedPermissions[] = [];
 
-  @Output() cancel = new EventEmitter<void>();
+  @Output() cancelModal = new EventEmitter<void>();
   @Output() save = new EventEmitter<Permission[]>();
 
   selectedModule: string | null = null;
   allChecked = false;
 
-  private cdr = inject(ChangeDetectorRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   ngOnChanges(): void {
     if (this.groupedPermissions.length > 0) {
       // Nếu chưa có module được chọn thì chọn module đầu tiên
       this.selectedModule = this.selectedModule || this.groupedPermissions[0].module;
       this.allChecked = this.isAllSelected();
-      this.cdr.detectChanges(); // cập nhật UI
+      this.cdr.detectChanges(); 
     }
   }
 
@@ -107,7 +107,7 @@ export class AssignPermissionModalComponent {
   }
 
   handleCancel(): void {
-    this.cancel.emit();
+    this.cancelModal.emit();
   }
 
   handleSave(): void {

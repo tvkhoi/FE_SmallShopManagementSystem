@@ -7,7 +7,6 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { UserService } from '../../../core/services/user.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzTabLinkTemplateDirective } from 'ng-zorro-antd/tabs';
 
 @Component({
   selector: 'app-forgot-password',
@@ -19,16 +18,15 @@ import { NzTabLinkTemplateDirective } from 'ng-zorro-antd/tabs';
     NzInputModule,
     NzButtonModule,
     RouterLink,
-    NzTabLinkTemplateDirective,
   ],
   templateUrl: './forgot-password.html',
   styleUrls: ['./forgot-password.scss'],
 })
 export class ForgotPassword {
-  private userService = inject(UserService);
-  private message = inject(NzMessageService);
-  private router = inject(Router);
-  private cdj = inject(ChangeDetectorRef);
+  private readonly userService = inject(UserService);
+  private readonly message = inject(NzMessageService);
+  private readonly router = inject(Router);
+  private readonly cdj = inject(ChangeDetectorRef);
 
   isLoading = false;
 

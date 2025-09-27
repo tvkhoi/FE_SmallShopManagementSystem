@@ -23,7 +23,9 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { ExcelExportService } from '../../../core/services/excel-export.service';
-import { PaginationComponent } from "../../../shared/components/pagination-component/pagination-component";
+import { PaginationComponent } from '../../../shared/components/admin/pagination-component/pagination-component';
+import { getMethodColor, getStatusColor } from '../../../core/utils/index';
+
 
 @Component({
   selector: 'app-auditlog',
@@ -43,18 +45,21 @@ import { PaginationComponent } from "../../../shared/components/pagination-compo
     NzSelectModule,
     NzDropDownModule,
     NzMenuModule,
-    PaginationComponent
-],
+    PaginationComponent,
+  ],
   templateUrl: './auditlog.html',
   styleUrls: ['./auditlog.scss'],
 })
 export class Auditlog implements OnInit, OnDestroy {
-  private logsService = inject(SystemLogsService);
-  private zone = inject(NgZone);
-  private cdr = inject(ChangeDetectorRef);
-  private message = inject(NzMessageService);
-  private modal: NzModalService = inject(NzModalService);
-  private excelExportService = inject(ExcelExportService);
+  private readonly logsService = inject(SystemLogsService);
+  private readonly zone = inject(NgZone);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly message = inject(NzMessageService);
+  private readonly modal: NzModalService = inject(NzModalService);
+  private readonly excelExportService = inject(ExcelExportService);
+
+  getStatusColor = getStatusColor;
+  getMethodColor = getMethodColor;
 
   // === Filters ===
   userId: number | null = null;
@@ -87,7 +92,7 @@ export class Auditlog implements OnInit, OnDestroy {
   loading = false;
 
   // === Unsubscribe subject ===
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
 
   ngOnInit(): void {
     this.loadLogs();
@@ -179,33 +184,6 @@ export class Auditlog implements OnInit, OnDestroy {
   handleViewAuditDetailCancel() {
     this.isViewAuditDetailVisible = false;
     this.selectedLog = null;
-  }
-
-  // Phương thức trả về màu dựa trên mã trạng thái
-  getStatusColor(status: string | number): string {
-    const code = typeof status === 'string' ? parseInt(status.replace(/[()]/g, ''), 10) : status;
-
-    if (code >= 200 && code < 300) return '#4FBF67';
-    if (code >= 300 && code < 400) return '#FF9F38';
-    if (code >= 400 && code < 600) return '#C00D49';
-    return 'transparent';
-  }
-
-  getMethodColor(method: string): string {
-    switch (method.toUpperCase()) {
-      case 'GET':
-        return '#4FBF67';
-      case 'POST':
-        return '#1E90FF';
-      case 'PUT':
-        return '#FF9F38';
-      case 'DELETE':
-        return '#C00D49';
-      case 'PATCH':
-        return '#8A2BE2';
-      default:
-        return '#808080';
-    }
   }
 
   onMethodChange(value: string | null): void {

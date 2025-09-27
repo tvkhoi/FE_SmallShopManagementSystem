@@ -19,13 +19,13 @@ import { RoleService } from '../../../core/services/role.service';
 import { PermissionService } from '../../../core/services/permission.service';
 
 // Components
-import { AssignPermissionModalComponent } from '../../../shared/components/assign-permission-modal/assign-permission-modal';
-import { PaginationComponent } from '../../../shared/components/pagination-component/pagination-component';
+import { AssignPermissionModalComponent } from '../../../shared/components/admin/assign-permission-modal/assign-permission-modal';
+import { PaginationComponent } from '../../../shared/components/admin/pagination-component/pagination-component';
 
 // Models
-import { Role } from '../../../core/models/role';
-import { Permission } from '../../../core/models/permission';
-import { TreeNode } from '../../../core/models/tree-node';
+import { Role } from '../../../core/models/domain/role';
+import { Permission } from '../../../core/models/domain/permission';
+import { TreeNode } from '../../../core/models/ui/tree-node';
 
 @Component({
   selector: 'app-roles',
@@ -68,15 +68,14 @@ export class RolesComponent implements OnInit, OnDestroy {
   currentPage = 1;
   searchQuery = '';
 
-  private destroy$ = new Subject<void>();
-
+  private readonly destroy$ = new Subject<void>();
   // Inject services
-  private roleService = inject(RoleService);
-  private permissionService = inject(PermissionService);
-  private zone = inject(NgZone);
-  private msg = inject(NzMessageService);
-  private modal: NzModalService = inject(NzModalService);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly roleService = inject(RoleService);
+  private readonly permissionService = inject(PermissionService);
+  private readonly zone = inject(NgZone);
+  private readonly msg = inject(NzMessageService);
+  private readonly modal: NzModalService = inject(NzModalService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.loadPermissions();
@@ -88,38 +87,47 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  /** Helper to group permissions by module */
+  private groupPermissionsByModule(data: Permission[]): { module: string; permissions: Permission[] }[] {
+    const modules = [...new Set(data.map((p) => p.module))];
+    return modules.map((module) => ({
+      module,
+      permissions: data.filter((p) => p.module === module),
+    }));
+  }
+
+  /** Helper to build tree data */
+  private buildTreeData(data: Permission[]): TreeNode[] {
+    const modules = [...new Set(data.map((p) => p.module))];
+    return modules.map((module) => ({
+      key: module,
+      title: module,
+      expanded: true,
+      children: data
+        .filter((p) => p.module === module)
+        .map((perm) => ({
+          key: `${module}-${perm.id}`,
+          title: perm.description,
+          isLeaf: true,
+          checked: false,
+          id: perm.id,
+        })),
+    }));
+  }
+
   /** Load toàn bộ permissions và build tree */
   private loadPermissions(): void {
     this.permissionService
       .getPermissions()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (data: Permission[]) =>
+        next: (data: Permission[]) => {
           this.zone.run(() => {
-            const modules = [...new Set(data.map((p) => p.module))];
-
-            this.groupedPermissions = modules.map((module) => ({
-              module,
-              permissions: data.filter((p) => p.module === module),
-            }));
-
-            this.treeData = modules.map((module) => ({
-              key: module,
-              title: module,
-              expanded: true,
-              children: data
-                .filter((p) => p.module === module)
-                .map((perm) => ({
-                  key: `${module}-${perm.id}`,
-                  title: perm.description,
-                  isLeaf: true,
-                  checked: false,
-                  id: perm.id,
-                })),
-            }));
-
+            this.groupedPermissions = this.groupPermissionsByModule(data);
+            this.treeData = this.buildTreeData(data);
             this.cdr.detectChanges();
-          }),
+          });
+        },
         error: () => this.msg.error('Không thể tải danh sách quyền'),
       });
   }
@@ -190,42 +198,50 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  /** Helper to build tree data for assign modal */
+  private buildAssignTreeData(allPerms: Permission[], grantedIds: Set<number>): TreeNode[] {
+    const modules = [...new Set(allPerms.map((p) => p.module))];
+    return modules.map((module) => ({
+      key: module,
+      title: module,
+      expanded: true,
+      children: allPerms
+        .filter((p) => p.module === module)
+        .map((p) => ({
+          key: `${module}-${p.id}`,
+          title: p.description,
+          isLeaf: true,
+          id: p.id,
+          checked: grantedIds.has(p.id),
+        })),
+    }));
+  }
+
+  /** Helper to group permissions for assign modal */
+  private buildAssignGroupedPermissions(allPerms: Permission[], grantedIds: Set<number>) {
+    const modules = [...new Set(allPerms.map((p) => p.module))];
+    return modules.map((module) => ({
+      module,
+      permissions: allPerms
+        .filter((p) => p.module === module)
+        .map((p) => ({ ...p, granted: grantedIds.has(p.id) })),
+    }));
+  }
+
   /** Hiển thị modal gán quyền */
   showAssignModal(role: Role): void {
     this.isAssignVisible = true;
     this.selectedRole = role;
 
     this.permissionService.getPermissions().subscribe((allPerms) => {
-      this.roleService
-        .getPermissionsByRole(role.id)
-        .subscribe((res: { roleId: number; permissions: Permission[] }) => {
-          const grantedIds = new Set(res.permissions.filter((p) => p.granted).map((p) => p.id));
+      this.roleService.getPermissionsByRole(role.id).subscribe((res: { roleId: number; permissions: Permission[] }) => {
+        const grantedIds = new Set(res.permissions.filter((p) => p.granted).map((p) => p.id));
 
-          const modules = [...new Set(allPerms.map((p) => p.module))];
-          this.treeData = modules.map((module) => ({
-            key: module,
-            title: module,
-            expanded: true,
-            children: allPerms
-              .filter((p) => p.module === module)
-              .map((p) => ({
-                key: `${module}-${p.id}`,
-                title: p.description,
-                isLeaf: true,
-                id: p.id,
-                checked: grantedIds.has(p.id),
-              })),
-          }));
+        this.treeData = this.buildAssignTreeData(allPerms, grantedIds);
+        this.groupedPermissions = this.buildAssignGroupedPermissions(allPerms, grantedIds);
 
-          this.groupedPermissions = modules.map((module) => ({
-            module,
-            permissions: allPerms
-              .filter((p) => p.module === module)
-              .map((p) => ({ ...p, granted: grantedIds.has(p.id) })),
-          }));
-
-          this.cdr.detectChanges();
-        });
+        this.cdr.detectChanges();
+      });
     });
   }
 
@@ -335,9 +351,9 @@ export class RolesComponent implements OnInit, OnDestroy {
         if (node.checked && node.isLeaf) {
           selected.push({
             id: node.id!,
-            name: node.title!,
+            name: node.title,
             module: parentModule || '',
-            description: node.title!,
+            description: node.title,
           });
         }
         if (node.children) traverse(node.children, node.key);
