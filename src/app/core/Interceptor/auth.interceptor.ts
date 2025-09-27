@@ -40,7 +40,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
           return refreshSubject.pipe(
             filter(token => token != null),
             take(1),
-            switchMap(token => next(req.clone({ setHeaders: { Authorization: `Bearer ${token!}` } })))
+            switchMap(token => next(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })))
           );
         }
       }

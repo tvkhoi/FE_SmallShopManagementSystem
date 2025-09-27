@@ -97,7 +97,7 @@
         border-radius: 8px;
 
         &:hover {
-          background-color: darken(#40A9FF, 10%);
+          background-color: #1677cc;
         }
       }
     }
@@ -107,7 +107,6 @@
     padding: 16px;
 
     .search-bar {
-      //flex-direction: column;
       gap: 12px;
 
       nz-input-group {

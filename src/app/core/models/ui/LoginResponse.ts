@@ -2,6 +2,6 @@ export interface LoginResponse {
   username: string;
   email: string;
   roles: string[];
-  token: string;          // access token
+  token: string;         
   refreshToken: string;
 }

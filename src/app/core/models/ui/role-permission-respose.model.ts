@@ -1,4 +1,4 @@
-import { Permission } from "../../../core/models/permission";
+import { Permission } from "../../../core/models/domain/permission";
 
 export interface RolePermissionsResponse {
   roleId: number;

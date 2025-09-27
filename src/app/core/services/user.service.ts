@@ -1,20 +1,20 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, map, Observable, throwError } from 'rxjs';
-import { ApiResponse } from '../models/ApiResponse';
-import { LoginResponse } from '../models/LoginResponse';
-import { UserDTO } from '../../features/admin/users/user.dto';
-import { PagedResult } from '../../features/admin/users/PagedResult';
-import { User } from '../models/user';
+import { BehaviorSubject, map, Observable } from 'rxjs';
+import { ApiResponse } from '../models/domain/ApiResponse';
+import { LoginResponse } from '../models/ui/LoginResponse';
+import { UserDTO } from '../models/ui/user.dto';
+import { PagedResult } from '../models/ui/PagedResult';
+import { User } from '../models/domain/user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private apiUrl = 'https://localhost:7277/api';
-  private http = inject(HttpClient);
+  private readonly apiUrl = 'https://localhost:7277/api';
+  private readonly http = inject(HttpClient);
 
-  private userDataSource = new BehaviorSubject<LoginResponse | null>(null);
+  private readonly userDataSource = new BehaviorSubject<LoginResponse | null>(null);
   currentUserData = this.userDataSource.asObservable();
 
   changeData(newUserData: LoginResponse) {
@@ -131,14 +131,7 @@ export class UserService {
     pageNumber?: number;
     pageSize?: number;
   }): Observable<PagedResult<User>> {
-    return this.http
-      .get<ApiResponse<PagedResult<User>>>(`${this.apiUrl}/User/paged`, { params })
-      .pipe(
-        map((res) => {
-          if (res.success) return res.data;
-          throw res;
-        })
-      );
+    return this.getUsersPaged(params);
   }
 
   searchUsers(

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
-import { PasswordPolicy } from '../../../core/models/PasswordPolicy';
+import { PasswordPolicy } from '../../../core/models/domain/PasswordPolicy';
 import { PasswordPolicyService } from '../../../core/services/passwordPolicy.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,7 +16,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
     FormsModule,
     NzCheckboxModule,   
     NzButtonModule,     
-    NzInputModule     
+    NzInputModule,
   ],
   templateUrl: './settings.html',
   styleUrls: ['./settings.scss'],
@@ -30,9 +30,9 @@ export class Settings implements OnInit {
     requireNonAlphanumeric: false,
   };
 
-  private passwordPolicyService = inject(PasswordPolicyService);
-  private ms = inject(NzMessageService);
-  private cdj = inject(ChangeDetectorRef);
+  private readonly passwordPolicyService = inject(PasswordPolicyService);
+  private readonly ms = inject(NzMessageService);
+  private readonly cdj = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.passwordPolicyService.getPolicy().subscribe((data) => {

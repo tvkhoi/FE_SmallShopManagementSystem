@@ -1,9 +1,8 @@
-import { routes } from './../../../app.routes';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzLayoutModule } from "ng-zorro-antd/layout";
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../../auth/auth.service';
+import { AuthService } from '../../../../auth/auth.service';
 import { Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -16,9 +15,9 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
   styleUrls: ['./sidebar-right.scss'],
 })
 export class SidebarRight {
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  private messageService = inject(NzMessageService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly messageService = inject(NzMessageService);
 
   @Input() isProfileCardOpen: boolean = false;
   @Input() menuItems: Array<{ label: string, icon: string, route: string }> = [];

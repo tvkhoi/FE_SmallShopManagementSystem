@@ -1,15 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-import { ApiResponse } from '../models/ApiResponse';
-import { PasswordPolicy } from '../models/PasswordPolicy';
+import { ApiResponse } from '../models/domain/ApiResponse';
+import { PasswordPolicy } from '../models/domain/PasswordPolicy';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PasswordPolicyService {
-  private apiUrl = 'https://localhost:7277/api/PasswordPolicy';
-  private http = inject(HttpClient);
+  private readonly apiUrl = 'https://localhost:7277/api/PasswordPolicy';
+  private readonly http = inject(HttpClient);
 
   // GET: lấy password policy hiện tại
   getPolicy(): Observable<PasswordPolicy> {

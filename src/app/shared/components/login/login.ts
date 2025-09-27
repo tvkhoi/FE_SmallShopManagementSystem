@@ -37,11 +37,11 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   isLoading = false;
 
-  private cdr = inject(ChangeDetectorRef);
-  private fb = inject(FormBuilder);
-  private userService = inject(UserService);
-  private authService = inject(AuthService);
-  private message = inject(NzMessageService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly fb = inject(FormBuilder);
+  private readonly userService = inject(UserService);
+  private readonly authService = inject(AuthService);
+  private readonly message = inject(NzMessageService);
 
   passwordVisible = false;
 
@@ -87,5 +87,12 @@ export class LoginComponent implements OnInit {
           console.error('Đăng nhập thất bại:', err);
         },
       });
+  }
+
+  onToggleKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.passwordVisible = !this.passwordVisible;
+    }
   }
 }

@@ -30,7 +30,7 @@
 
     <!-- Modal Gán quyền -->
     <app-assign-permission-modal [visible]="isAssignVisible" [role]="selectedRole"
-      [groupedPermissions]="groupedPermissions" (cancel)="handleAssignCancel()"
+      [groupedPermissions]="groupedPermissions" (cancelModal)="handleAssignCancel()"
       (save)="handleAssignOk($event)"></app-assign-permission-modal>
 
     <!-- Footer Modal -->
@@ -54,11 +54,11 @@
 
     <thead>
       <tr>
-        <th nzWidth="15%">Hành động</th>
-        <th nzWidth="60%" nzShowSort [nzSortFn]="sortByName" nzSortKey="name">
+        <th nzWidth="15%" scope="col">Hành động</th>
+        <th nzWidth="60%" scope="col" nzShowSort [nzSortFn]="sortByName" nzSortKey="name">
           Tên vai trò
         </th>
-        <th nzWidth="25%" nzShowSort [nzSortFn]="sortByUserCount" nzSortKey="userCount">
+        <th nzWidth="25%" scope="col" nzShowSort [nzSortFn]="sortByUserCount" nzSortKey="userCount">
           Số người dùng
         </th>
       </tr>
@@ -67,7 +67,7 @@
       <tr *ngFor="let role of table.data">
         <td>
           <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu">
-            <nz-icon nzType="setting" nzTheme="outline" style="font-size: 16px; padding-right: 5px;"></nz-icon>Hành động
+            <span><nz-icon nzType="setting" nzTheme="outline" style="font-size: 16px; padding-right: 5px;"/>Hành động</span>
           </a>
           <nz-dropdown-menu #menu="nzDropdownMenu">
             <ul nz-menu>

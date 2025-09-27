@@ -16,7 +16,8 @@ import { ChartData, ChartOptions } from 'chart.js';
     NzDatePickerModule,
     NzButtonModule,
     NzIconModule,
-    BaseChartDirective
+    BaseChartDirective,
+    FormsModule
   ],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']

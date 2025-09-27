@@ -15,8 +15,6 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { UserService } from '../../../core/services/user.service';
-import { NzTabLinkTemplateDirective } from 'ng-zorro-antd/tabs';
-import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -30,18 +28,16 @@ import { finalize } from 'rxjs';
     NzButtonModule,
     NzIconModule,
     RouterLink,
-    NzTabLinkTemplateDirective,
-    NzTooltipDirective,
   ],
   templateUrl: './reset-password.html',
   styleUrls: ['./reset-password.scss'],
 })
 export class ResetPassword implements OnInit {
-  private userService = inject(UserService);
-  private message = inject(NzMessageService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private cdRef = inject(ChangeDetectorRef);
+  private readonly userService = inject(UserService);
+  private readonly message = inject(NzMessageService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly cdRef = inject(ChangeDetectorRef);
 
   email: string = '';
 

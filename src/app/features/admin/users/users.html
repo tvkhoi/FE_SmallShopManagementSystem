@@ -116,10 +116,10 @@
                             <nz-form-label>Chọn vai trò</nz-form-label>
                             <nz-form-control>
                                 <div *ngFor="let role of roles">
-                                    <label nz-checkbox [(ngModel)]="role.checked" name="{{ role.name }}"
+                                    <nz-form-label nz-checkbox [(ngModel)]="role.checked" name="{{ role.name }}"
                                         (ngModelChange)="onChangeRoleSelection()">
                                         {{ role.name }}
-                                    </label>
+                                    </nz-form-label>
                                 </div>
                             </nz-form-control>
                         </nz-form-item>
@@ -131,49 +131,57 @@
 
     <!-- Modal: Assign permissions -->
     <app-assign-permission-modal [visible]="isAssignVisible" [user]="selectedUser"
-        [groupedPermissions]="groupedPermissions" (cancel)="handleAssignCancel()"
+        [groupedPermissions]="groupedPermissions" (cancelModal)="handleAssignCancel()"
         (save)="handleAssignOk($event)"></app-assign-permission-modal>
 
     <nz-modal [(nzVisible)]="isViewDetailsVisible" nzTitle="Xem chi tiết" (nzOnCancel)="handleViewDetailsCancel()"
         [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooterViewDetails">
         <div *nzModalContent>
             <table class="details-table">
-                <tr>
-                    <td class="label">Mã người dùng</td>
-                    <td>{{ selectedUser?.id }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Tên đăng nhập</td>
-                    <td>{{ selectedUser?.username }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Họ và tên</td>
-                    <td>{{ selectedUser?.fullName }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Email</td>
-                    <td>{{ selectedUser?.email }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Số điện thoại</td>
-                    <td>{{ selectedUser?.phoneNumber }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Địa chỉ</td>
-                    <td class="address-cell">{{ selectedUser?.address }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Ngày tạo</td>
-                    <td>{{ selectedUser?.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Trạng thái</td>
-                    <td>
-                        <nz-tag [nzColor]="selectedUser?.isActive ? 'green' : 'red'">
-                            {{ selectedUser?.isActive ? 'Kích hoạt' : 'Không kích hoạt' }}
-                        </nz-tag>
-                    </td>
-                </tr>
+                <thead>
+                    <tr>
+                        <th>Thuộc tính</th>
+                        <th>Giá trị</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="label">Mã người dùng</td>
+                        <td>{{ selectedUser?.id }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Tên đăng nhập</td>
+                        <td>{{ selectedUser?.username }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Họ và tên</td>
+                        <td>{{ selectedUser?.fullName }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Email</td>
+                        <td>{{ selectedUser?.email }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Số điện thoại</td>
+                        <td>{{ selectedUser?.phoneNumber }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Địa chỉ</td>
+                        <td class="address-cell">{{ selectedUser?.address }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Ngày tạo</td>
+                        <td>{{ selectedUser?.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Trạng thái</td>
+                        <td>
+                            <nz-tag [nzColor]="selectedUser?.isActive ? 'green' : 'red'">
+                                {{ selectedUser?.isActive ? 'Kích hoạt' : 'Không kích hoạt' }}
+                            </nz-tag>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </nz-modal>
@@ -331,37 +339,38 @@
     <nz-table #userTable [nzData]="users" [nzFrontPagination]="false" class="user-table" [nzLoading]="loading">
         <thead>
             <tr>
-                <th nzWidth="10%" nzColumnKey="username">Hành động</th>
-                <th nzWidth="12%" nzColumnKey="username" [nzSortFn]="true"
+                <th scope="col" nzWidth="10%" nzColumnKey="username">Hành động</th>
+                <th scope="col" nzWidth="12%" nzColumnKey="username" [nzSortFn]="true"
                     (nzSortOrderChange)="onSort('username', $event)">
                     Tên người dùng
                 </th>
 
-                <th nzWidth="14%" nzColumnKey="fullName" [nzSortFn]="true"
+                <th scope="col" nzWidth="14%" nzColumnKey="fullName" [nzSortFn]="true"
                     (nzSortOrderChange)="onSort('fullName', $event)">
                     Họ và tên
                 </th>
 
-                <th nzWidth="18%" nzColumnKey="email" [nzSortFn]="true" (nzSortOrderChange)="onSort('email', $event)">
+                <th scope="col" nzWidth="18%" nzColumnKey="email" [nzSortFn]="true"
+                    (nzSortOrderChange)="onSort('email', $event)">
                     Địa chỉ email
                 </th>
 
-                <th nzWidth="12%" nzColumnKey="phoneNumber" [nzSortFn]="true"
+                <th scope="col" nzWidth="12%" nzColumnKey="phoneNumber" [nzSortFn]="true"
                     (nzSortOrderChange)="onSort('phoneNumber', $event)">
                     Số điện thoại
                 </th>
 
-                <th nzWidth="14%" nzColumnKey="address" [nzSortFn]="true"
+                <th scope="col" nzWidth="14%" nzColumnKey="address" [nzSortFn]="true"
                     (nzSortOrderChange)="onSort('address', $event)">
                     Địa chỉ
                 </th>
 
-                <th nzWidth="12%" nzColumnKey="createdAt" [nzSortFn]="true"
+                <th scope="col" nzWidth="12%" nzColumnKey="createdAt" [nzSortFn]="true"
                     (nzSortOrderChange)="onSort('createdAt', $event)">
                     Ngày tạo
                 </th>
 
-                <th nzWidth="8%" nzColumnKey="isActive" [nzSortFn]="true"
+                <th scope="col" nzWidth="8%" nzColumnKey="isActive" [nzSortFn]="true"
                     (nzSortOrderChange)="onSort('isActive', $event)">
                     Trạng thái
                 </th>

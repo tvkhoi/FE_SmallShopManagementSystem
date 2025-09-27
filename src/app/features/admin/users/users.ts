@@ -13,23 +13,23 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTreeModule, NzFormatEmitEvent } from 'ng-zorro-antd/tree';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzTagModule } from 'ng-zorro-antd/tag';
-import { of, Subject, map } from 'rxjs';
-import { finalize, switchMap, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 
-import { PaginationComponent } from '../../../shared/components/pagination-component/pagination-component';
-import { AssignPermissionModalComponent } from '../../../shared/components/assign-permission-modal/assign-permission-modal';
+import { PaginationComponent } from '../../../shared/components/admin/pagination-component/pagination-component';
+import { AssignPermissionModalComponent } from '../../../shared/components/admin/assign-permission-modal/assign-permission-modal';
 import { PermissionService } from '../../../core/services/permission.service';
 import { UserService } from '../../../core/services/user.service';
 
-import { Permission } from '../../../core/models/permission';
-import { TreeNode } from '../../../core/models/tree-node';
-import { User } from '../../../core/models/user';
-import { UserPermissionsResponse } from './user-permission-respose.model';
+import { Permission } from '../../../core/models/domain/permission';
+import { TreeNode } from '../../../core/models/ui/tree-node';
+import { User } from '../../../core/models/domain/user';
+import { UserPermissionsResponse } from '../../../core/models/ui/user-permission-respose.model';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
-import { Role } from '../../../core/models/role';
+import { Role } from '../../../core/models/domain/role';
 import { RoleService } from '../../../core/services/role.service';
-import { UserDTO } from './user.dto';
+import { UserDTO } from '../../../core/models/ui/user.dto';
 import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 
@@ -61,13 +61,13 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
   styleUrls: ['./users.scss'],
 })
 export class UsersComponent implements OnInit {
-  private permissionService = inject(PermissionService);
-  private userService = inject(UserService);
-  private roleService = inject(RoleService);
-  private cdr = inject(ChangeDetectorRef);
-  private zone = inject(NgZone);
-  private msg = inject(NzMessageService);
-  private modal: NzModalService = inject(NzModalService);
+  private readonly permissionService = inject(PermissionService);
+  private readonly userService = inject(UserService);
+  private readonly roleService = inject(RoleService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly zone = inject(NgZone);
+  private readonly msg = inject(NzMessageService);
+  private readonly modal = inject(NzModalService);
 
   searchQuery = '';
   users: User[] = [];
@@ -127,7 +127,7 @@ export class UsersComponent implements OnInit {
   roles: Role[] = [];
   selectedNames: string[] = [];
 
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
 
   ngOnInit(): void {
     this.loadUsers();
@@ -148,7 +148,6 @@ export class UsersComponent implements OnInit {
           this.totalItems = pagedResult.totalItems;
           this.pageSize = pagedResult.pageSize;
           this.currentPage = pagedResult.pageNumber;
-          console.log('Danh sách users:', this.users);
           this.cdr.detectChanges();
         });
       },
