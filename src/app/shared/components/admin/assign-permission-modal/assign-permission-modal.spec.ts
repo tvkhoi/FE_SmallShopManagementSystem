@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AssignPermissionModal } from './assign-permission-modal';
+import { AssignPermissionModalComponent } from './assign-permission-modal';
 
 describe('AssignPermissionModal', () => {
-  let component: AssignPermissionModal;
-  let fixture: ComponentFixture<AssignPermissionModal>;
+  let component: AssignPermissionModalComponent;
+  let fixture: ComponentFixture<AssignPermissionModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AssignPermissionModal]
+      imports: [AssignPermissionModalComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AssignPermissionModal);
+    fixture = TestBed.createComponent(AssignPermissionModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -19,14 +19,14 @@ interface JwtPayload {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private accessTokenKey = 'accessToken';
-  private refreshTokenKey = 'refreshToken';
-  private router = inject(Router);
-  private http = inject(HttpClient);
-  private platformId = inject(PLATFORM_ID);
-  private ngZone = inject(NgZone);
+  private readonly refreshTokenKey = 'refreshToken';
+  private readonly accessTokenKey = 'accessToken';
+  private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly ngZone = inject(NgZone);
 
-  private loggedIn$ = new BehaviorSubject<boolean>(false);
+  private readonly loggedIn$ = new BehaviorSubject<boolean>(false);
   get isLoggedIn$(): Observable<boolean> {
     return this.loggedIn$.asObservable();
   }
@@ -74,7 +74,8 @@ export class AuthService {
     const decoded = this.getDecodedToken();
     if (!decoded) return [];
     const msRole = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-    return msRole ? (Array.isArray(msRole) ? msRole : [msRole]) : [];
+    const roles =  msRole ? (Array.isArray(msRole) ? msRole : [msRole]) : [];
+    return roles;
   }
 
   getEmail(): string | null {
