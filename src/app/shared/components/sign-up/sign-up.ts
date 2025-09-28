@@ -23,6 +23,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { UserService } from '../../../core/services/user.service';
 import { PasswordPolicyService } from '../../../core/services/passwordPolicy.service';
 import { PasswordPolicy } from '../../../core/models/domain/PasswordPolicy';
+import { getPendingPasswordRules, noWhitespaceValidator } from '../../../core/utils';
 
 @Component({
   selector: 'app-sign-up',
@@ -51,6 +52,9 @@ export class SignUpComponent implements OnInit {
   confirmPasswordVisible = false;
   policy!: PasswordPolicy;
 
+  getPendingPasswordRules = getPendingPasswordRules;
+  noWhitespaceValidator = noWhitespaceValidator;
+
   private readonly fb = inject(FormBuilder);
   private readonly userService = inject(UserService);
   private readonly router = inject(Router);
@@ -58,49 +62,36 @@ export class SignUpComponent implements OnInit {
   private readonly cdjf = inject(ChangeDetectorRef);
   private readonly policyService = inject(PasswordPolicyService);
 
-  // Mảng điều kiện password
-  get passwordRules() {
-    return [
-      { key: 'requiredLength', label: `Ít nhất ${this.policy?.requiredLength || 8} ký tự` },
-      { key: 'uppercase', label: 'Chữ hoa (A-Z)' },
-      { key: 'lowercase', label: 'Chữ thường (a-z)' },
-      { key: 'digit', label: 'Số (0-9)' },
-      { key: 'nonAlphanumeric', label: 'Ký tự đặc biệt (!@#$...)' },
-    ];
-  }
+  pendingRules: string[] = [];
 
   // Validator kiểm tra password match
-  private readonly passwordMatchValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
+  private readonly passwordMatchValidator: ValidatorFn = (
+    group: AbstractControl
+  ): ValidationErrors | null => {
     const password = group.get('password')?.value;
     const confirm = group.get('c_password')?.value;
     if (!password || !confirm) return null;
     return password === confirm ? null : { notSame: true };
   };
 
-  // Validator chính sách password
-  private passwordPolicyValidator(policy: PasswordPolicy): ValidatorFn {
+  // validator động dựa theo policy
+  private createPasswordPolicyValidator(policy: PasswordPolicy): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      if (!control.value) return null;
-      const value = control.value as string;
-      const errors: any = {};
-      if (value.length < policy.requiredLength) errors.requiredLength = true;
-      if (policy.requireUppercase && !/[A-Z]/.test(value)) errors.uppercase = true;
-      if (policy.requireLowercase && !/[a-z]/.test(value)) errors.lowercase = true;
-      if (policy.requireDigit && !/\d/.test(value)) errors.digit = true;
-      if (policy.requireNonAlphanumeric && !/[^a-zA-Z0-9]/.test(value)) errors.nonAlphanumeric = true;
-      return Object.keys(errors).length ? errors : null;
+      const value = control.value || '';
+      const pending = getPendingPasswordRules(value, policy);
+      return pending.length === 0 ? null : { passwordPolicy: pending.map((r) => r.label) };
     };
   }
 
   ngOnInit(): void {
     this.signUpForm = this.fb.group(
       {
-        fullname: ['', Validators.required],
+        fullname: [''],
         phoneNumber: ['', [Validators.pattern(/^0\d{9}$/)]],
-        username: ['', Validators.required],
+        username: ['', [Validators.required, noWhitespaceValidator]],
         email: ['', [Validators.required, Validators.email]],
-        password: ['', Validators.required],
-        c_password: ['', Validators.required],
+        password: ['', [Validators.required, noWhitespaceValidator]],
+        c_password: ['', [Validators.required]],
         address: [''],
       },
       { validators: this.passwordMatchValidator }
@@ -109,17 +100,20 @@ export class SignUpComponent implements OnInit {
     this.policyService.getPolicy().subscribe({
       next: (res) => {
         this.policy = res;
-        const passwordControl = this.signUpForm.get('password');
-        if (passwordControl) {
-          passwordControl.setValidators([
-            Validators.required,
-            this.passwordPolicyValidator(this.policy),
-          ]);
-          passwordControl.updateValueAndValidity();
+
+        const passwordCtrl = this.signUpForm.get('password');
+        if(passwordCtrl){
+          passwordCtrl.addValidators(this.createPasswordPolicyValidator(this.policy));
+          passwordCtrl.updateValueAndValidity();
         }
+
+        passwordCtrl?.valueChanges.subscribe((value) => {
+          this.pendingRules = getPendingPasswordRules(value || '', this.policy).map((r) => r.label);
+        });
       },
       error: () => console.error('Không thể lấy chính sách mật khẩu'),
     });
+
   }
 
   signUp(): void {
@@ -135,11 +129,14 @@ export class SignUpComponent implements OnInit {
     this.isLoading = true;
     const { fullname, phoneNumber, username, email, password } = this.signUpForm.value;
 
-    this.userService.signUp({ fullname, phoneNumber, username, email, password })
-      .pipe(finalize(() => {
-        this.isLoading = false;
-        setTimeout(() => this.cdjf.detectChanges(), 2000);
-      }))
+    this.userService
+      .signUp({ fullname, phoneNumber, username, email, password })
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          setTimeout(() => this.cdjf.detectChanges(), 2000);
+        })
+      )
       .subscribe({
         next: () => {
           this.message.success('Đăng ký thành công');
