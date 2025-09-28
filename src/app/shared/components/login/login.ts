@@ -1,3 +1,4 @@
+import { PasswordPolicy } from './../../../core/models/domain/PasswordPolicy';
 import { AuthService } from './../../../auth/auth.service';
 import { RouterModule } from '@angular/router';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
@@ -16,6 +17,8 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { PasswordPolicyService } from '../../../core/services/passwordPolicy.service';
+import { getPendingPasswordRules } from '../../../core/utils/index';
 
 @Component({
   selector: 'app-login',
@@ -42,14 +45,31 @@ export class LoginComponent implements OnInit {
   private readonly userService = inject(UserService);
   private readonly authService = inject(AuthService);
   private readonly message = inject(NzMessageService);
+  private readonly policy = inject(PasswordPolicyService);
 
   passwordVisible = false;
+  getPendingPasswordRules = getPendingPasswordRules;
+  policyPassword!: PasswordPolicy;
+  pendingRules: string[] = [];
 
   ngOnInit() {
     // Tạo form reactive
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
+    });
+
+    this.policy.getPolicy().subscribe({
+      next: (res) => {
+        this.policyPassword = res;
+      },
+      error: (err) => {
+        console.error('Failed to fetch password policy:', err);
+      },
+    });
+    // Live check mỗi khi thay đổi password
+    this.loginForm.get('password')?.valueChanges.subscribe(value => {
+      this.pendingRules = getPendingPasswordRules(value || '', this.policyPassword).map(r => r.label);
     });
   }
 
@@ -93,6 +113,15 @@ export class LoginComponent implements OnInit {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       this.passwordVisible = !this.passwordVisible;
+    }
+  }
+
+  onPasswordChange(): void {
+    const password = this.loginForm.get('password')?.value || '';
+    if (this.policyPassword) {
+      this.pendingRules = getPendingPasswordRules(password, this.policyPassword).map(
+        (r) => r.label
+      );
     }
   }
 }

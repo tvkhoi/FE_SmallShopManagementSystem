@@ -1,4 +1,4 @@
-.login-container {
+.sign-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -124,6 +124,20 @@
     padding-right: 36px;
   }
 
+  button {
+    background: transparent;
+    border: none;
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: #999;
+    font-size: 18px;
+
+    &:hover {
+      color: #1890ff;
+    }
+  }
+
   .toggle-eye {
     position: absolute;
     right: 10px;
@@ -135,4 +149,18 @@
       color: #1890ff;
     }
   }
+}
+
+.text-red-500 {
+  color: #ff4d4f !important;
+}
+.text-xs {
+  font-size: 12px !important;
+}
+.mt-1 {
+  margin-top: 4px !important;
+}
+.list-disc {
+  list-style: none;
+  padding-left: 5px;
 }

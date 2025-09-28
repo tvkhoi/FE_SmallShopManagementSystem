@@ -30,21 +30,25 @@
           <div class="password-wrapper">
             <input nz-input [type]="passwordVisible ? 'text' : 'password'" id="password" formControlName="password"
               placeholder="********" />
+            <span (keydown)="onToggleKeydown($event)" class="toggle-eye" (click)="passwordVisible = !passwordVisible">
+              <nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" nzTheme="outline"></nz-icon>
+            </span>
             <ng-template #passwordErrorTpl let-control>
               <ng-container *ngIf="control.hasError('required')">
                 Vui lòng nhập mật khẩu!
               </ng-container>
             </ng-template>
-            <span (keydown)="onToggleKeydown($event)" class="toggle-eye" (click)="passwordVisible = !passwordVisible">
-              <nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" nzTheme="outline"></nz-icon>
-            </span>
           </div>
-          <div class="forget-pass">
-            <a [routerLink]="['/forgot-password']">Quên mật khẩu?</a>
-          </div>
+
         </nz-form-control>
+
       </nz-form-item>
 
+      <!-- Quên mật khẩu -->
+      <div class="forget-pass">
+        <a [routerLink]="['/forgot-password']">Quên mật khẩu?</a>
+      </div>
+      
       <!-- Nút đăng nhập -->
       <div class="text-center">
         <button nz-button nzType="primary" class="login-btn" [nzBlock]="true"
