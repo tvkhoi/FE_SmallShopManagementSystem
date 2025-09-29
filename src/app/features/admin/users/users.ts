@@ -1,5 +1,14 @@
 import { Component, inject, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  Validators,
+  ReactiveFormsModule,
+  AbstractControl,
+  ValidationErrors,
+  ValidatorFn,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -32,6 +41,9 @@ import { RoleService } from '../../../core/services/role.service';
 import { UserDTO } from '../../../core/models/ui/user.dto';
 import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { getPendingPasswordRules, noWhitespaceValidator } from '../../../core/utils';
+import { PasswordPolicyService } from '../../../core/services/passwordPolicy.service';
+import { PasswordPolicy } from '../../../core/models/domain/PasswordPolicy';
 
 @Component({
   selector: 'app-users',
@@ -56,6 +68,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
     NzSwitchModule,
     NzTooltipModule,
     NzSelectModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './users.html',
   styleUrls: ['./users.scss'],
@@ -68,7 +81,12 @@ export class UsersComponent implements OnInit {
   private readonly zone = inject(NgZone);
   private readonly msg = inject(NzMessageService);
   private readonly modal = inject(NzModalService);
+  private readonly destroy$ = new Subject<void>();
+  private readonly fb = inject(FormBuilder);
+  private readonly policyService = inject(PasswordPolicyService);
 
+  noWhitespaceValidator = noWhitespaceValidator;
+  getPendingPasswordRules = getPendingPasswordRules;
   searchQuery = '';
   users: User[] = [];
 
@@ -127,12 +145,61 @@ export class UsersComponent implements OnInit {
   roles: Role[] = [];
   selectedNames: string[] = [];
 
-  private readonly destroy$ = new Subject<void>();
+  userForm!: FormGroup;
+  policy!: PasswordPolicy;
+  pendingRules: string[] = [];
+
+  private readonly passwordMatchValidator: ValidatorFn = (
+    group: AbstractControl
+  ): ValidationErrors | null => {
+    const password = group.get('password')?.value;
+    const confirm = group.get('confirmPassword')?.value;
+    if (!password || !confirm) return null;
+    return password === confirm ? null : { notSame: true };
+  };
 
   ngOnInit(): void {
+    this.userForm = this.fb.group(
+      {
+        username: ['', [Validators.required, noWhitespaceValidator]],
+        email: ['', [Validators.required, Validators.email]],
+        fullName: [''],
+        address: [''],
+        phoneNumber: ['', [Validators.pattern(/^0[0-9]{9}$/)]],
+        password: ['', [Validators.required, noWhitespaceValidator]],
+        confirmPassword: ['', [Validators.required]],
+        isActive: [true],
+      },
+      { validators: this.passwordMatchValidator }
+    );
+    this.policyService.getPolicy().subscribe({
+      next: (res) => {
+        this.policy = res;
+
+        const passwordCtrl = this.userForm.get('password');
+        if (passwordCtrl) {
+          passwordCtrl.addValidators(this.createPasswordPolicyValidator(this.policy));
+          passwordCtrl.updateValueAndValidity();
+        }
+
+        passwordCtrl?.valueChanges.subscribe((value) => {
+          this.pendingRules = getPendingPasswordRules(value || '', this.policy).map((r) => r.label);
+        });
+      },
+      error: () => console.error('Không thể lấy chính sách mật khẩu'),
+    });
+
     this.loadUsers();
     this.loadPermissions();
     this.loadRoles();
+  }
+
+  private createPasswordPolicyValidator(policy: PasswordPolicy): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value || '';
+      const pending = getPendingPasswordRules(value, policy);
+      return pending.length === 0 ? null : { passwordPolicy: pending.map((r) => r.label) };
+    };
   }
 
   /** Load danh sách user */
@@ -245,6 +312,11 @@ export class UsersComponent implements OnInit {
 
   /** Modal: tạo user + gán quyền */
   showModal(): void {
+    this.userForm.get('username')?.enable();
+    this.userForm.get('email')?.enable();
+    this.userForm.get('password')?.enable();
+    this.userForm.get('confirmPassword')?.enable();
+
     this.isVisible = true;
     this.submitted = false;
     this.isEditMode = false;
@@ -279,14 +351,11 @@ export class UsersComponent implements OnInit {
   handleCancel(): void {
     this.isVisible = false;
     this.submitted = false;
+    this.isEditMode = false;
+    this.userForm.reset();
   }
 
   handleOk(): void {
-    if (!this.isEditMode && this.newUser.password !== this.confirmPassword) {
-      this.msg.error('Mật khẩu và Nhập lại mật khẩu không khớp!');
-      return;
-    }
-
     this.submitted = true;
     this.isConfirmLoading = true;
 
@@ -416,6 +485,13 @@ export class UsersComponent implements OnInit {
     this.submitted = false;
     this.isEditMode = true;
     this.userId = user.id;
+
+    if (this.isEditMode === true) {
+      this.userForm.get('username')?.disable();
+      this.userForm.get('email')?.disable();
+      this.userForm.get('password')?.disable();
+      this.userForm.get('confirmPassword')?.disable();
+    }
 
     this.userService.getUserById(user.id).subscribe({
       next: (res) => {
@@ -554,6 +630,10 @@ export class UsersComponent implements OnInit {
   }
 
   showChangePasswordModal(user: User): void {
+    this.userForm.get('username')?.disable();
+    this.userForm.get('email')?.disable();
+    this.userForm.get('password')?.enable();
+    this.userForm.get('confirmPassword')?.enable();
     this.selectedUser = user;
     this.isChangePasswordVisible = true;
     this.changePassword = { newPassword: '' };
