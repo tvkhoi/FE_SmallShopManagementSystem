@@ -151,7 +151,7 @@ export class UserService {
       );
   }
 
-  createUser(userData: UserDTO): Observable<any> {
+  createUser(userData : UserDTO):Observable<any> {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/User`, userData).pipe(
       map((res) => {
         if (res.success) return res.data;

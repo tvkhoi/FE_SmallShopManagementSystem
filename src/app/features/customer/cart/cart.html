@@ -1,0 +1,75 @@
+<div class="container py-5 cart-page">
+  <h1 class="text-success mb-4">Giỏ hàng của bạn</h1>
+
+  <!-- Bảng giỏ hàng -->
+  <div class="table-responsive mb-4">
+    <table class="table align-middle text-center">
+      <thead class="table-success">
+        <tr>
+          <th>Sản phẩm</th>
+          <th>Giá</th>
+          <th>Số lượng</th>
+          <th>Tổng</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of cartItems; index as i">
+          <td class="text-start">
+            <div class="d-flex align-items-center">
+              <img [src]="item.image" alt="{{item.name}}" class="cart-img me-3">
+              <div>
+                <h6 class="mb-0">{{item.name}}</h6>
+                <small class="text-muted">{{item.category}}</small>
+              </div>
+            </div>
+          </td>
+          <td>{{item.price | currency:'VND'}}</td>
+          <td>
+            <input 
+                id="quantity-{{i}}" 
+                type="number" 
+                class="form-control text-center rounded" 
+                [(ngModel)]="item.quantity" 
+                min="1" 
+                style="width: 70px;" />
+          </td>
+          <td>{{item.price * item.quantity | currency:'VND'}}</td>
+          <td>
+            <button 
+            type="button" 
+            class="btn btn-outline-danger btn-sm rounded" 
+            (click)="removeItem(i)" 
+            aria-label="Xóa sản phẩm">
+            <i class="fa fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Tổng tiền + nút thanh toán -->
+  <div class="row justify-content-end">
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3">
+        <h5 class="mb-3">Tóm tắt đơn hàng</h5>
+        <div class="d-flex justify-content-between mb-2">
+          <span>Tạm tính:</span>
+          <strong>{{getSubtotal() | currency:'VND'}}</strong>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span>Phí ship:</span>
+          <strong>{{shipping | currency:'VND'}}</strong>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between mb-3">
+          <span>Tổng cộng:</span>
+          <strong class="text-success">{{getTotal() | currency:'VND'}}</strong>
+        </div>
+        <button class="btn btn-success w-100">Thanh toán</button>
+      </div>
+    </div>
+  </div>
+</div>
+

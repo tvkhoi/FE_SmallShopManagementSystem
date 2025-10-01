@@ -1,0 +1,33 @@
+.carousel-image {
+  width: 100%;
+  height: auto;         /* chiều cao tự thay đổi theo tỉ lệ ảnh */
+  max-height: 600px;    /* không vượt quá 600px */
+  object-fit: contain;  /* giữ nguyên tỉ lệ, hiển thị full ảnh, không crop */
+  background-color: #000; /* nền đen nếu ảnh không lấp đầy khung */
+  
+}
+/* Nếu bạn muốn khung ảnh luôn 16:9 nhưng co giãn theo màn hình: */
+@media (min-width: 768px) {
+  .carousel-image {
+    aspect-ratio: 16/9;  /* hỗ trợ Chrome/Edge/Safari */
+  }
+}
+
+.carousel-caption {
+  
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+.carousel-image {
+  width: 100%;
+  height: 60vh;      /* cao 60% chiều cao màn hình */
+  object-fit: cover;
+}
+#homeCarousel {
+  width: 100vw; /* full chiều rộng viewport */
+}
+
+#homeCarousel .carousel-inner {
+  width: 100%;
+}
+

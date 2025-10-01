@@ -1,0 +1,30 @@
+<div class="container py-5 wishlist-page">
+  <h1 class="text-danger mb-4">Sản phẩm yêu thích</h1>
+
+  <!-- Danh sách sản phẩm -->
+  <div class="row g-4">
+    <div class="col-md-4" *ngFor="let item of wishlistItems; index as i">
+      <div class="card h-100 shadow-sm">
+        <img [src]="item.image" class="card-img-top wishlist-img" [alt]="item.name">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{item.name}}</h5>
+          <p class="card-text text-muted">{{item.category}}</p>
+          <p class="price text-success fw-bold mb-3">{{item.price | currency:'VND'}}</p>
+          <div class="mt-auto d-flex gap-2">
+            <button class="btn btn-sm btn-success flex-fill" (click)="addToCart(item)">
+              <i class="fa fa-shopping-cart me-1"></i> Thêm giỏ
+            </button>
+            <button class="btn btn-sm btn-outline-danger flex-fill" (click)="removeItem(i)">
+              <i class="fa fa-trash me-1"></i> Bỏ thích
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Khi không có sản phẩm -->
+  <div *ngIf="wishlistItems.length === 0" class="text-center py-5">
+    <p class="text-muted">Bạn chưa có sản phẩm yêu thích nào.</p>
+  </div>
+</div>

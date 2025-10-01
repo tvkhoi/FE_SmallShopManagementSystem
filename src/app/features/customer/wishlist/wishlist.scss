@@ -1,0 +1,23 @@
+.wishlist-page {
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .wishlist-img {
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .price {
+    font-size: 1.1rem;
+  }
+
+  .card {
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+    }
+  }
+}

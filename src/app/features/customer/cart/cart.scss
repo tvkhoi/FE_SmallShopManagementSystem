@@ -1,0 +1,19 @@
+.cart-page {
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .cart-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  table {
+    th, td {
+      vertical-align: middle;
+    }
+  }
+}

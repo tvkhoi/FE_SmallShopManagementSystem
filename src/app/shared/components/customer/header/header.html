@@ -1,0 +1,84 @@
+<header class="header_section shadow-sm sticky-top">
+  <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark custom_nav-container">
+      <div class="container-fluid">
+        <!-- Logo -->
+        <a class="navbar-brand fw-bold" routerLink="/">
+          <span>Mini Market</span>
+        </a>
+
+        <!-- Toggle (mobile) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menu -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                Trang chủ
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/products" routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                Sản phẩm
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/about" routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                Giới thiệu
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/contact" routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                Liên hệ
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Search + Icons -->
+        <div class="d-flex align-items-center gap-3 flex-grow-1">
+          <!-- Form search -->
+          <form (ngSubmit)="onSearch()" class="search-form">
+            <input type="text" class="form-control" name="searchText" [(ngModel)]="searchText"
+              placeholder="Search..." />
+            <button class="btn btn-search" type="submit" title="Search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </form>
+
+          <!-- Icons -->
+          <ul class="navbar-nav flex-row gap-3 mb-0 align-items-center">
+            <!-- Wishlist -->
+            <li class="nav-item">
+              <a routerLink="/wishlist" class="nav-link icon-link" title="Wishlist">
+                <i class="fa-regular fa-heart"></i>
+              </a>
+            </li>
+
+            <!-- Cart -->
+            <li class="nav-item position-relative">
+              <a routerLink="/cart" class="nav-link icon-link" title="Cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-badge">2</span>
+              </a>
+            </li>
+
+            <!-- User -->
+            <li class="nav-item">
+              <a routerLink="/login" class="nav-link icon-link" title="Login">
+                <i class="fa-regular fa-user"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
