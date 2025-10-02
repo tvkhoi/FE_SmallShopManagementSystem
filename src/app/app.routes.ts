@@ -11,6 +11,7 @@ import {RolesComponent } from './features/admin/roles/roles';
 import { ForgotPassword } from './shared/components/forgot-password/forgot-password';
 import { ResetPassword } from './shared/components/reset-password/reset-password';
 import { Settings } from './features/admin/settings/settings';
+import { Account } from './features/admin/account/account';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -27,9 +28,10 @@ export const routes: Routes = [
             { path: 'audit_log', component: Auditlog },
             { path: 'users', component: UsersComponent },
             { path: 'roles', component: RolesComponent },
-            {path: 'settings', component: Settings},
+            { path: 'settings', component: Settings },
+            { path: 'account', component: Account },
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
           ]
-}
+},
 
 ];

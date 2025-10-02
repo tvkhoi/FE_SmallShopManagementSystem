@@ -7,6 +7,7 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 
 interface JwtPayload {
+  id: string;
   nameid: string;
   unique_name: string;
   email: string;
@@ -14,7 +15,7 @@ interface JwtPayload {
   'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'?: string | string[];
   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'?: string | null;
   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'?: string | null;
-
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -74,7 +75,7 @@ export class AuthService {
     const decoded = this.getDecodedToken();
     if (!decoded) return [];
     const msRole = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-    const roles =  msRole ? (Array.isArray(msRole) ? msRole : [msRole]) : [];
+    const roles = msRole ? (Array.isArray(msRole) ? msRole : [msRole]) : [];
     return roles;
   }
 
@@ -95,6 +96,16 @@ export class AuthService {
     return (
       decoded.nameid ||
       decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ||
+      null
+    );
+  }
+
+  getId(): string | null {
+    const decoded = this.getDecodedToken();
+    if (!decoded) return null;
+    return (
+      decoded.id ||
+      decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ||
       null
     );
   }

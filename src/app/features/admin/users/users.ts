@@ -5,9 +5,6 @@ import {
   FormsModule,
   Validators,
   ReactiveFormsModule,
-  AbstractControl,
-  ValidationErrors,
-  ValidatorFn,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -41,9 +38,14 @@ import { RoleService } from '../../../core/services/role.service';
 import { UserDTO } from '../../../core/models/ui/user.dto';
 import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 import { NzSelectModule } from 'ng-zorro-antd/select';
-import { getPendingPasswordRules, noWhitespaceValidator } from '../../../core/utils';
+import {
+  createPasswordPolicyValidator,
+  getPendingPasswordRules,
+  noWhitespaceValidator,
+} from '../../../core/utils';
 import { PasswordPolicyService } from '../../../core/services/passwordPolicy.service';
 import { PasswordPolicy } from '../../../core/models/domain/PasswordPolicy';
+import { passwordMatchValidator } from '../../../core/utils/passwordMatchValidator.utils';
 
 @Component({
   selector: 'app-users',
@@ -149,15 +151,6 @@ export class UsersComponent implements OnInit {
   policy!: PasswordPolicy;
   pendingRules: string[] = [];
 
-  private readonly passwordMatchValidator: ValidatorFn = (
-    group: AbstractControl
-  ): ValidationErrors | null => {
-    const password = group.get('password')?.value;
-    const confirm = group.get('confirmPassword')?.value;
-    if (!password || !confirm) return null;
-    return password === confirm ? null : { notSame: true };
-  };
-
   ngOnInit(): void {
     this.userForm = this.fb.group(
       {
@@ -170,7 +163,7 @@ export class UsersComponent implements OnInit {
         confirmPassword: ['', [Validators.required]],
         isActive: [true],
       },
-      { validators: this.passwordMatchValidator }
+      { validators: passwordMatchValidator }
     );
     this.policyService.getPolicy().subscribe({
       next: (res) => {
@@ -178,7 +171,7 @@ export class UsersComponent implements OnInit {
 
         const passwordCtrl = this.userForm.get('password');
         if (passwordCtrl) {
-          passwordCtrl.addValidators(this.createPasswordPolicyValidator(this.policy));
+          passwordCtrl.addValidators(createPasswordPolicyValidator(this.policy));
           passwordCtrl.updateValueAndValidity();
         }
 
@@ -192,14 +185,6 @@ export class UsersComponent implements OnInit {
     this.loadUsers();
     this.loadPermissions();
     this.loadRoles();
-  }
-
-  private createPasswordPolicyValidator(policy: PasswordPolicy): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const value = control.value || '';
-      const pending = getPendingPasswordRules(value, policy);
-      return pending.length === 0 ? null : { passwordPolicy: pending.map((r) => r.label) };
-    };
   }
 
   /** Load danh sách user */
@@ -337,15 +322,8 @@ export class UsersComponent implements OnInit {
       RoleName: [],
     };
 
-    // Reset role selection
     this.roles = this.roles.map((r) => ({ ...r, checked: false }));
     this.selectedNames = [];
-    // reset check tree
-    // this.treeData = this.treeData.map((m) => ({
-    //   ...m,
-    //   checked: false,
-    //   children: m.children?.map((c: any) => ({ ...c, checked: false })),
-    // }));
   }
 
   handleCancel(): void {

@@ -1,0 +1,87 @@
+.personal-info-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+  h2 {
+    margin-bottom: 24px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #111827;
+    text-align: center;
+  }
+
+  .personal-form {
+    nz-form-item {
+      nz-form-label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #1f2937;
+      }
+
+      nz-form-control {
+        input[nz-input] {
+          width: 100%;
+          padding: 10px 14px;
+          border: 1px solid #d1d5db;
+          border-radius: 8px;
+          background: #fff;
+          color: #111827;
+          transition: all 0.2s;
+
+          &:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+          }
+
+          &::placeholder {
+            color: #9ca3af;
+          }
+        }
+      }
+    }
+
+    .button-col {
+      text-align: right;
+      margin-top: 16px;
+
+      .save-button {
+        padding: 8px 24px;
+        border-radius: 8px;
+        font-weight: 500;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .button-col {
+      text-align: center;
+
+      .save-button {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.text-red-500 {
+  color: #ff4d4f !important;
+}
+
+.text-xs {
+  font-size: 12px !important;
+}
+
+.mt-1 {
+  margin-top: 4px !important;
+}
+
+.list-disc {
+  list-style: none;
+  padding-left: 5px;
+}

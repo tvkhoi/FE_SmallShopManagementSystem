@@ -1,0 +1,20 @@
+<div class="account-container">
+    <h3>Tài khoản của tôi</h3>
+    <div class="account-content">
+        <div class="account-content__left">
+            <ul>
+                <li >
+                    <a (click)="selectTab('personal-info')" [class.active]="selectedTab === 'personal-info'">Thông tin cá nhân</a>
+                </li>
+                <li>
+                    <a (click)="selectTab('change-password')" [class.active]="selectedTab === 'change-password'">Thay đổi mật khẩu</a>
+                </li>
+            </ul>
+        </div>
+        <div class="account-content__right">
+            <app-personal-info *ngIf="selectedTab === 'personal-info'"></app-personal-info>
+            <app-change-password *ngIf="selectedTab === 'change-password'"></app-change-password>
+        </div>
+
+    </div>
+</div>
