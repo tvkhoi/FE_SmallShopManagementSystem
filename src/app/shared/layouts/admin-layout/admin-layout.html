@@ -1,12 +1,12 @@
 <nz-layout class="admin-layout">
 
-  <app-sidebar-left [menuItems]="menuItemsLeft" [isCollapsed]="isCollapsed"
+  <app-sidebar-left  [menuItems]="menuItemsForSidebar" [isCollapsed]="isCollapsed"
     (collapseChange)="onCollapse($event)"></app-sidebar-left>
 
   <!-- Main Layout -->
   <nz-layout>
     <!-- Header -->
-    <app-header style="width: 100%;" [routeMap]="routeMap" [currentTitle]="currentTitle" [currentIcon]="currentIcon"></app-header>
+    <app-header style="width: 100%;" [routeMap]="routeMap" [currentTitle]="currentPage.title" [currentIcon]="currentPage.icon"></app-header>
     <!-- Content -->
     <nz-content class="admin-content">
       <router-outlet></router-outlet>
@@ -17,5 +17,5 @@
   </nz-layout>
 
   <!-- Sidebar phải (Toolbar) -->
-  <app-sidebar-right [isProfileCardOpen]="isProfileCardOpen" (toggleProfileCard)="onToggleProfileCard()" [menuItems]="menuItemsRight"></app-sidebar-right>
+  <app-sidebar-right [isProfileCardOpen]="isProfileCardOpen" (toggleProfileCard)="onToggleProfileCard()" (collapseChange)="onCollapse($event)" [menuItems]="menuItemsRight"></app-sidebar-right>
 </nz-layout>

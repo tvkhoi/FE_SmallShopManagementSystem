@@ -52,9 +52,6 @@ export class SignUpComponent implements OnInit {
   confirmPasswordVisible = false;
   policy!: PasswordPolicy;
 
-  getPendingPasswordRules = getPendingPasswordRules;
-  noWhitespaceValidator = noWhitespaceValidator;
-
   private readonly fb = inject(FormBuilder);
   private readonly userService = inject(UserService);
   private readonly router = inject(Router);

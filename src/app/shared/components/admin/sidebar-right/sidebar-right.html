@@ -19,7 +19,7 @@
         </div>
 
         <div class="profile-menu" *ngFor="let item of menuItems || []">
-            <div class="menu-item"><span nz-icon class="icon" [nzType]="item.icon"></span><span>{{ item.label }}</span></div>
+            <div class="menu-item"><a [routerLink]="item.route" target="_blank" (click)="onNavigate()"><span nz-icon class="icon" [nzType]="item.icon"></span><span>{{ item.label }}</span></a></div>
         </div>
 
         <div class="profile-footer">
