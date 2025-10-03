@@ -15,6 +15,7 @@ import { passwordMatchValidator } from '../../../../core/utils/passwordMatchVali
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { AuthService } from '../../../../auth/auth.service';
 
 @Component({
   selector: 'app-change-password',
@@ -26,6 +27,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 export class ChangePassword implements OnInit {
   private readonly userService = inject(UserService);
   private readonly policyServices = inject(PasswordPolicyService);
+  private readonly autheService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
   private readonly cdj = inject(ChangeDetectorRef);
   private readonly msg = inject(NzMessageService);
@@ -67,12 +69,13 @@ export class ChangePassword implements OnInit {
     if (this.formChangePassword?.valid) {
       const currentPassword = this.formChangePassword.get('currentPassword')?.value;
       const newPassword = this.formChangePassword.get('password')?.value;
-      this.userService.setPassword(currentPassword, newPassword).subscribe({
+      this.userService.setPassword(parseInt(this.autheService.getId()!), { currentPassword, newPassword }).subscribe({
         next: () => {
           this.formChangePassword?.reset();
           this.pendingRules = [];
           this.cdj.markForCheck();
           this.msg.success('Đổi mật khẩu thành công!');
+          this.autheService.logout();
         },
         error: (err) => console.log('Đổi mật khẩu thất bại', err)
       });
