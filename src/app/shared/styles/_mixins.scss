@@ -1,0 +1,40 @@
+@use './_variables.scss' as v;
+
+@mixin xs {
+  @media (max-width: #{v.$breakpoint-xs}) {
+    @content;
+  }
+}
+
+@mixin sm {
+  @media (max-width: #{v.$breakpoint-sm}) {
+    @content;
+  }
+}
+
+@mixin md {
+  @media (max-width: #{v.$breakpoint-md}) {
+    @content;
+  }
+}
+
+@mixin lg {
+  @media (max-width: #{v.$breakpoint-lg}) {
+    @content;
+  }
+}
+
+@mixin xl {
+  @media (max-width: #{v.$breakpoint-xl}) {
+    @content;
+  }
+}
+
+@mixin responsive-font($small, $large, $lineHeight: 1.5) {
+  font-size: $small;
+  line-height: $lineHeight;
+
+  @media (min-width: #{v.$breakpoint-md}) {
+    font-size: $large;
+  }
+}

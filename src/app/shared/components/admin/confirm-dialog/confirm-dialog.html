@@ -1,0 +1,19 @@
+<nz-modal [(nzVisible)]="isVisible" [nzTitle]="title" [nzFooter]="null" nzCentered [nzClosable]="false"
+    [nzMaskClosable]="true" (nzOnCancel)="handleCancel()">
+    <ng-container *nzModalContent >
+        <div class="confirm-content">
+            <i nz-icon nzType="exclamation-circle" nzTheme="twotone" nzTwotoneColor="#faad14" class="icon"></i>
+
+            <p class="message">{{ message }}</p>
+            <div class="actions">
+                <app-button type="primary" (click)="handleCancel()">
+                    {{ cancelText }}
+                </app-button>
+
+                <app-button [type]="confirmType" (click)="handleConfirm()">
+                    {{ confirmText }}
+                </app-button>
+            </div>
+        </div>
+    </ng-container>
+</nz-modal>

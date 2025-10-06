@@ -1,0 +1,14 @@
+<button
+  nz-button
+  [ngClass]="[
+    'app-btn',
+    'app-btn--' + type,
+    size ? 'app-btn--' + size : '',
+    isActive ? 'is-active' : '',
+    customClass
+  ]"
+  [disabled]="disabled"
+  [nzLoading]="isLoading"
+>
+  <ng-content></ng-content>
+</button>

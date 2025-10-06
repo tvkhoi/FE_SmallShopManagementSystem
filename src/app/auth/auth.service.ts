@@ -163,7 +163,7 @@ export class AuthService {
     const roles = this.getRoles().map((r) => r.toLowerCase());
 
     const roleRoutes: { [key: string]: string } = {
-      admin: '/admin/dashboard',
+      admin: '/admin/users',
       customer: '/customer/dashboard',
       seller: '/seller/dashboard',
     };

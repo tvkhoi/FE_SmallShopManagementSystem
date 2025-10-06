@@ -3,9 +3,10 @@
     <div class="users-header">
         <h2>Người dùng</h2>
         <div class="user-header__actions">
-            <button nz-button nzType="primary" (click)="showModal()">Thêm người dùng</button>
+            <app-button type="primary" size="large" (click)="showModal()">Thêm người dùng</app-button>
         </div>
     </div>
+    <!--End Header-->
 
     <!-- Modal: Thêm người dùng -->
     <nz-modal [(nzVisible)]="isVisible" [nzTitle]="isEditMode ? 'Sửa người dùng' : 'Thêm người dùng'"
@@ -195,12 +196,20 @@
         </div>
     </nz-modal>
 
-    <!-- Modal: Assign permissions -->
+    <ng-template #modalFooter>
+        <app-button type="cancel" (click)="handleCancel()" style="margin-right: 10px;">Hủy</app-button>
+        <app-button type="primary" (click)="handleOk()" [disabled]="userForm.invalid"
+            [isLoading]="isConfirmLoading">Lưu</app-button>
+    </ng-template>
+    <!-- End Modal: Thêm người dùng-->
+
+    <!-- Modal: Gán quyền -->
     <app-assign-permission-modal [visible]="isAssignVisible" [user]="selectedUser"
         [groupedPermissions]="groupedPermissions" (cancelModal)="handleAssignCancel()"
         (save)="handleAssignOk($event)"></app-assign-permission-modal>
+    <!-- End Modal: Gán quyền -->
 
-    <!-- Modal: View details -->
+    <!-- Modal: Xem chi tiết -->
     <nz-modal [(nzVisible)]="isViewDetailsVisible" nzTitle="Xem chi tiết" (nzOnCancel)="handleViewDetailsCancel()"
         [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooterViewDetails">
         <div *nzModalContent>
@@ -253,7 +262,12 @@
         </div>
     </nz-modal>
 
-    <!-- Modal: Change password -->
+    <ng-template #modalFooterViewDetails>
+        <app-button type="primary" (click)="handleViewDetailsCancel()">Đóng</app-button>
+    </ng-template>
+    <!-- End Modal: Xem chi tiết -->
+
+    <!-- Modal: Đổi mật khẩu -->
     <nz-modal [(nzVisible)]="isChangePasswordVisible" nzTitle="Đặt lại mật khẩu"
         (nzOnCancel)="handleCancelChangePassword()" [nzFooter]="changePasswordFooter">
         <div *nzModalContent>
@@ -295,8 +309,8 @@
                     <nz-form-control [nzSpan]="18">
                         <nz-input-group [nzSuffix]="suffixConfirmPwdIcon">
                             <input nz-input [type]="confirmPasswordVisible ? 'text' : 'password'" id="confirmPassword"
-                                name="confirmPassword" formControlName="confirmPassword" [(ngModel)]="confirmPassword" required
-                                placeholder="Nhập lại mật khẩu" />
+                                name="confirmPassword" formControlName="confirmPassword" [(ngModel)]="confirmPassword"
+                                required placeholder="Nhập lại mật khẩu" />
 
                         </nz-input-group>
                         @if(confirmPassword && confirmPassword !== changePassword.newPassword)
@@ -317,35 +331,21 @@
         </div>
     </nz-modal>
 
-    <!-- Footer -->
     <ng-template #changePasswordFooter>
-        <button nz-button nzType="default" (click)="handleCancelChangePassword()">Hủy</button>
-        <button nz-button nzType="primary" (click)="handleOkChangePassword()" [disabled]="!userForm.valid || confirmPassword !== changePassword.newPassword">
-            Đặt lại mật khẩu
-        </button>
+        <app-button type="cancel" (click)="handleCancelChangePassword()" style="margin-right: 10px;">Hủy</app-button>
+        <app-button type="primary" (click)="handleOkChangePassword()" [isLoading]="isConfirmLoading"
+            [disabled]="!userForm.valid || confirmPassword !== changePassword.newPassword">Đặt lại mật khẩu</app-button>
     </ng-template>
-
-
-
-    <ng-template #modalFooter>
-        <button nz-button nzType="default" (click)="handleCancel()">Hủy</button>
-        <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading"
-            [disabled]="!userForm.valid">Lưu</button>
-    </ng-template>
-
-    <ng-template #modalFooterViewDetails>
-        <button style="width: 100%;" nz-button nzType="primary" (click)="handleViewDetailsCancel()">Đóng</button>
-    </ng-template>
+    <!-- End Modal: Đổi mật khẩu -->
 
     <!-- Search -->
     <div class="search-bar" style="display: flex; gap: 8px; align-items: center; margin-bottom: 16px;">
         <nz-input-group>
             <input type="text" nz-input placeholder="Tìm kiếm theo tên đăng nhập và email" [(ngModel)]="searchQuery" />
         </nz-input-group>
-        <button nz-button nzType="primary" (click)="filterUsers()">
-            <i nz-icon nzType="search"></i> Tìm kiếm
-        </button>
+        <app-button type="primary" (click)="filterUsers()"><i nz-icon nzType="search"></i>Tìm kiếm</app-button>
     </div>
+    <!-- End Search -->
 
     <!-- Bộ lọc -->
     <div class="filter-container">
@@ -411,12 +411,14 @@
             </nz-form-item>
 
             <!-- Buttons -->
-            <nz-form-item class="filter-buttons" style="grid-column: span 4;">
-                <button nz-button nzType="primary" (click)="applyFilter()" style="margin-right: 8px;">Lọc</button>
-                <button nz-button (click)="resetFilter()">Làm mới</button>
+            <nz-form-item class="filter-buttons"
+                style="grid-column: span 4; display: flex; justify-content: flex-end; align-items: flex-end; gap: 8px;">
+                <app-button type="primary" size="large" (click)="applyFilter()">Lọc</app-button>
+                <app-button type="cancel" size="large" (click)="resetFilter()">Làm mới</app-button>
             </nz-form-item>
         </form>
     </div>
+    <!-- End Bộ lọc -->
 
 
 
@@ -466,34 +468,21 @@
         <tbody>
             <tr *ngFor="let user of userTable.data">
                 <td>
-                    <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu">
-                        <nz-icon nzType="setting" nzTheme="outline"
-                            style="font-size: 16px; padding-right: 5px;"></nz-icon>
-                        Hành động
-                    </a>
-                    <nz-dropdown-menu #menu="nzDropdownMenu">
-                        <ul nz-menu>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="viewDetails(user)">Xem chi
-                                    tiết</button></li>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="editUser(user)"
-                                    [disabled]="user.id===1">Sửa</button></li>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="showAssignModal(user)"
-                                    [disabled]="user.id===1">Gán
-                                    quyền</button></li>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="deleteUser(user)"
-                                    [disabled]="user.id===1">Xóa</button>
-                            </li>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="showChangePasswordModal(user)"
-                                    [disabled]="user.id===1">Đặt lại mật khẩu</button>
-                            </li>
-                            <li nz-menu-item>
-                                <button nz-button nzType="link" (click)="toggleLock(user)" [disabled]="user.id === 1">
-                                    {{ user.isActive ? 'Khóa' : 'Mở khóa' }}
-                                </button>
-                            </li>
-
-                        </ul>
-                    </nz-dropdown-menu>
+                    <app-action-dropdown [actions]="[
+    { label: 'Xem chi tiết', emitName: 'viewDetails', icon: 'eye' },
+    { label: 'Sửa', emitName: 'editUser', icon: 'edit', disabled: user.email === 'admin@system.com' },
+    { label: 'Gán quyền', emitName: 'assignUser', icon: 'user-add', disabled: user.email === 'admin@system.com' },
+    { label: 'Xóa', emitName: 'deleteUser', icon: 'delete', type: 'danger', disabled: user.email === 'admin@system.com' },
+    { label: 'Đặt lại mật khẩu', emitName: 'changePassword', icon: 'key', disabled: user.email === 'admin@system.com' },
+    {
+      label: user.isActive ? 'Khóa' : 'Mở khóa',
+      emitName: 'toggleLock',
+      icon: user.isActive ? 'lock' : 'unlock',
+      type: 'cancel',
+      disabled: user.email === 'admin@system.com'
+    }
+  ]" dropdownLabel="Hành động" [dropdownIcon]="'setting'" [data]="user"
+                        (action)="handleUserAction($event)"></app-action-dropdown>
                 </td>
                 <td>{{ user.username }}</td>
                 <td>{{ user.fullName }}</td>
@@ -514,8 +503,16 @@
             </tr>
         </tbody>
     </nz-table>
+    <!-- End Table -->
+
+    <app-confirm-dialog [(isVisible)]="isDeleteModalVisible" title="Xóa người dùng"
+        message="Bạn có chắc muốn xóa người dùng này không?" confirmText="Xóa" confirmType="danger" cancelText="Hủy"
+        (confirm)="handleConfirmDelete()" (cancelModal)="handleCancelDelete()"></app-confirm-dialog>
+
+
 
     <!-- Pagination -->
     <app-pagination [total]="totalItems" [pageSize]="pageSize" [pageIndex]="currentPage"
         (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)"></app-pagination>
+    <!-- End Pagination -->
 </div>
