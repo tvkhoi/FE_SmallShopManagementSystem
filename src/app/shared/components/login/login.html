@@ -51,10 +51,10 @@
       
       <!-- Nút đăng nhập -->
       <div class="text-center">
-        <button nz-button nzType="primary" class="login-btn" [nzBlock]="true"
-          [disabled]="loginForm.invalid || isLoading">
+        <app-button [fullWidth]="true" type="primary" size="large"
+          [disabled]="loginForm.invalid || isLoading"  [isLoading]="isLoading" customClass="login-btn">
           {{ isLoading ? 'Đang xử lý...' : 'Đăng nhập' }}
-        </button>
+        </app-button>
       </div>
 
       <!-- Chuyển sang đăng ký -->

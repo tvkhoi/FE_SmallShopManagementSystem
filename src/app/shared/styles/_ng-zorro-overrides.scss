@@ -10,3 +10,11 @@
 .ant-modal-content {
   border-radius: 8px !important;
 }
+
+.ant-wave {
+  display: none !important;
+}
+
+html {
+  --antd-wave-shadow-color: transparent !important;
+}

@@ -1,7 +1,8 @@
+@use '../../../styles/mixins' as m;
 .admin-header {
   width: 100%;
-  background: #111827 !important;
-  color: #fff;
+  background: #ffffff !important;
+  color: #000000;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -87,7 +88,7 @@
   }
 
   /* Hiển thị menu khi màn hình nhỏ */
-  @media (max-width: 768px) {
+  @include m.sm {
     .mobile-menu {
       display: flex;
     }

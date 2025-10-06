@@ -21,6 +21,7 @@ import { UserService } from '../../../core/services/user.service';
 import { PasswordPolicyService } from '../../../core/services/passwordPolicy.service';
 import { PasswordPolicy } from '../../../core/models/domain/PasswordPolicy';
 import { getPendingPasswordRules, noWhitespaceValidator } from '../../../core/utils';
+import { Button } from "../admin/button/button";
 
 @Component({
   selector: 'app-reset-password',
@@ -34,7 +35,8 @@ import { getPendingPasswordRules, noWhitespaceValidator } from '../../../core/ut
     NzButtonModule,
     NzIconModule,
     RouterLink,
-  ],
+    Button
+],
   templateUrl: './reset-password.html',
   styleUrls: ['./reset-password.scss'],
 })

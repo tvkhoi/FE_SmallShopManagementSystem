@@ -19,6 +19,7 @@ import { finalize } from 'rxjs';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { PasswordPolicyService } from '../../../core/services/passwordPolicy.service';
 import { getPendingPasswordRules } from '../../../core/utils/index';
+import { Button } from "../admin/button/button";
 
 @Component({
   selector: 'app-login',
@@ -34,7 +35,8 @@ import { getPendingPasswordRules } from '../../../core/utils/index';
     NzButtonModule,
     RouterModule,
     CommonModule,
-  ],
+    Button
+],
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;

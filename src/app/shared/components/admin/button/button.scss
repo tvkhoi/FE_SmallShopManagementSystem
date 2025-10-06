@@ -6,6 +6,13 @@
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s ease;
+  box-sizing: border-box;
+
+
+  &--full {
+    width: 100%;
+    display: block;
+  }
 
   &--primary {
     background: v.$primary-color-admin;
@@ -40,6 +47,7 @@
     &:hover {
       background: #e0e0e0;
     }
+
     &:disabled {
       cursor: not-allowed;
     }
