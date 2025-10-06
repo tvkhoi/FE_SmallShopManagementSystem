@@ -1,0 +1,34 @@
+@use './_mixins.scss'as m;
+
+h1 {
+  font-weight: 700;
+  margin-bottom: 1em;
+  @include m.responsive-font(24px, 36px, 1.3);
+}
+
+h2 {
+  font-weight: 600;
+  margin-bottom: 0.9em;
+  @include m.responsive-font(20px, 28px, 1.35);
+}
+
+h3 {
+  font-weight: 600;
+  margin-bottom: 0.8em;
+  @include m.responsive-font(18px, 24px, 1.35);
+}
+
+h4 {
+  font-weight: 500;
+  @include m.responsive-font(16px, 20px, 1.4);
+}
+
+h5 {
+  font-weight: 500;
+  @include m.responsive-font(14px, 18px, 1.4);
+}
+
+h6 {
+  font-weight: 500;
+  @include m.responsive-font(12px, 16px, 1.4);
+}

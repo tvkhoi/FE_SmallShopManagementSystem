@@ -1,0 +1,20 @@
+@use './_variables.scss'as v;
+@use './_mixins.scss'as m;
+
+body {
+  font-family: v.$font-family-base;
+  color: #111;
+  background-color: #fff;
+  @include m.responsive-font(14px, 16px, 1.6);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-top: 0;
+  margin-bottom: 0.75em;
+}

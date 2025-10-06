@@ -46,6 +46,9 @@ import {
 import { PasswordPolicyService } from '../../../core/services/passwordPolicy.service';
 import { PasswordPolicy } from '../../../core/models/domain/PasswordPolicy';
 import { passwordMatchValidator } from '../../../core/utils/passwordMatchValidator.utils';
+import { Button } from '../../../shared/components/admin/button/button';
+import { ActionDropdown } from '../../../shared/components/admin/action-dropdown/action-dropdown';
+import { ConfirmDialog } from '../../../shared/components/admin/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-users',
@@ -71,6 +74,9 @@ import { passwordMatchValidator } from '../../../core/utils/passwordMatchValidat
     NzTooltipModule,
     NzSelectModule,
     ReactiveFormsModule,
+    Button,
+    ActionDropdown,
+    ConfirmDialog,
   ],
   templateUrl: './users.html',
   styleUrls: ['./users.scss'],
@@ -83,12 +89,9 @@ export class UsersComponent implements OnInit {
   private readonly zone = inject(NgZone);
   private readonly msg = inject(NzMessageService);
   private readonly modal = inject(NzModalService);
-  private readonly destroy$ = new Subject<void>();
   private readonly fb = inject(FormBuilder);
   private readonly policyService = inject(PasswordPolicyService);
 
-  noWhitespaceValidator = noWhitespaceValidator;
-  getPendingPasswordRules = getPendingPasswordRules;
   searchQuery = '';
   users: User[] = [];
 
@@ -136,7 +139,9 @@ export class UsersComponent implements OnInit {
 
   userId: number | null = null;
   selectedUserId: number | null = null;
-  selectedUser: User | null = null;
+  selectedUser!: User | null;
+
+  isDeleteModalVisible: boolean = false;
 
   // Permissions
   groupedPermissions: { module: string; permissions: Permission[] }[] = [];
@@ -506,23 +511,43 @@ export class UsersComponent implements OnInit {
   }
 
   deleteUser(user: User): void {
-    this.modal.confirm({
-      nzTitle: 'Bạn có chắc muốn xóa vai trò này?',
-      nzOkText: 'Xóa',
-      nzOkType: 'primary',
-      nzOkDanger: true,
-      nzOnOk: () => {
-        this.userService.deleteUser(user.id).subscribe({
-          next: () => {
-            this.msg.success('Đã xóa user');
-            this.loadUsers();
-          },
-          error: (e) => console.error('Lỗi khi xóa user:', e),
-        });
+    // this.modal.confirm({
+    //   nzTitle: 'Bạn có chắc muốn xóa vai trò này?',
+    //   nzOkText: 'Xóa',
+    //   nzOkType: 'primary',
+    //   nzOkDanger: true,
+    //   nzOnOk: () => {
+    //     this.userService.deleteUser(user.id).subscribe({
+    //       next: () => {
+    //         this.msg.success('Đã xóa user');
+    //         this.loadUsers();
+    //       },
+    //       error: (e) => console.error('Lỗi khi xóa user:', e),
+    //     });
+    //   },
+    //   nzCancelText: 'Hủy',
+    //   nzOnCancel: () => this.msg.info('Hủy xóa vai trò'),
+    // });
+    this.selectedUser = user;
+    this.openDeleteModal();
+  }
+
+  openDeleteModal(): void {
+    this.isDeleteModalVisible = true;
+  }
+
+  handleConfirmDelete(): void {
+    this.userService.deleteUser(this.selectedUser!.id).subscribe({
+      next: () => {
+        this.msg.success('Đã xóa user');
+        this.loadUsers();
       },
-      nzCancelText: 'Hủy',
-      nzOnCancel: () => this.msg.info('Hủy xóa vai trò'),
+      error: (err) => this.msg.error('Lỗi khi xóa user'),
     });
+  }
+
+  handleCancelDelete(): void {
+    this.msg.info('Đã hủy xóa');
   }
 
   viewDetails(user: User): void {
@@ -705,5 +730,27 @@ export class UsersComponent implements OnInit {
       if (valueA! > valueB!) return order === 'ascend' ? 1 : -1;
       return 0;
     });
+  }
+  handleUserAction(event: { action: string; data: any }) {
+    switch (event.action) {
+      case 'viewDetails':
+        this.viewDetails(event.data);
+        break;
+      case 'editUser':
+        this.editUser(event.data);
+        break;
+      case 'assignUser':
+        this.showAssignModal(event.data);
+        break;
+      case 'deleteUser':
+        this.deleteUser(event.data);
+        break;
+      case 'changePassword':
+        this.showChangePasswordModal(event.data);
+        break;
+      case 'toggleLock':
+        this.toggleLock(event.data);
+        break;
+    }
   }
 }

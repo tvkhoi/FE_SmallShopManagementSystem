@@ -39,7 +39,6 @@ export class AdminLayout {
   currentIcon: string = '';
 
   routeMap: { [key: string]: { title: string; icon: string } } = {
-    '/admin/dashboard': { title: 'Trang chủ', icon: 'dashboard' },
     '/admin/users': { title: 'Quản lý người dùng', icon: 'user' },
     '/admin/roles': { title: 'Quản lý vai trò', icon: 'team' },
     '/admin/audit_log': { title: 'Nhật ký hệ thống', icon: 'audit' },
@@ -48,7 +47,6 @@ export class AdminLayout {
   };
 
   private readonly originalMenuItemsLeft = [
-    { label: 'Trang chủ', icon: 'dashboard', route: '/admin/dashboard' },
     { label: 'Quản lý người dùng', icon: 'user', route: '/admin/users' },
     { label: 'Quản lý vai trò', icon: 'team', route: '/admin/roles' },
     { label: 'Nhật ký hệ thống', icon: 'audit', route: '/admin/audit_log' },
@@ -69,7 +67,7 @@ export class AdminLayout {
 
   get currentPage() {
     const url = this.router.url;
-    return this.routeMap[url] ?? { title: 'Trang chủ', icon: 'dashboard' };
+    return this.routeMap[url] ?? { title: 'Quản lí người dùng', icon: 'user' };
   }
 
   onCollapse(collapsed: any): void {

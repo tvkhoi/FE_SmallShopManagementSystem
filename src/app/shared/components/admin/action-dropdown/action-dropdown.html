@@ -1,0 +1,20 @@
+<app-button type="primary" size="large" class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu">
+  <nz-icon [nzType]="dropdownIcon" nzTheme="outline" style="font-size: 16px; padding-right: 5px;"></nz-icon>
+  {{ dropdownLabel }}
+</app-button>
+
+<nz-dropdown-menu #menu="nzDropdownMenu">
+  <ul nz-menu>
+    <li *ngFor="let act of actions" nz-menu-item>
+      <app-button
+        [type]="act.type || 'primary'"
+        [size]="act.size || 'small'"
+        [disabled]="act.disabled!"
+        (click)="!act.disabled && triggerAction(act.emitName)"
+      >
+        <nz-icon *ngIf="act.icon" [nzType]="act.icon" style="margin-right: 5px;"></nz-icon>
+        {{ act.label }}
+      </app-button>
+    </li>
+  </ul>
+</nz-dropdown-menu>

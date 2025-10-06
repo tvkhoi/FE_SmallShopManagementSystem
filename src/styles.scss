@@ -1,2 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
-
+@use 'app/shared/styles/variables' as *;
+@use 'app/shared/styles/mixins' as * ;
+@use 'app/shared/styles/typography' as * ;
+@use 'app/shared/styles/_ng-zorro-overrides' as *;
+@use 'app/shared/styles/_utilities' as * ;

@@ -16,10 +16,11 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { AuthService } from '../../../../auth/auth.service';
+import { Button } from "../button/button";
 
 @Component({
   selector: 'app-change-password',
-  imports: [CommonModule, NzFormModule, ReactiveFormsModule, NzInputModule, NzButtonModule, NzIconModule],
+  imports: [CommonModule, NzFormModule, ReactiveFormsModule, NzInputModule, NzButtonModule, NzIconModule, Button],
   templateUrl: './change-password.html',
   styleUrls: ['./change-password.scss'],
   standalone: true,
@@ -34,7 +35,7 @@ export class ChangePassword implements OnInit {
 
   pendingRules: string[] = [];
   policy!: PasswordPolicy;
-  formChangePassword?: FormGroup;
+  formChangePassword!: FormGroup;
 
   passwordVisible = false;
   currentPasswordVisible = false;

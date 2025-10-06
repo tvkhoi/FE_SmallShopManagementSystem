@@ -1,49 +1,33 @@
-:host {
-  ::ng-deep {
-    .admin-layout {
-      height: 100vh;
-      display: flex;
-      flex-direction: row;
-      overflow: hidden;
+.admin-layout {
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
 
-      /* Main Layout */
-      nz-layout {
-        flex: 1; // chiếm hết không gian còn lại
-        min-width: 0; // fix lỗi flex tràn ngang
-        display: flex;
-        flex-direction: column;
-        overflow: hidden; // ko để nó tạo scroll ngang
+  /* Main Layout */
+  nz-layout {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 
-        /* Content */
-        .admin-content {
-          flex: 1;
-          padding: 24px;
-          background: #f9fafb;
-          overflow-y: auto;
-          overflow-x: hidden; // cắt ngang, bảng quá rộng sẽ cuộn riêng
-        }
+    /* Content */
+    .admin-content {
+      flex: 1;
+      padding: 24px;
+      background: #f9fafb;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
 
-        /* Footer */
-        .admin-footer {
-          background: #f3f4f6;
-          text-align: center;
-          padding: 12px 0;
-          font-size: 14px;
-          color: #6b7280;
-        }
-      }
-
-      button[nzType="primary"] {
-        border-radius: 8px !important;
-
-        &:hover {
-          background-color: #40a9ff !important;
-        }
-
-        &:active {
-          background-color: #096dd9 !important;
-        }
-      }
+    /* Footer */
+    .admin-footer {
+      background: #f3f4f6;
+      text-align: center;
+      padding: 12px 0;
+      font-size: 14px;
+      color: #6b7280;
     }
   }
 }

@@ -1,0 +1,31 @@
+.confirm-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+  padding: 16px 8px;
+
+  .icon {
+    font-size: 40px;
+  }
+
+  .message {
+    font-size: 16px;
+    font-weight: 500;
+    color: #444;
+    max-width: 320px;
+    line-height: 1.4;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+
+    app-button {
+      min-width: 90px;
+    }
+  }
+}

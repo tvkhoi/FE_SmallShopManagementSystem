@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { Button } from "../button/button";
 
 @Component({
   selector: 'app-personal-info',
@@ -28,7 +29,8 @@ import { NzMessageService } from 'ng-zorro-antd/message';
     NzInputModule,
     NzButtonModule,
     ReactiveFormsModule,
-  ],
+    Button
+],
   templateUrl: './personal-info.html',
   styleUrls: ['./personal-info.scss'],
   standalone: true,
@@ -40,7 +42,7 @@ export class PersonalInfo implements OnInit {
   private readonly cdj = inject(ChangeDetectorRef);
   private readonly msg = inject(NzMessageService);
 
-  formUser?: FormGroup;
+  formUser!: FormGroup;
   userData: User | null = null;
 
   ngOnInit(): void {

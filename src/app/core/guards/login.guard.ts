@@ -13,8 +13,8 @@ export const loginGuard: CanActivateFn = () => {
   }
 
   if (auth.isLoggedIn()) {
-    // Nếu đã đăng nhập → chặn vào login/signup và chuyển hướng sang dashboard
-    router.navigate(['/admin/dashboard']);
+    // Nếu đã đăng nhập → chặn vào login/signup và chuyển hướng sang users
+    router.navigate(['/admin/users']);
     return false;
   }
   return true; // chưa login thì cho vào login/signup

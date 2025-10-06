@@ -1,21 +1,32 @@
 <nz-layout class="admin-layout">
 
-  <app-sidebar-left  [menuItems]="menuItemsForSidebar" [isCollapsed]="isCollapsed"
+  <!-- Sidebar trái -->
+  <app-sidebar-left [menuItems]="menuItemsForSidebar" [isCollapsed]="isCollapsed"
     (collapseChange)="onCollapse($event)"></app-sidebar-left>
+  <!-- End Sidebar trái -->
 
   <!-- Main Layout -->
   <nz-layout>
     <!-- Header -->
-    <app-header style="width: 100%;" [routeMap]="routeMap" [currentTitle]="currentPage.title" [currentIcon]="currentPage.icon"></app-header>
+    <app-header style="width: 100%;" [routeMap]="routeMap" [currentTitle]="currentPage.title"
+      [currentIcon]="currentPage.icon"></app-header>
+    <!-- End Header -->
+
     <!-- Content -->
     <nz-content class="admin-content">
       <router-outlet></router-outlet>
     </nz-content>
+    <!-- End Content -->
 
     <!-- Footer -->
     <nz-footer class="admin-footer">© 2025 Admin Panel</nz-footer>
+    <!-- End Footer -->
   </nz-layout>
+  <!-- End Main Layout -->
 
   <!-- Sidebar phải (Toolbar) -->
-  <app-sidebar-right [isProfileCardOpen]="isProfileCardOpen" (toggleProfileCard)="onToggleProfileCard()" (collapseChange)="onCollapse($event)" [menuItems]="menuItemsRight"></app-sidebar-right>
+  <app-sidebar-right [isProfileCardOpen]="isProfileCardOpen" (toggleProfileCard)="onToggleProfileCard()"
+    (collapseChange)="onCollapse($event)" [menuItems]="menuItemsRight"></app-sidebar-right>
+  <!-- End Sidebar phải (Toolbar) -->
+
 </nz-layout>

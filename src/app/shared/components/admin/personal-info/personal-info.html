@@ -36,7 +36,7 @@
                     <nz-form-control>
                         <input nz-input maxlength="10" minlength="10" name="phoneNumber" formControlName="phoneNumber"
                             placeholder="Nhập số điện thoại" />
-                        @if(formUser?.get('phoneNumber')?.hasError('pattern'))
+                        @if(formUser.get('phoneNumber')?.hasError('pattern'))
                         {
                         <div class="text-red-500 text-xs mt-1 list-disc">
                             Số điện thoại phải có 10 số và bắt đầu bằng 0!
@@ -56,11 +56,11 @@
             </nz-col>
 
             <nz-col [nzXs]="24" class="button-col">
-                <button nz-button nzType="primary" class="save-button" (click)="onSubmit()" [disabled]="formUser?.invalid">
+                <app-button (click)="onSubmit()" class="save-button" type="primary" size="large"
+                    [disabled]="formUser.invalid">
                     Lưu thay đổi
-                </button>
+                </app-button>
             </nz-col>
-
         </nz-row>
     </form>
 </div>
