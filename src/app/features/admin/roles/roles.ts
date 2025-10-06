@@ -26,6 +26,9 @@ import { PaginationComponent } from '../../../shared/components/admin/pagination
 import { Role } from '../../../core/models/domain/role';
 import { Permission } from '../../../core/models/domain/permission';
 import { TreeNode } from '../../../core/models/ui/tree-node';
+import { Button } from '../../../shared/components/admin/button/button';
+import { ActionDropdown } from '../../../shared/components/admin/action-dropdown/action-dropdown';
+import { ConfirmDialog } from '../../../shared/components/admin/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-roles',
@@ -43,6 +46,9 @@ import { TreeNode } from '../../../core/models/ui/tree-node';
     NzIconModule,
     AssignPermissionModalComponent,
     PaginationComponent,
+    Button,
+    ActionDropdown,
+    ConfirmDialog,
   ],
   templateUrl: './roles.html',
   styleUrls: ['./roles.scss'],
@@ -56,6 +62,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   isCreateVisible = false;
   isAssignVisible = false;
   isConfirmLoading = false;
+  isDeleteModalVisible = false;
 
   // Form state
   roleName = '';
@@ -88,7 +95,9 @@ export class RolesComponent implements OnInit, OnDestroy {
   }
 
   /** Helper to group permissions by module */
-  private groupPermissionsByModule(data: Permission[]): { module: string; permissions: Permission[] }[] {
+  private groupPermissionsByModule(
+    data: Permission[]
+  ): { module: string; permissions: Permission[] }[] {
     const modules = [...new Set(data.map((p) => p.module))];
     return modules.map((module) => ({
       module,
@@ -234,14 +243,16 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.selectedRole = role;
 
     this.permissionService.getPermissions().subscribe((allPerms) => {
-      this.roleService.getPermissionsByRole(role.id).subscribe((res: { roleId: number; permissions: Permission[] }) => {
-        const grantedIds = new Set(res.permissions.filter((p) => p.granted).map((p) => p.id));
+      this.roleService
+        .getPermissionsByRole(role.id)
+        .subscribe((res: { roleId: number; permissions: Permission[] }) => {
+          const grantedIds = new Set(res.permissions.filter((p) => p.granted).map((p) => p.id));
 
-        this.treeData = this.buildAssignTreeData(allPerms, grantedIds);
-        this.groupedPermissions = this.buildAssignGroupedPermissions(allPerms, grantedIds);
+          this.treeData = this.buildAssignTreeData(allPerms, grantedIds);
+          this.groupedPermissions = this.buildAssignGroupedPermissions(allPerms, grantedIds);
 
-        this.cdr.detectChanges();
-      });
+          this.cdr.detectChanges();
+        });
     });
   }
 
@@ -300,25 +311,30 @@ export class RolesComponent implements OnInit, OnDestroy {
   }
 
   deleteRole(role: Role): void {
-    this.modal.confirm({
-      nzTitle: 'Bạn có chắc muốn xóa vai trò này?',
-      nzOkText: 'Xóa',
-      nzOkType: 'primary',
-      nzOkDanger: true,
-      nzOnOk: () =>
-        this.roleService
-          .deleteRole(role.id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: () => {
-              this.msg.success('Xóa vai trò thành công');
-              this.loadRoles();
-            },
-            error: () => this.msg.error('Xóa vai trò thất bại'),
-          }),
-      nzCancelText: 'Hủy',
-      nzOnCancel: () => this.msg.info('Hủy xóa vai trò'),
-    });
+    this.selectedRole = role;
+    this.isDeleteModalVisible = true;
+  }
+
+  handleConfirmDelete(): void {
+    if (!this.selectedRole) return;
+
+    this.roleService
+      .deleteRole(this.selectedRole.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.msg.success('Xóa vai trò thành công');
+          this.loadRoles();
+        },
+        error: () => console.log('Xóa vai trò thất bại'),
+      });
+
+    this.isDeleteModalVisible = false;
+  }
+
+  handleCancelDelete(): void {
+    this.msg.info('Hủy xóa vai trò');
+    this.isDeleteModalVisible = false;
   }
 
   editRole(role: Role): void {
@@ -376,4 +392,18 @@ export class RolesComponent implements OnInit, OnDestroy {
   sortByUserCount = (a: Role, b: Role): number => {
     return a.userCount - b.userCount;
   };
+  onDropdownAction(event: { action: string; data: any }) {
+    const { action, data } = event;
+    switch (action) {
+      case 'assign':
+        this.showAssignModal(data);
+        break;
+      case 'edit':
+        this.editRole(data);
+        break;
+      case 'delete':
+        this.deleteRole(data);
+        break;
+    }
+  }
 }

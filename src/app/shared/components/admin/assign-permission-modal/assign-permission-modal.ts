@@ -14,6 +14,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzTreeModule } from 'ng-zorro-antd/tree';
 import { User } from '../../../../core/models/domain/user';
+import { Button } from "../button/button";
 
 // ================== Interfaces ==================
 export interface Permission {
@@ -46,7 +47,8 @@ export interface GroupedPermissions {
     NzCheckboxModule,
     NzModalModule,
     NzTreeModule,
-  ],
+    Button
+],
   templateUrl: './assign-permission-modal.html',
   styleUrls: ['./assign-permission-modal.scss'],
 })

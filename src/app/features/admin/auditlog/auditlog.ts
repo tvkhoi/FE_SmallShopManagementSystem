@@ -25,6 +25,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { ExcelExportService } from '../../../core/services/excel-export.service';
 import { PaginationComponent } from '../../../shared/components/admin/pagination-component/pagination-component';
 import { getMethodColor, getStatusColor } from '../../../core/utils/index';
+import { Button } from "../../../shared/components/admin/button/button";
 
 
 @Component({
@@ -46,7 +47,8 @@ import { getMethodColor, getStatusColor } from '../../../core/utils/index';
     NzDropDownModule,
     NzMenuModule,
     PaginationComponent,
-  ],
+    Button
+],
   templateUrl: './auditlog.html',
   styleUrls: ['./auditlog.scss'],
 })

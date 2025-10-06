@@ -16,4 +16,5 @@ export class Button {
   @Input() isActive: boolean = false;
   @Input() customClass: string = '';
   @Input() isLoading: boolean = false;
+  @Input() fullWidth = false;
 }

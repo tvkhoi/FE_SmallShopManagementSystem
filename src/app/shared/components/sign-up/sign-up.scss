@@ -6,15 +6,17 @@
   background: linear-gradient(135deg, #001529, #003a8c);
 }
 
+.ant-card-bordered {
+  border-radius: 8px !important; 
+}
 .auth {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
 
-  .auth-card {
+  ::deep .auth-card {
     background: #fff;
-    border-radius: 18px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
     padding: 40px 32px;
     width: 100%;
@@ -149,18 +151,4 @@
       color: #1890ff;
     }
   }
-}
-
-.text-red-500 {
-  color: #ff4d4f !important;
-}
-.text-xs {
-  font-size: 12px !important;
-}
-.mt-1 {
-  margin-top: 4px !important;
-}
-.list-disc {
-  list-style: none;
-  padding-left: 5px;
 }

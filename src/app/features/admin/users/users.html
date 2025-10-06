@@ -509,6 +509,11 @@
         message="Bạn có chắc muốn xóa người dùng này không?" confirmText="Xóa" confirmType="danger" cancelText="Hủy"
         (confirm)="handleConfirmDelete()" (cancelModal)="handleCancelDelete()"></app-confirm-dialog>
 
+    <app-confirm-dialog [(isVisible)]="isDeleteModalVisible" title="Xác nhận hành động" message="Bạn có chắc muốn {{ selectedUser?.isActive ? 'khóa' : 'mở khóa' }} người dùng này không?"
+        [confirmText]="selectedUser?.isActive ? 'Khóa' : 'Mở khóa'" [cancelText]="'Hủy'"
+        (confirm)="handleConfirmLock()" (cancelModal)="handleCancelLock()"></app-confirm-dialog>
+
+
 
 
     <!-- Pagination -->

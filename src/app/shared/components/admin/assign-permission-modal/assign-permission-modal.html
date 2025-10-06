@@ -1,4 +1,4 @@
-<nz-modal [(nzVisible)]="visible" nzTitle="Permissions" (nzOnCancel)="handleCancel()" (nzOnOk)="handleSave()"
+<nz-modal [(nzVisible)]="visible" nzTitle="Gán quyền" (nzOnCancel)="handleCancel()" (nzOnOk)="handleSave()"
   nzWidth="800px" nzWrapClassName="permissions-modal">
   <div *nzModalContent>
     <div class="permissions-header">
@@ -36,5 +36,9 @@
 
       </div>
     </div>
+  </div>
+  <div *nzModalFooter>
+    <app-button nz-button type="cancel" size="medium" (click)="handleCancel()" style="margin-right: 8px;">Hủy</app-button>
+    <app-button nz-button type="primary" size="medium" (click)="handleSave()">Lưu thay đổi</app-button>
   </div>
 </nz-modal>

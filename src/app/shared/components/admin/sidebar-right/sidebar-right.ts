@@ -6,12 +6,13 @@ import { AuthService } from '../../../../auth/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { Button } from "../button/button";
 
 
 @Component({
   selector: 'app-sidebar-right',
   standalone: true,
-  imports: [NzLayoutModule, CommonModule, NzDropDownModule, NzIconModule, RouterModule],
+  imports: [NzLayoutModule, CommonModule, NzDropDownModule, NzIconModule, RouterModule, Button],
   templateUrl: './sidebar-right.html',
   styleUrls: ['./sidebar-right.scss'],
 })

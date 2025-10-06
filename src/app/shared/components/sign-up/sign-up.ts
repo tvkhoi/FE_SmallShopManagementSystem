@@ -24,6 +24,7 @@ import { UserService } from '../../../core/services/user.service';
 import { PasswordPolicyService } from '../../../core/services/passwordPolicy.service';
 import { PasswordPolicy } from '../../../core/models/domain/PasswordPolicy';
 import { getPendingPasswordRules, noWhitespaceValidator } from '../../../core/utils';
+import { Button } from "../admin/button/button";
 
 @Component({
   selector: 'app-sign-up',
@@ -41,7 +42,8 @@ import { getPendingPasswordRules, noWhitespaceValidator } from '../../../core/ut
     NzButtonModule,
     NzIconModule,
     RouterLink,
-  ],
+    Button
+],
 })
 export class SignUpComponent implements OnInit {
   signUpForm!: FormGroup;

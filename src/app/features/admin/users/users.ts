@@ -142,6 +142,7 @@ export class UsersComponent implements OnInit {
   selectedUser!: User | null;
 
   isDeleteModalVisible: boolean = false;
+  
 
   // Permissions
   groupedPermissions: { module: string; permissions: Permission[] }[] = [];
@@ -511,23 +512,6 @@ export class UsersComponent implements OnInit {
   }
 
   deleteUser(user: User): void {
-    // this.modal.confirm({
-    //   nzTitle: 'Bạn có chắc muốn xóa vai trò này?',
-    //   nzOkText: 'Xóa',
-    //   nzOkType: 'primary',
-    //   nzOkDanger: true,
-    //   nzOnOk: () => {
-    //     this.userService.deleteUser(user.id).subscribe({
-    //       next: () => {
-    //         this.msg.success('Đã xóa user');
-    //         this.loadUsers();
-    //       },
-    //       error: (e) => console.error('Lỗi khi xóa user:', e),
-    //     });
-    //   },
-    //   nzCancelText: 'Hủy',
-    //   nzOnCancel: () => this.msg.info('Hủy xóa vai trò'),
-    // });
     this.selectedUser = user;
     this.openDeleteModal();
   }
@@ -556,51 +540,30 @@ export class UsersComponent implements OnInit {
   }
 
   toggleLock(user: any) {
-    const action = user.isActive ? 'khóa' : 'mở khóa';
-    this.modal.confirm({
-      nzTitle: `Bạn có chắc muốn ${action} người dùng này?`,
-      nzOkText: action,
-      nzOkType: 'primary',
-      nzOkDanger: user.isActive, // chỉ cảnh báo đỏ khi khóa
-      nzOnOk: () => {
-        // Chọn API phù hợp
-        const request$ = user.isActive
-          ? this.userService.deactivateUser(user.id) // Lock user
-          : this.userService.activateUser(user.id); // Unlock user
+    this.selectedUser = user;
+    this.isDeleteModalVisible = true;
+  }
+  handleConfirmLock(): void {
+    if (!this.selectedUser) return;
+    const request$ = this.selectedUser.isActive
+      ? this.userService.deactivateUser(this.selectedUser.id) // Lock user
+      : this.userService.activateUser(this.selectedUser.id); // Unlock user
 
-        request$.subscribe({
-          next: (res: any) => {
-            user.isActive = !user.isActive; // Cập nhật UI ngay
-            this.msg.success(`Người dùng đã ${user.isActive ? 'mở khóa' : 'khóa'} thành công`);
+    request$.subscribe({
+      next: (res: any) => {
+        this.selectedUser!.isActive = !this.selectedUser!.isActive; // Cập nhật UI ngay
+        this.msg.success(`Người dùng đã ${this.selectedUser!.isActive ? 'mở khóa' : 'khóa'} thành công`);
             this.cdr.detectChanges();
           },
           error: (err) => {
-            this.msg.error(`Cập nhật trạng thái thất bại: ${err?.message || err}`);
             console.error(err);
           },
         });
-      },
-      nzCancelText: 'Hủy',
-      nzOnCancel: () => this.msg.info(`Hủy ${action} người dùng`),
-    });
+    this.isDeleteModalVisible = false;
   }
-
-  /** Tree helpers */
-  get selectedPermissions(): { id: number; name: string; module: string; description: string }[] {
-    const selected: any[] = [];
-    this.treeData.forEach((moduleNode) => {
-      moduleNode.children?.forEach((permNode: any) => {
-        if (permNode.checked) {
-          selected.push({
-            id: permNode.id!,
-            name: permNode.title!,
-            module: moduleNode.key,
-            description: permNode.title!,
-          });
-        }
-      });
-    });
-    return selected;
+  handleCancelLock(): void {
+    this.isDeleteModalVisible = false;
+    this.msg.info('Đã hủy');
   }
 
   onCheck(event: NzFormatEmitEvent): void {
