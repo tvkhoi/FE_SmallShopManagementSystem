@@ -9,7 +9,7 @@
   <nz-layout>
     <!-- Header -->
     <app-header style="width: 100%;" [routeMap]="routeMap" [currentTitle]="currentPage.title"
-      [currentIcon]="currentPage.icon"></app-header>
+      [currentIcon]="currentPage.icon" [isMenuVisible]="!isMobileMenuHidden"></app-header>
     <!-- End Header -->
 
     <!-- Content -->
@@ -26,7 +26,7 @@
 
   <!-- Sidebar phải (Toolbar) -->
   <app-sidebar-right [isProfileCardOpen]="isProfileCardOpen" (toggleProfileCard)="onToggleProfileCard()"
-    (collapseChange)="onCollapse($event)" [menuItems]="menuItemsRight"></app-sidebar-right>
+    (collapseChange)="onCollapse($event)" (collapseChange)="handleCollapseChange($event)" [menuItems]="menuItemsRight"></app-sidebar-right>
   <!-- End Sidebar phải (Toolbar) -->
 
 </nz-layout>

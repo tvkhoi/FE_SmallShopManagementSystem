@@ -3,16 +3,18 @@
   min-height: 100vh;
 
   .users-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
     height: auto;
     margin-bottom: 24px;
 
+    h2 {
+      margin: 0 !important;
+    }
     .user-header__actions {
       display: flex;
       gap: 8px;
-      height: 100px;
     }
   }
 
@@ -28,6 +30,9 @@
       .ant-input {
         background: #ffffff;
         color: #000000;
+        padding: 11px 0;
+        border-radius: 8px !important;
+        padding-left: 15px;
       }
 
       .ant-input-suffix {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
@@ -28,12 +28,13 @@ import { Header } from '../../components/admin/header/header';
   styleUrl: './admin-layout.scss',
   standalone: true,
 })
-export class AdminLayout {
+export class AdminLayout implements OnInit {
   private readonly router = inject(Router);
   private readonly cdj = inject(ChangeDetectorRef);
 
   isCollapsed = false;
   isProfileCardOpen = false;
+  isMobileMenuHidden = false;
 
   currentTitle: string = '';
   currentIcon: string = '';
@@ -57,6 +58,17 @@ export class AdminLayout {
 
   menuItemsRight = [{ label: 'Tài khoản của tôi', icon: 'user', route: '/admin/account' }];
 
+  ngOnInit(): void {
+    const hideMenu = localStorage.getItem('hideMobileMenuOnNewTab');
+    this.isMobileMenuHidden = hideMenu === 'true';
+    if (this.isMobileMenuHidden) {
+      localStorage.removeItem('hideMobileMenuOnNewTab');
+    }
+    this.router.events.subscribe(() => {
+      this.cdj.detectChanges();
+    });
+  }
+
   get menuItemsForSidebar() {
     const url = this.router.url;
     if (url.startsWith('/admin/account')) {
@@ -77,5 +89,8 @@ export class AdminLayout {
 
   onToggleProfileCard() {
     this.isProfileCardOpen = !this.isProfileCardOpen;
+  }
+  handleCollapseChange(hidden: boolean) {
+    this.isMobileMenuHidden = hidden; 
   }
 }

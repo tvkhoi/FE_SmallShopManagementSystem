@@ -6,7 +6,7 @@
             <span class="page-title">{{ currentTitle }}</span>
         </div>
     </div>
-    <ul nz-menu nzMode="horizontal" class="mobile-menu">
+    <ul nz-menu nzMode="horizontal" class="mobile-menu" *ngIf="isMenuVisible">
         <li nz-menu-item routerLink="/admin/users" routerLinkActive="ant-menu-item-selected">
             <div class="menu-mobile-item">
                 <span nz-icon nzType="user"></span>

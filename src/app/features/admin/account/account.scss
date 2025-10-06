@@ -71,7 +71,7 @@
 
   @include m.xs {
     ::ng-deep .account-btn {
-      font-size: 10px;
+      font-size: 11px !important;
     }
   }
 

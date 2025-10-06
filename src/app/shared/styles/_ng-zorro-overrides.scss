@@ -1,3 +1,4 @@
+@use '_variables' as v;
 .ant-btn {
   all: unset;
   display: inline-block;
@@ -17,4 +18,9 @@
 
 html {
   --antd-wave-shadow-color: transparent !important;
+}
+
+.ant-checkbox .ant-checkbox-inner {
+  background-color: v.$primary-color-admin !important; 
+  border-color: v.$primary-color-admin !important;
 }
