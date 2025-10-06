@@ -72,10 +72,9 @@
 }
 
 ::ng-deep .permissions-modal .ant-modal-content {
-  background-color: #1e1e1e !important;
+  background-color: #ffffff !important;
   color: #fff !important;
   border: none !important;
-  border-radius: 420px !important;
 }
 
 ::ng-deep .permissions-modal .ant-modal-header {
@@ -97,6 +96,7 @@
 ::ng-deep .permissions-modal .ant-modal-footer {
   background-color: #1e1e1e !important;
   border-top: 0px solid #333 !important;
+  border-radius: 8px !important;
 }
 
 ::ng-deep .permissions-modal .anticon svg {

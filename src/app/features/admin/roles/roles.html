@@ -6,7 +6,7 @@
         <h2>Vai trò</h2>
       </nz-col>
       <nz-col nzSpan="12" style="text-align: right;">
-        <app-button nz-button nzType="primary" (click)="showCreateModal()">Tạo vai trò</app-button>
+        <app-button nz-button nzType="primary" size="large" (click)="showCreateModal()">Tạo vai trò</app-button>
       </nz-col>
     </nz-row>
 
@@ -46,7 +46,7 @@
   <!-- Search box -->
   <div class="roles-search">
     <input nz-input placeholder="Tìm kiếm tên vai trò" [(ngModel)]="searchQuery" />
-    <app-button class="search-button" nz-button type="primary" (click)="filterRoles()">Tìm kiếm</app-button>
+    <app-button class="search-button" nz-button type="primary" size="large" (click)="filterRoles()">Tìm kiếm</app-button>
   </div>
 
   <!-- Table roles -->

@@ -1,5 +1,6 @@
 @use '../../../styles/mixins' as m;
 @use '../../../styles/variables' as v;
+
 .right-toolbar {
   background: #ffffff;
   display: flex;
@@ -98,7 +99,7 @@
       padding: 12px 15px;
       cursor: pointer;
       font-size: 16px;
-      color: #c3c3c3;
+      color: #000000;
 
       a {
         color: inherit;
@@ -106,8 +107,8 @@
       }
 
       &:hover {
-        background-color: v.$primary-color-admin;
-        color: #fff;
+        background-color: v.$secondary-color-admin;
+        opacity: 0.5;
       }
     }
   }

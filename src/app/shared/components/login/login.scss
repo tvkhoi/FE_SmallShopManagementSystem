@@ -1,11 +1,25 @@
 @use '../../styles/mixins'as m;
+@use 'sass:color';
 
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, #001529, #003a8c);
+  background: url('https://cdn-kvweb.kiotviet.vn/kiotviet-website/wp-content/uploads/2024/03/14064038/bg-register-success-tablet.png');
+  background-size: cover;
+  background-position: center;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(var(--kv-black-rgb), .4);
+
+  }
 
   .login-card {
     width: 350px;
@@ -13,6 +27,7 @@
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1; 
 
     .login-avatar {
       text-align: center;
@@ -36,7 +51,7 @@
 
         &:hover {
           text-decoration: underline;
-          color: darken(#1890ff, 15%);
+          color: color.adjust(#1890ff, $lightness: -15%);
         }
       }
     }
@@ -53,7 +68,7 @@
 
         &:hover {
           text-decoration: underline;
-          color: darken(#1890ff, 15%);
+          color: color.adjust(#1890ff, $lightness: -15%);
         }
       }
     }
@@ -88,7 +103,7 @@
 }
 
 /* Responsive */
-@media (max-width: 576px) {
+@include m.xs {
   .login-container {
     padding: 15px;
 
@@ -98,4 +113,3 @@
     }
   }
 }
-

@@ -1,13 +1,12 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
-import { NzLayoutModule } from "ng-zorro-antd/layout";
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../auth/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { Button } from "../button/button";
-
+import { Button } from '../button/button';
 
 @Component({
   selector: 'app-sidebar-right',
@@ -22,7 +21,7 @@ export class SidebarRight {
   private readonly messageService = inject(NzMessageService);
 
   @Input() isProfileCardOpen: boolean = false;
-  @Input() menuItems: Array<{ label: string, icon: string, route: string }> = [];
+  @Input() menuItems: Array<{ label: string; icon: string; route: string }> = [];
   @Output() toggleProfileCard = new EventEmitter<boolean>();
   @Output() collapseChange = new EventEmitter<boolean>();
 
@@ -45,7 +44,7 @@ export class SidebarRight {
     this.toggleProfileCard.emit(this.isProfileCardOpen);
   }
 
-   onNavigate() {
-    this.collapseChange.emit(true);
+  onNavigate() {
+    localStorage.setItem('hideMobileMenuOnNewTab', 'true');
   }
 }

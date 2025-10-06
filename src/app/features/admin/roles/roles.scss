@@ -5,6 +5,9 @@
 
     input {
       margin-right: 8px;
+      padding: 11px 0;
+      padding-left: 15px !important;
+      border-radius: 8px !important;
     }
     .search-button {
       white-space: nowrap;
@@ -14,10 +17,12 @@
 }
 
 .roles-header {
+  margin-bottom: 8px !important;
   .error-msg {
     color: red;
     font-size: 12px;
     margin-top: 4px;
+    
   }
 
   .permissions-list {
@@ -55,4 +60,8 @@
 
 ::ng-deep .custom-role-modal .ant-modal-header {
   border-radius: 15px !important;
+}
+
+::ng-deep .ant-table {
+  overflow-x: scroll;
 }
