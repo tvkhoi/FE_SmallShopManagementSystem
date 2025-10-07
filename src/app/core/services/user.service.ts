@@ -21,7 +21,7 @@ export class UserService {
     this.userDataSource.next(newUserData);
   }
 
-  // ========== AUTH ==========
+  //  AUTH 
   signUp(userData: {
     fullname: string;
     phoneNumber: string;
@@ -66,7 +66,7 @@ export class UserService {
     );
   }
 
-  // ========== AUTH PASSWORD RESET ==========
+  //AUTH PASSWORD RESET
   forgotPassword(email: string): Observable<string> {
     return this.http
       .post<ApiResponse<{ email: string }>>(`${this.apiUrl}/User/forgot-password`, { email })
@@ -90,7 +90,7 @@ export class UserService {
     );
   }
 
-  // ========== USER ==========
+  //  USER 
   getAllUsers(): Observable<any> {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/User`).pipe(
       map((res) => {
@@ -196,7 +196,7 @@ export class UserService {
     );
   }
 
-  // ========== ROLE ==========
+  //  ROLE 
   assignRoles(userId: number, roleIds: number[]): Observable<any> {
     return this.http
       .post<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/assign-roles`, { roleIds })
@@ -233,7 +233,7 @@ export class UserService {
       );
   }
 
-  // ========== PERMISSION ==========
+  //  PERMISSION ==========
   getUserPermissions(userId: number): Observable<any> {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/permissions`).pipe(
       map((res) => {

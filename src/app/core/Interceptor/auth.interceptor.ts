@@ -1,50 +1,65 @@
+import { HttpInterceptorFn, HttpErrorResponse, HttpRequest, HttpHandlerFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { HttpRequest, HttpHandlerFn, HttpEvent, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
-import { Observable, BehaviorSubject, throwError, filter, take, switchMap } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 
 let isRefreshing = false;
-const refreshSubject = new BehaviorSubject<string | null>(null);
+const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
-export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  console.log('Auth Interceptor called', req.url);
   const authService = inject(AuthService);
-  const token = authService.getAccessToken();
+  const accessToken = authService.getAccessToken();
 
-  let authReq = req;
-  if (token) {
-    authReq = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
+  // Gắn Authorization header nếu có token
+  let cloned = req;
+  if (accessToken) {
+    cloned = req.clone({
+      setHeaders: { Authorization: `Bearer ${accessToken}` },
+    });
   }
 
-  return next(authReq).pipe(
-    catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
-        if (!isRefreshing) {
-          isRefreshing = true;
-          refreshSubject.next(null);
-
-          return authService.refreshToken().pipe(
-            switchMap((resp: any) => {
-              isRefreshing = false;
-              authService.saveTokens(resp.accessToken, resp.refreshToken);
-              refreshSubject.next(resp.accessToken);
-              return next(req.clone({ setHeaders: { Authorization: `Bearer ${resp.accessToken}` } }));
-            }),
-            catchError((err) => {
-              isRefreshing = false;
-              authService.clearTokens();
-              return throwError(() => err);
-            })
-          );
-        } else {
-          return refreshSubject.pipe(
-            filter(token => token != null),
-            take(1),
-            switchMap(token => next(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })))
-          );
-        }
+  return next(cloned).pipe(
+    catchError((error) => {
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        // Token hết hạn → xử lý refresh
+        return handle401Error(authService, cloned, next);
       }
       return throwError(() => error);
     })
   );
 };
+
+function handle401Error(authService: AuthService, req: HttpRequest<any>, next: HttpHandlerFn) {
+  if (!isRefreshing) {
+    isRefreshing = true;
+    refreshTokenSubject.next(null);
+
+    return authService.refreshToken().pipe(
+      switchMap((tokens) => {
+        isRefreshing = false;
+        refreshTokenSubject.next(tokens.accessToken);
+
+        return next(
+          req.clone({
+            setHeaders: { Authorization: `Bearer ${tokens.accessToken}` },
+          })
+        );
+      }),
+      catchError((err) => {
+        isRefreshing = false;
+        authService.logout();
+        return throwError(() => err);
+      })
+    );
+  } else {
+    // Nếu đang refresh → chờ token mới rồi gửi lại request
+    return refreshTokenSubject.pipe(
+      filter((token) => token != null),
+      take(1),
+      switchMap((token) =>
+        next(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }))
+      )
+    );
+  }
+}
