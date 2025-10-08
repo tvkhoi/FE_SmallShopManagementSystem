@@ -57,7 +57,7 @@
 
             <nz-col [nzXs]="24" class="button-col">
                 <app-button (click)="onSubmit()" class="save-button" type="primary" size="large"
-                    [disabled]="formUser.invalid">
+                    [disabled]="formUser.invalid" [permissions]="[PERMISSIONS.USERS_UPDATE]">
                     Lưu thay đổi
                 </app-button>
             </nz-col>

@@ -1,4 +1,4 @@
-<button
+<button 
   nz-button
   [ngClass]="[
     'app-btn',
@@ -8,7 +8,7 @@
     fullWidth ? 'app-btn--full' : '',
     customClass
   ]"
-  [disabled]="disabled"
+  [disabled]="disabled || hasPermission === false"
   [nzLoading]="isLoading"
 >
   <ng-content></ng-content>

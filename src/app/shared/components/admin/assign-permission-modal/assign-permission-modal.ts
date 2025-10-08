@@ -15,6 +15,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzTreeModule } from 'ng-zorro-antd/tree';
 import { User } from '../../../../core/models/domain/user';
 import { Button } from "../button/button";
+import { PERMISSION_GROUPS } from '../../../../core/constants/permission-groups';
 
 // ================== Interfaces ==================
 export interface Permission {
@@ -63,6 +64,8 @@ export class AssignPermissionModalComponent implements OnChanges {
 
   selectedModule: string | null = null;
   allChecked = false;
+
+  PERMISSION_GROUPS = PERMISSION_GROUPS;
 
   private readonly cdr = inject(ChangeDetectorRef);
 

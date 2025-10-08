@@ -16,6 +16,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Button } from "../button/button";
+import { PERMISSIONS } from '../../../../core/constants/permission.constant';
 
 @Component({
   selector: 'app-personal-info',
@@ -41,9 +42,11 @@ export class PersonalInfo implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly cdj = inject(ChangeDetectorRef);
   private readonly msg = inject(NzMessageService);
+  private readonly auth = inject(AuthService);
 
   formUser!: FormGroup;
   userData: User | null = null;
+  readonly PERMISSIONS = PERMISSIONS;
 
   ngOnInit(): void {
     this.formUser = this.fb.group({
@@ -54,7 +57,12 @@ export class PersonalInfo implements OnInit {
       address: [''],
     });
 
-    this.loadUserData();
+    if(this.auth.hasPermission(PERMISSIONS.USERS_VIEW)) {
+      this.loadUserData();
+    }
+    else {
+      console.warn('Không có quyền xem người dùng (USERS_VIEW)');
+    }
   }
 
   private loadUserData() {
