@@ -1,6 +1,7 @@
 .header_section {
   background: #232831;
   padding: 10px 0;
+   z-index: 1050; 
 
   .navbar-brand {
     font-size: 1.6rem;
@@ -71,3 +72,4 @@
 .container-fluid {
   margin-left: 10px;
 }
+

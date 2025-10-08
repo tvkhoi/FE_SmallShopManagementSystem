@@ -24,10 +24,12 @@ import { ProductsComponent } from './features/customer/products/products';
 import { ContactComponent } from './features/customer/contact/contact';
 import { CartComponent } from './features/customer/cart/cart';
 import { WishlistComponent } from './features/customer/wishlist/wishlist';
+import { ProductItemComponent } from './features/customer/product-item/product-item';
+
 
 
 export const routes: Routes = [
-  // CUSTOMER
+  // CUSTOMER - Public routes (no auth required)
   {
     path: '',
     component: CustomerLayoutComponent,
@@ -36,8 +38,19 @@ export const routes: Routes = [
       { path: 'about', component: AboutComponent },
       { path: 'products', component: ProductsComponent },
       { path: 'contact', component: ContactComponent },
+      { path: 'productItem', component: ProductItemComponent }
+    ]
+  },
+
+  // CUSTOMER - Protected routes (auth required)
+  {
+    path: 'customer',
+    component: CustomerLayoutComponent,
+    canActivate: [authGuard],
+    data: { roles: ['Customer'] },
+    children: [
       { path: 'cart', component: CartComponent },
-      { path: 'wishlist', component: WishlistComponent },
+      { path: 'wishlist', component: WishlistComponent }
     ]
   },
 
@@ -46,7 +59,7 @@ export const routes: Routes = [
   { path: 'sign-up', component: SignUpComponent, canActivate: [loginGuard] },
   { path: 'forgot-password', component: ForgotPassword, canActivate: [loginGuard] },
   { path: 'reset-password', component: ResetPassword, pathMatch: 'full' },
-   
+
   // ADMIN
   {
     path: 'admin',

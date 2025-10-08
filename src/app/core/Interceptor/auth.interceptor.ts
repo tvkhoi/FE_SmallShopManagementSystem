@@ -11,9 +11,18 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
   const authService = inject(AuthService);
   const token = authService.getAccessToken();
 
+  console.log('🔐 Auth Interceptor:', {
+    url: req.url,
+    hasToken: !!token,
+    tokenPreview: token ? `${token.substring(0, 20)}...` : 'null'
+  });
+
   let authReq = req;
   if (token) {
     authReq = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
+    console.log('✅ Added Bearer token to request');
+  } else {
+    console.warn('⚠️ No token found - request will be sent without authentication');
   }
 
   return next(authReq).pipe(

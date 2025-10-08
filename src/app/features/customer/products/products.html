@@ -1,52 +1,54 @@
-<div class="container my-5 products-page">
-  <h2 class="text-center mb-4 title">Sản Phẩm Chính</h2>
+<div class="container products-page py-4">
+  <!-- Title -->
+  <h2  *ngIf="!isFeatured" class="title text-center mb-4">Danh sách sản phẩm</h2>
 
-  <!-- Filters -->
-  <div class="d-flex justify-content-center mb-4 filter-buttons gap-3">
-    <!-- Category -->
-    <div>
-      <button *ngFor="let cat of categories" class="btn" [ngClass]="{ 'active': selectedCategory === cat }"
-        (click)="selectCategory(cat)">
-        {{ cat }}
-      </button>
-    </div>
-
-    <!-- Price -->
-    <div class="dropdown">
-      <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
-        Lọc theo giá
-      </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" (click)="filterByPrice('all')">Tất cả</a></li>
-        <li><a class="dropdown-item" (click)="filterByPrice('low')">Dưới 10$</a></li>
-        <li><a class="dropdown-item" (click)="filterByPrice('mid')">10$ - 20$</a></li>
-        <li><a class="dropdown-item" (click)="filterByPrice('high')">Trên 20$</a></li>
-      </ul>
-    </div>
+  <!-- Bộ lọc -->
+  <div class="filter-buttons d-flex flex-wrap justify-content-center mb-4">
+    <button *ngFor="let cat of categories" class="btn" [class.active]="selectedCategory === cat"
+      (click)="selectedCategory = cat; filterProducts()">
+      {{ cat }}
+    </button>
   </div>
 
-  <!-- Products Grid -->
-  <div class="row g-4">
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let product of filteredProducts">
-      <div class="product-card h-100 animate__animated animate__fadeIn">
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-success" role="status"></div>
+    <p class="mt-2">Đang tải dữ liệu...</p>
+  </div>
+
+  <!-- Không có sản phẩm -->
+  <div *ngIf="!isLoading && filteredProducts.length === 0" class="alert alert-warning text-center">
+    Không có sản phẩm nào phù hợp.
+  </div>
+
+  <!-- Danh sách sản phẩm -->
+  <div class="row g-4" *ngIf="!isLoading">
+    <div class="col-md-4 col-lg-3" *ngFor="let p of filteredProducts; trackBy: trackByProductId">
+      <div class="product-card shadow-sm text-center">
+        <!-- Ảnh -->
         <div class="product-img">
-          <img [src]="product.image" [alt]="product.name" />
+          <img [src]="p.imageUrls && p.imageUrls.length > 0 ? p.imageUrls[0] : 'assets/nen.jpg'" alt="{{ p.name }}">
         </div>
-        <div class="product-content">
-          <h5>{{ product.name }}</h5>
-          <div class="d-flex justify-content-between align-items-center">
-            <span class="price">${{ product.price }}</span>
-            <div class="actions">
-              <button class="btn-action" title="Wishlist">
-                <i class="fa fa-heart"></i>
-              </button>
-              <button class="btn-action" title="Add to Cart" (click)="addToCart(product)">
-                <i class="fa fa-shopping-cart"></i>
-              </button>
-            </div>
+
+        <!-- Chỉ hiển thị Tên + Giá -->
+        <div class="product-content d-flex flex-column">
+          <h5 class="text-truncate">{{ p.name }}</h5>
+          <p class="price text-danger">{{ p.price | currency:'VND':'symbol' }}</p>
+
+          <!-- Chỉ có nút xem chi tiết -->
+          <div class="actions mt-auto">
+            <button class="btn-action" (click)="addToCart(p)" title="Thêm vào giỏ hàng">🛒</button>
+            <button class="btn-action" (click)="addToWishlist(p)" title="Thêm vào yêu thích">❤️</button>
+            <button class="btn-action" (click)="viewDetails(p)" title="Chi tiết">🔍</button>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+
+  <!-- Modal chi tiết -->
+  <app-product-item [product]="selectedProduct" (closeModal)="selectedProduct = null">
+  </app-product-item>
+  <!-- Phân trang -->
+  <app-pagination *ngIf="!isFeatured" [total]="totalPages" [pageSize]="pageSize" [pageIndex]="pageNumber" (pageChange)="changePage($event)"
+    (pageSizeChange)="changePageSize($event)"></app-pagination>

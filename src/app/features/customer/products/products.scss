@@ -6,15 +6,20 @@
 
   /* Filter Buttons */
   .filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+
     button {
       border: none;
       background: transparent;
       color: #333;
       padding: 6px 15px;
       font-weight: bold;
-      margin: 0 5px;
       border-radius: 20px;
       transition: 0.3s;
+      white-space: nowrap;
 
       &.active,
       &:hover {
@@ -32,7 +37,9 @@
     display: flex;
     flex-direction: column;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    
+    text-align: center;
+    padding: 15px;
+
     &:hover {
       transform: translateY(-5px);
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
@@ -40,14 +47,16 @@
 
     .product-img {
       background: #fff;
-      padding: 20px;
+      padding: 15px;
       text-align: center;
+      border-radius: 15px;
 
       img {
-        width: 120px;
-        height: 120px;
+        width: 200px;
+        height: 200px;  
         object-fit: contain;
         transition: transform 0.3s ease;
+        border-radius: 15px;
       }
 
       &:hover img {
@@ -57,21 +66,23 @@
 
     .product-content {
       background: #f5f5f5;
-      color: #000000;
+      color: #000;
       padding: 10px;
 
       h5 {
         font-weight: bold;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
       }
 
       .price {
         font-weight: bold;
         font-size: 1.1rem;
+        margin-bottom: 10px;
       }
 
       .actions {
         display: flex;
+        justify-content: center;
         gap: 8px;
 
         .btn-action {
@@ -95,4 +106,3 @@
     }
   }
 }
-

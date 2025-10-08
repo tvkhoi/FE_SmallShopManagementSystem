@@ -1,0 +1,41 @@
+<div class="modal fade show d-block" *ngIf="product" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0 rounded-4">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">{{ product.name }}</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="close()" title="Đóng"
+          aria-label="Đóng"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <!-- Ảnh sản phẩm -->
+          <div class="col-md-6 text-center mb-3 mb-md-0">
+            <img [src]="selectedImage" alt="{{ product.name }}" class="img-fluid rounded shadow-sm detail-img mb-2">
+            <div class="d-flex flex-wrap justify-content-center"
+              *ngIf="product?.imageUrls && product.imageUrls.length > 1">
+              <img *ngFor="let img of product.imageUrls" [src]="img" (click)="selectImage(img)"
+                [class.selected]="img === selectedImage" class="thumbnail-img me-2 mb-2 rounded border">
+            </div>
+          </div>
+          <!-- Nội dung chi tiết -->
+          <div class="col-md-6">
+            <p class="fw-bold text-danger fs-4">{{ product.price | currency:'VND':'symbol' }}</p>
+            <p><strong>Mô tả:</strong> {{ product.description || 'Không có mô tả' }}</p>
+            <p><strong>Còn lại:</strong> {{ product.stock }}</p>
+            <p><strong>Danh mục:</strong> {{ product.categoryName || 'Khác' }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer d-flex justify-content-between">
+        <div>
+          <button class="btn btn-success me-2" (click)="addToCart()">🛒 Thêm giỏ hàng</button>
+          <button class="btn btn-outline-danger" (click)="addToWishlist(product)">❤️ Yêu thích</button>
+        </div>
+        <button class="btn btn-secondary" (click)="close()">Đóng</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- backdrop -->
+<div class="modal-backdrop fade show" *ngIf="product"></div>

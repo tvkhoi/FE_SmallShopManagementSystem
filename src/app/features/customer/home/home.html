@@ -1,19 +1,16 @@
+<!-- Trang chủ -->
 <div class="home-container">
-  <!-- Hero section -->
   <div class="hero-section">
     <section class="hero">
       <h1>Chào mừng đến với Mini Market</h1>
       <h5>Mang đến cho bạn những món ăn nhanh ngon miệng, tiện lợi và chất lượng cao.</h5>
-
     </section>
   </div>
 
-  <!-- Carousel -->
   <app-carousel [slides]="slides"></app-carousel>
 
   <div class="separator"></div>
 
-  <!-- Features -->
   <section class="features">
     <div class="feature-card">
       <h3>Sản phẩm tươi ngon</h3>
@@ -27,19 +24,14 @@
       <h3>Hỗ trợ 24/7</h3>
       <p>Đội ngũ chăm sóc khách hàng luôn sẵn sàng.</p>
     </div>
-
   </section>
 
-  <!-- Products component -->
-  <app-products></app-products>
-  <section class="hero">
-
-    <button class="btn-primary">Mua ngay</button>
+  <!-- Sản phẩm nổi bật -->
+  <section class="featured-products mt-5">
+    <h1 class="text-center mb-4">Sản phẩm nổi bật </h1>
+    <app-product [isFeatured]="true"></app-product>
   </section>
-  <!-- About component -->
+<hr class="section-divider my-5">
   <app-about></app-about>
-
-  <!-- Contact component -->
   <app-contact></app-contact>
-
 </div>

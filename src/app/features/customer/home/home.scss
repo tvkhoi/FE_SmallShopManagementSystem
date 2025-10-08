@@ -56,3 +56,12 @@
     padding-top: 50px;
   }
 }
+.section-divider {
+  border: none;
+  height: 7px;
+  width: 40%;
+  margin: 40px auto;
+  background: linear-gradient(to right, #5fc256, #00b894);
+  border-radius: 50px;
+  opacity: 0.8;
+}

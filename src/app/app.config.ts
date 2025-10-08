@@ -1,5 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection, importProvidersFrom, APP_INITIALIZER } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
@@ -19,7 +20,13 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes), provideClientHydration(withEventReplay()), provideNzI18n(en_US), importProvidersFrom(FormsModule), provideAnimationsAsync(), provideHttpClient(withFetch() ,withInterceptors([authInterceptor, errorInterceptor])),
+    provideRouter(routes), 
+    provideClientHydration(withEventReplay()), 
+    provideNzI18n(en_US), 
+    importProvidersFrom(FormsModule), 
+    provideAnimationsAsync(), 
+    provideHttpClient(withFetch() ,withInterceptors([authInterceptor, errorInterceptor])),
+    NzMessageService,
     {
       provide: APP_INITIALIZER,
       useFactory: (authService: AuthService) => {

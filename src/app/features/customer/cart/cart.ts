@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
+import { CartService } from '../../../core/services/cart.service';
+import { CartItem } from '../../../core/models/domain/cartItem';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -9,24 +11,72 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './cart.html',
   styleUrls: ['./cart.scss']
 })
-export class CartComponent {
-  // Giả dữ liệu cart
-  cartItems = [
-    { name: 'Bánh mì sandwich', category: 'Đồ ăn nhanh', price: 25000, quantity: 2, image: 'assets/pizza1.jpg' },
-    { name: 'Trà sữa', category: 'Đồ uống', price: 35000, quantity: 1, image: 'assets/pizza1.jpg' }
-  ];
+export class CartComponent implements OnInit {
+  cartItems: CartItem[] = [];
+  isLoading = true;
+  shipping = 30000;
 
-  shipping = 15000;
+  constructor(
+    private cartService: CartService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
-  getSubtotal() {
-    return this.cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  ngOnInit(): void {
+    this.loadCart();
+    this.cartService.cartChanged$.subscribe(() => this.loadCart());
   }
 
-  getTotal() {
-    return this.getSubtotal() + this.shipping;
+  loadCart(): void {
+    this.isLoading = true;
+    this.cartService.getCart().subscribe({
+      next: items => {
+       this.cartItems = items.data;
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        console.error('Lỗi load giỏ hàng:', err);
+        this.isLoading = false;
+      }
+    });
   }
 
-  removeItem(index: number) {
-    this.cartItems.splice(index, 1);
+  get subtotal(): number {
+    return this.cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  }
+
+  get total(): number {
+    return this.subtotal + this.shipping;
+  }
+
+  getProductImage(item: CartItem): string {
+    return this.cartService.getCartItemMainImage(item);
+  }
+
+  updateQuantity(item: CartItem, newQuantity: number): void {
+    if (newQuantity <= 0) {
+      this.removeItem(item.productId);
+      return;
+    }
+    this.cartService.addOrUpdateCart(item.productId, newQuantity).subscribe({
+      next: res => {
+        if (res.success) {
+          item.quantity = newQuantity;
+          this.cdr.markForCheck();
+        }
+      },
+      error: err => console.error('Lỗi update số lượng:', err)
+    });
+  }
+
+  removeItem(productId: number): void {
+    this.cartService.removeFromCart(productId).subscribe({
+      next: () => this.cartItems = this.cartItems.filter(i => i.productId !== productId),
+      error: err => console.error('Lỗi remove item:', err)
+    });
+  }
+
+  trackByProductId(index: number, item: CartItem): number {
+    return item.productId;
   }
 }

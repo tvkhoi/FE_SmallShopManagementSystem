@@ -8,16 +8,29 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      console.error('🚨 Error Interceptor caught error:', {
+        status: error.status,
+        statusText: error.statusText,
+        url: error.url,
+        message: error.message,
+        error: error.error
+      });
+
       if (error.error) {
         // Nếu BE trả về ApiResponse
         if (error.error.message) {
+          console.error('📝 Backend message:', error.error.message);
           messageService.error(error.error.message);
         }
         if (error.error.errors && Array.isArray(error.error.errors)) {
-          error.error.errors.forEach((e: any) => messageService.error(JSON.stringify(e)));
+          error.error.errors.forEach((e: any) => {
+            console.error('📝 Backend error:', e);
+            messageService.error(JSON.stringify(e));
+          });
         }
       } else {
         // Lỗi mạng hoặc BE không phản hồi
+        console.error('🌐 Network error or no response from server');
         messageService.error('Không thể kết nối đến server');
       }
 
