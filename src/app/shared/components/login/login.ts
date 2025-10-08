@@ -79,7 +79,7 @@ export class LoginComponent implements OnInit {
 
           if (res.token && res.refreshToken) {
             this.authService.saveTokens(res.token, res.refreshToken);
-            this.authService.redirectByRole();
+            this.authService.redirectByPermission();
             this.message.success('Đăng nhập thành công');
           } else {
             this.message.error('Không tìm thấy token trong phản hồi');

@@ -9,7 +9,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -29,7 +29,8 @@ import { TreeNode } from '../../../core/models/ui/tree-node';
 import { Button } from '../../../shared/components/admin/button/button';
 import { ActionDropdown } from '../../../shared/components/admin/action-dropdown/action-dropdown';
 import { ConfirmDialog } from '../../../shared/components/admin/confirm-dialog/confirm-dialog';
-
+import { PERMISSIONS } from '../../../core/constants/permission.constant';
+import { AuthService } from '../../../auth/auth.service';
 @Component({
   selector: 'app-roles',
   standalone: true,
@@ -57,6 +58,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   roles: Role[] = [];
   groupedPermissions: { module: string; permissions: Permission[] }[] = [];
   treeData: TreeNode[] = [];
+  readonly PERMISSIONS = PERMISSIONS;
 
   // Modal state
   isCreateVisible = false;
@@ -78,15 +80,24 @@ export class RolesComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   // Inject services
   private readonly roleService = inject(RoleService);
+  private readonly auth = inject(AuthService)
   private readonly permissionService = inject(PermissionService);
   private readonly zone = inject(NgZone);
   private readonly msg = inject(NzMessageService);
-  private readonly modal: NzModalService = inject(NzModalService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
-    this.loadPermissions();
-    this.loadRoles();
+    if (this.auth.hasPermission(PERMISSIONS.PERMISSIONS_VIEW)) {
+      this.loadPermissions();
+    } else {
+      console.warn('Không có quyền xem quyền hạn (PERMISSIONS_VIEW)');
+    }
+
+    if (this.auth.hasPermission(PERMISSIONS.ROLES_VIEW)) {
+      this.loadRoles();
+    } else {
+      console.warn('Không có quyền xem vai trò (ROLES_VIEW)');
+    }
   }
 
   ngOnDestroy(): void {
@@ -137,7 +148,7 @@ export class RolesComponent implements OnInit, OnDestroy {
             this.cdr.detectChanges();
           });
         },
-        error: () => this.msg.error('Không thể tải danh sách quyền'),
+        error: () => console.log('Không thể tải danh sách quyền'),
       });
   }
 

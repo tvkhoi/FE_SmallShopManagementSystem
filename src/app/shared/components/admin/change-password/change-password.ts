@@ -1,3 +1,4 @@
+import { PERMISSIONS } from './../../../../core/constants/permission.constant';
 import { PasswordPolicyService } from './../../../../core/services/passwordPolicy.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
@@ -33,6 +34,7 @@ export class ChangePassword implements OnInit {
   private readonly cdj = inject(ChangeDetectorRef);
   private readonly msg = inject(NzMessageService);
 
+  PERMISSIONS = PERMISSIONS;
   pendingRules: string[] = [];
   policy!: PasswordPolicy;
   formChangePassword!: FormGroup;

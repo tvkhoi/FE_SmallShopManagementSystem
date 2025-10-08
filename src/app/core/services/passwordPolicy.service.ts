@@ -12,6 +12,7 @@ export class PasswordPolicyService {
   private readonly http = inject(HttpClient);
 
   // GET: lấy password policy hiện tại
+  // Cần quyền PASSWORDPOLICY_VIEW
   getPolicy(): Observable<PasswordPolicy> {
     return this.http.get<ApiResponse<PasswordPolicy>>(this.apiUrl).pipe(
       map((res) => {
@@ -22,6 +23,7 @@ export class PasswordPolicyService {
   }
 
   // PUT: cập nhật password policy
+  // Cần quyền PASSWORDPOLICY_UPDATE
   updatePolicy(policy: PasswordPolicy): Observable<PasswordPolicy> {
     return this.http.put<ApiResponse<PasswordPolicy>>(this.apiUrl, policy).pipe(
       map((res) => {

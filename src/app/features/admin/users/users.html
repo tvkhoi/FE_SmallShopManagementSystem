@@ -3,7 +3,7 @@
     <div class="users-header">
         <h2>Người dùng</h2>
         <div class="user-header__actions">
-            <app-button type="primary" size="large" (click)="showModal()">Thêm người dùng</app-button>
+            <app-button type="primary" size="large" (click)="showModal()" [permissions]="[PERMISSIONS.USERS_CREATE]">Thêm người dùng</app-button>
         </div>
     </div>
     <!--End Header-->
@@ -469,17 +469,18 @@
             <tr *ngFor="let user of userTable.data">
                 <td>
                     <app-action-dropdown [actions]="[
-    { label: 'Xem chi tiết', emitName: 'viewDetails', icon: 'eye' },
-    { label: 'Sửa', emitName: 'editUser', icon: 'edit', disabled: user.email === 'admin@system.com' },
-    { label: 'Gán quyền', emitName: 'assignUser', icon: 'user-add', disabled: user.email === 'admin@system.com' },
-    { label: 'Xóa', emitName: 'deleteUser', icon: 'delete', type: 'danger', disabled: user.email === 'admin@system.com' },
-    { label: 'Đặt lại mật khẩu', emitName: 'changePassword', icon: 'key', disabled: user.email === 'admin@system.com' },
+    { label: 'Xem chi tiết', emitName: 'viewDetails', icon: 'eye', permissions: [PERMISSIONS.USERS_VIEW] },
+    { label: 'Sửa', emitName: 'editUser', icon: 'edit', disabled: user.email === 'admin@system.com', permissions: [PERMISSIONS.USERS_VIEW, PERMISSIONS.USERS_UPDATE] },
+    { label: 'Gán quyền', emitName: 'assignUser', icon: 'user-add', disabled: user.email === 'admin@system.com', permissions: [PERMISSION_GROUPS.ADMIN] },
+    { label: 'Xóa', emitName: 'deleteUser', icon: 'delete', type: 'danger', disabled: user.email === 'admin@system.com', permissions: [PERMISSIONS.USERS_DELETE] },
+    { label: 'Đặt lại mật khẩu', emitName: 'changePassword', icon: 'key', disabled: user.email === 'admin@system.com', permissions: [PERMISSIONS.USERS_UPDATE] },
     {
       label: user.isActive ? 'Khóa' : 'Mở khóa',
       emitName: 'toggleLock',
       icon: user.isActive ? 'lock' : 'unlock',
       type: 'cancel',
-      disabled: user.email === 'admin@system.com'
+      disabled: user.email === 'admin@system.com',
+      permissions: [user.isActive ? PERMISSIONS.USERS_LOCK : PERMISSIONS.USERS_UNLOCK]
     }
   ]" dropdownLabel="Hành động" [dropdownIcon]="'setting'" [data]="user"
                         (action)="handleUserAction($event)"></app-action-dropdown>

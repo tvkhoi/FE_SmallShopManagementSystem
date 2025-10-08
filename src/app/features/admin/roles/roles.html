@@ -6,7 +6,7 @@
         <h2>Vai trò</h2>
       </nz-col>
       <nz-col nzSpan="12" style="text-align: right;">
-        <app-button nz-button nzType="primary" size="large" (click)="showCreateModal()">Tạo vai trò</app-button>
+        <app-button nz-button nzType="primary" size="large" (click)="showCreateModal()" [permissions]="[PERMISSIONS.ROLES_CREATE]">Tạo vai trò</app-button>
       </nz-col>
     </nz-row>
 
@@ -67,9 +67,9 @@
       <tr *ngFor="let role of table.data">
         <td>
           <app-action-dropdown [actions]="[
-    { label: 'Gán quyền', icon: 'key', emitName: 'assign', disabled: role.name === 'Admin' },
-    { label: 'Sửa', icon: 'edit', emitName: 'edit', disabled: role.name === 'Admin' },
-    { label: 'Xóa', icon: 'delete', type: 'danger', emitName: 'delete', disabled: role.name === 'Admin' }
+    { label: 'Gán quyền', icon: 'key', emitName: 'assign', disabled: role.name === 'Admin', permissions: [PERMISSIONS.PERMISSIONS_VIEW] },
+    { label: 'Sửa', icon: 'edit', emitName: 'edit', disabled: role.name === 'Admin' , permissions: [PERMISSIONS.ROLES_UPDATE] },
+    { label: 'Xóa', icon: 'delete', type: 'danger', emitName: 'delete', disabled: role.name === 'Admin', permissions: [PERMISSIONS.ROLES_DELETE] }
   ]" [data]="role" (action)="onDropdownAction($event)"></app-action-dropdown>
 
         </td>

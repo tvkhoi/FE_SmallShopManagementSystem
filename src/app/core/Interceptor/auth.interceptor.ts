@@ -7,7 +7,6 @@ let isRefreshing = false;
 const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  console.log('Auth Interceptor called', req.url);
   const authService = inject(AuthService);
   const accessToken = authService.getAccessToken();
 

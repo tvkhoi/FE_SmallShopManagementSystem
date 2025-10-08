@@ -1,3 +1,4 @@
+import { PERMISSION_GROUPS } from './../../../core/constants/permission-groups';
 import { Component, inject, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import {
   FormBuilder,
@@ -49,6 +50,8 @@ import { passwordMatchValidator } from '../../../core/utils/passwordMatchValidat
 import { Button } from '../../../shared/components/admin/button/button';
 import { ActionDropdown } from '../../../shared/components/admin/action-dropdown/action-dropdown';
 import { ConfirmDialog } from '../../../shared/components/admin/confirm-dialog/confirm-dialog';
+import { PERMISSIONS } from '../../../core/constants/permission.constant';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-users',
@@ -91,7 +94,10 @@ export class UsersComponent implements OnInit {
   private readonly modal = inject(NzModalService);
   private readonly fb = inject(FormBuilder);
   private readonly policyService = inject(PasswordPolicyService);
+  private readonly auth = inject(AuthService);
 
+  PERMISSIONS = PERMISSIONS;
+  PERMISSION_GROUPS = PERMISSION_GROUPS;
   searchQuery = '';
   users: User[] = [];
 
@@ -188,9 +194,23 @@ export class UsersComponent implements OnInit {
       error: () => console.error('Không thể lấy chính sách mật khẩu'),
     });
 
-    this.loadUsers();
-    this.loadPermissions();
-    this.loadRoles();
+    if (this.auth.hasPermission(PERMISSIONS.USERS_VIEW)) {
+      this.loadUsers();
+    } else {
+      console.warn('Không có quyền xem người dùng (USERS_VIEW)');
+    }
+
+    if (this.auth.hasPermission(PERMISSIONS.PERMISSIONS_VIEW)) {
+      this.loadPermissions();
+    } else {
+      console.warn('Không có quyền xem quyền hạn (PERMISSIONS_VIEW)');
+    }
+
+    if (this.auth.hasPermission(PERMISSIONS.ROLES_VIEW)) {
+      this.loadRoles();
+    } else {
+      console.warn('Không có quyền xem vai trò (ROLES_VIEW)');
+    }
   }
 
   /** Load danh sách user */
@@ -236,6 +256,7 @@ export class UsersComponent implements OnInit {
             ...role,
             checked: false,
           }));
+          console.log('Roles loaded:', this.roles);
           this.cdr.detectChanges();
         });
       },

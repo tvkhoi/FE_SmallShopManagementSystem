@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 import { ApiResponse } from '../core/models/domain/ApiResponse';
+import { getFirstAccessibleAdminRoute, getFirstAccessibleCustomerRoute, getFirstAccessibleSellerRoute, getUserInterface } from '../core/utils/permission.utils';
 
 interface JwtPayload {
   id: string;
@@ -132,6 +133,27 @@ export class AuthService {
     );
   }
 
+  getPermissions(): string[] {
+    const decoded = this.getDecodedToken();
+    if (!decoded) return [];
+
+    const perms = (decoded as any).permission;
+
+    if (!perms) return [];
+
+    if (Array.isArray(perms)) return perms;
+
+    if (typeof perms === 'string') {
+      return perms.includes(',') ? perms.split(',').map((p) => p.trim()) : [perms];
+    }
+
+    return [];
+  }
+
+  hasPermission(permission: string): boolean {
+    return this.getPermissions().includes(permission);
+  }
+
   isAccessTokenValid(): boolean {
     const decoded = this.getDecodedToken();
     if (!decoded?.exp) return false;
@@ -207,21 +229,26 @@ export class AuthService {
     }
   }
 
-  redirectByRole() {
-    const roles = this.getRoles().map((r) => r.toLowerCase());
-    const roleRoutes: { [key: string]: string } = {
-      admin: '/admin/users',
-      customer: '/customer/dashboard',
-      seller: '/seller/dashboard',
-    };
+  redirectByPermission() {
+    const permissions = this.getPermissions();
+    const ui = getUserInterface(permissions);
 
-    for (const role of roles) {
-      if (roleRoutes[role]) {
-        this.ngZone.run(() => this.router.navigate([roleRoutes[role]]));
-        return;
-      }
+    let targetRoute = '/login';
+
+    switch (ui) {
+      case 'admin':
+        targetRoute = getFirstAccessibleAdminRoute(permissions);
+        break;
+      case 'seller':
+        targetRoute = getFirstAccessibleSellerRoute(permissions);
+        break;
+      case 'customer':
+        targetRoute = getFirstAccessibleCustomerRoute(permissions);
+        break;
+      default:
+        targetRoute = '/login';
     }
 
-    this.ngZone.run(() => this.router.navigate(['/login']));
+    this.ngZone.run(() => this.router.navigate([targetRoute]));
   }
 }

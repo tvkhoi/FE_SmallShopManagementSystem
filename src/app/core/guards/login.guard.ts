@@ -2,6 +2,7 @@ import { inject, PLATFORM_ID } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { isPlatformBrowser } from '@angular/common';
+import { getFirstAccessibleAdminRoute, getFirstAccessibleCustomerRoute, getFirstAccessibleSellerRoute, getUserInterface } from '../utils/permission.utils'
 
 export const loginGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
@@ -12,10 +13,23 @@ export const loginGuard: CanActivateFn = () => {
     return true;
   }
 
+  // Nếu user đã đăng nhập -> điều hướng dựa theo quyền
   if (auth.isLoggedIn()) {
-    // Nếu đã đăng nhập → chặn vào login/signup và chuyển hướng sang users
-    router.navigate(['/admin/users']);
-    return false;
+    const perms = auth.getPermissions();
+    const ui = getUserInterface(perms);
+
+    const redirectMap: Record<string, string> = {
+      admin: getFirstAccessibleAdminRoute(perms),
+      seller: getFirstAccessibleSellerRoute(perms),
+      customer: getFirstAccessibleCustomerRoute(perms),
+      unknown: '/login',
+    };
+
+    const target = redirectMap[ui] || '/login';
+    router.navigate([target]);
+    return false; // chặn vào login/sign-up
   }
-  return true; // chưa login thì cho vào login/signup
+
+  // Chưa đăng nhập thì cho vào trang login
+  return true;
 };
