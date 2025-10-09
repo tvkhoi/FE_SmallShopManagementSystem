@@ -1,3 +1,4 @@
+import { PERMISSION_GROUPS } from './../../../core/constants/permission-groups';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { Component, inject, NgZone, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -25,8 +26,9 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { ExcelExportService } from '../../../core/services/excel-export.service';
 import { PaginationComponent } from '../../../shared/components/admin/pagination-component/pagination-component';
 import { getMethodColor, getStatusColor } from '../../../core/utils/index';
-import { Button } from "../../../shared/components/admin/button/button";
-
+import { Button } from '../../../shared/components/admin/button/button';
+import { AuthService } from '../../../auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-auditlog',
@@ -47,8 +49,8 @@ import { Button } from "../../../shared/components/admin/button/button";
     NzDropDownModule,
     NzMenuModule,
     PaginationComponent,
-    Button
-],
+    Button,
+  ],
   templateUrl: './auditlog.html',
   styleUrls: ['./auditlog.scss'],
 })
@@ -59,11 +61,14 @@ export class Auditlog implements OnInit, OnDestroy {
   private readonly message = inject(NzMessageService);
   private readonly modal: NzModalService = inject(NzModalService);
   private readonly excelExportService = inject(ExcelExportService);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
   getStatusColor = getStatusColor;
   getMethodColor = getMethodColor;
+  PERMISSION_GROUPS = PERMISSION_GROUPS;
 
-  // === Filters ===
+  // Filters
   userId: number | null = null;
   userName: string = '';
   action: string = '';
@@ -74,30 +79,37 @@ export class Auditlog implements OnInit, OnDestroy {
   minDuration: number | null = null;
   maxDuration: number | null = null;
 
-  // === Clear old logs ===
+  // Clear old logs
   isClearOldVisible = false;
   clearOldDays = 30;
 
-  // === Selected Log for Detail View ===
+  // Selected Log for Detail View
   selectedLog: any = null;
   isViewAuditDetailVisible = false;
 
-  // === Table data ===
+  // Table data
   auditLogs: SystemLogDto[] = [];
 
-  // === Pagination ===
+  // Pagination
   totalItems = 0;
   pageSize = 10;
   currentPage = 1;
 
-  // === Loading state ===
+  // Loading state
   loading = false;
 
-  // === Unsubscribe subject ===
+  // Unsubscribe subject
   private readonly destroy$ = new Subject<void>();
 
   ngOnInit(): void {
-    this.loadLogs();
+    // Kiểm tra nếu user có quyền ADMIN
+    const hasAdminPermission = PERMISSION_GROUPS.ADMIN.every(p => this.auth.hasPermission(p));
+
+    if (hasAdminPermission) {
+      this.loadLogs();
+    } else {
+       this.router.navigate(['/forbidden']);
+    }
   }
 
   ngOnDestroy(): void {

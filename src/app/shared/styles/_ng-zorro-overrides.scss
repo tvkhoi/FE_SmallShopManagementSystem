@@ -1,4 +1,6 @@
 @use '_variables' as v;
+
+// BUTTON 
 .ant-btn {
   all: unset;
   display: inline-block;
@@ -8,10 +10,12 @@
 .ant-modal-header {
   border-radius: 8px !important;
 }
+
 .ant-modal-content {
   border-radius: 8px !important;
 }
 
+// REMOVE ANT WAVE
 .ant-wave {
   display: none !important;
 }
@@ -20,7 +24,94 @@ html {
   --antd-wave-shadow-color: transparent !important;
 }
 
+// CHECKBOX
 .ant-checkbox .ant-checkbox-inner {
   background-color: v.$primary-color-admin !important; 
   border-color: v.$primary-color-admin !important;
+}
+
+// Hiệu ứng hover + focus cho input
+.ant-input,
+input,
+textarea,
+.ant-input-affix-wrapper {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover,
+  &:focus,
+  &.ant-input-focused,
+  &.ant-input-affix-wrapper-focused {
+    border-color: v.$primary-color-admin !important;
+    box-shadow: 0 0 0 2px rgba(v.$primary-color-admin, 0.2) !important;
+    outline: none !important;
+  }
+}
+
+// Optional: trạng thái disabled
+.ant-input[disabled],
+.ant-input-disabled {
+  border-color: #d9d9d9 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  background-color: #f5f5f5 !important;
+}
+
+// NZ-TABS 
+.ant-tabs {
+  .ant-tabs-tab {
+    transition: color 0.25s ease, border-color 0.25s ease;
+
+    &:hover .ant-tabs-tab-btn {
+      color: v.$primary-color-admin !important;
+    }
+
+    &.ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: v.$primary-color-admin !important;
+      font-weight: 600;
+    }
+  }
+
+  //Thanh underline dưới tab 
+  .ant-tabs-ink-bar {
+    background: v.$primary-color-admin !important;
+    height: 2px !important;
+  }
+
+  // Khi focus vào tab bằng bàn phím
+  .ant-tabs-tab-btn:focus-visible {
+    outline: none !important;
+    color: v.$primary-color-admin !important;
+  }
+}
+
+// NZ-SELECT
+.ant-select {
+  .ant-select-selector {
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    border-radius: 6px !important;
+  }
+
+  &:hover .ant-select-selector {
+    border-color: v.$primary-color-admin !important;
+  }
+
+  &.ant-select-focused .ant-select-selector {
+    border-color: v.$primary-color-admin !important;
+    box-shadow: 0 0 0 2px rgba(v.$primary-color-admin, 0.2) !important;
+  }
+}
+
+// NZ-DATE-PICKER
+.ant-picker {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  border-radius: 6px !important;
+
+  &:hover {
+    border-color: v.$primary-color-admin !important;
+  }
+
+  &.ant-picker-focused {
+    border-color: v.$primary-color-admin !important;
+    box-shadow: 0 0 0 2px rgba(v.$primary-color-admin, 0.2) !important;
+  }
 }
