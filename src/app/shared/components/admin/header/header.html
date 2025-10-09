@@ -5,6 +5,9 @@
             <span nz-icon [nzType]="currentIcon"></span>
             <span class="page-title">{{ currentTitle }}</span>
         </div>
+
+        <!-- Profile Dropdown -->
+        <app-profile-dropdown [menuItems]="menuItems"></app-profile-dropdown>
     </div>
     <ul nz-menu nzMode="horizontal" class="mobile-menu" *ngIf="isMenuVisible">
         <li nz-menu-item routerLink="/admin/users" routerLinkActive="ant-menu-item-selected">

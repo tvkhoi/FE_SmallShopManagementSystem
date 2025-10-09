@@ -1,0 +1,33 @@
+<div nz-dropdown [nzDropdownMenu]="profileMenu" nzTrigger="click"
+  [nzOverlayClassName]="'profile-dropdown'" class="toolbar-item">
+  <div class="toolbar-item__icon">
+    <span nz-icon nzType="user"></span>
+  </div>
+</div>
+
+<nz-dropdown-menu #profileMenu="nzDropdownMenu">
+  <div class="profile-header">
+    <div class="avatar"><span nz-icon nzType="user"></span></div>
+    <div class="info">
+      <div class="name">{{ getName() }}</div>
+      <div class="email">{{ getEmail() }}</div>
+    </div>
+  </div>
+
+  <div class="profile-menu" *ngFor="let item of menuItems || []">
+    <div class="menu-item">
+      <a [routerLink]="item.route" target="_blank" (click)="onNavigate()">
+        <span nz-icon class="icon" [nzType]="item.icon"></span>
+        <span>{{ item.label }}</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="profile-footer">
+    <div class="menu-item logout">
+      <app-button type="primary" size="small" customClass="logout-button" (click)="logout()">
+        Đăng xuất
+      </app-button>
+    </div>
+  </div>
+</nz-dropdown-menu>
