@@ -23,7 +23,7 @@ export class SidebarRight {
   @Input() isProfileCardOpen: boolean = false;
   @Input() menuItems: Array<{ label: string; icon: string; route: string }> = [];
   @Output() toggleProfileCard = new EventEmitter<boolean>();
-  @Output() collapseChange = new EventEmitter<boolean>();
+
 
   getEmail(): string {
     return this.authService.getEmail() || 'Chưa có email';

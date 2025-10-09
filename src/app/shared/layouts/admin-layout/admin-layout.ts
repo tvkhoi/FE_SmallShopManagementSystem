@@ -70,10 +70,6 @@ export class AdminLayout implements OnInit {
   }
 
   get menuItemsForSidebar() {
-    const url = this.router.url;
-    if (url.startsWith('/admin/account')) {
-      return [];
-    }
     return this.menuItemsLeft;
   }
 
@@ -82,15 +78,7 @@ export class AdminLayout implements OnInit {
     return this.routeMap[url] ?? { title: 'Quản lí người dùng', icon: 'user' };
   }
 
-  onCollapse(collapsed: any): void {
-    this.isCollapsed = collapsed;
-    this.cdj.detectChanges();
-  }
-
   onToggleProfileCard() {
     this.isProfileCardOpen = !this.isProfileCardOpen;
-  }
-  handleCollapseChange(hidden: boolean) {
-    this.isMobileMenuHidden = hidden; 
   }
 }

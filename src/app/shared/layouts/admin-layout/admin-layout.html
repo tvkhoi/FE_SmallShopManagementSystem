@@ -2,7 +2,7 @@
 
   <!-- Sidebar trái -->
   <app-sidebar-left [menuItems]="menuItemsForSidebar" [isCollapsed]="isCollapsed"
-    (collapseChange)="onCollapse($event)"></app-sidebar-left>
+    ></app-sidebar-left>
   <!-- End Sidebar trái -->
 
   <!-- Main Layout -->
@@ -25,8 +25,7 @@
   <!-- End Main Layout -->
 
   <!-- Sidebar phải (Toolbar) -->
-  <app-sidebar-right [isProfileCardOpen]="isProfileCardOpen" (toggleProfileCard)="onToggleProfileCard()"
-    (collapseChange)="onCollapse($event)" (collapseChange)="handleCollapseChange($event)" [menuItems]="menuItemsRight"></app-sidebar-right>
+  <app-sidebar-right [isProfileCardOpen]="isProfileCardOpen" (toggleProfileCard)="onToggleProfileCard()" [menuItems]="menuItemsRight"></app-sidebar-right>
   <!-- End Sidebar phải (Toolbar) -->
 
 </nz-layout>
