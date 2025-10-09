@@ -7,11 +7,12 @@ import { Router, RouterModule } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { Button } from '../button/button';
+import { ProfileDropdown } from "../profile-dropdown/profile-dropdown";
 
 @Component({
   selector: 'app-sidebar-right',
   standalone: true,
-  imports: [NzLayoutModule, CommonModule, NzDropDownModule, NzIconModule, RouterModule, Button],
+  imports: [NzLayoutModule, CommonModule, NzDropDownModule, NzIconModule, RouterModule, ProfileDropdown],
   templateUrl: './sidebar-right.html',
   styleUrls: ['./sidebar-right.scss'],
 })
@@ -25,26 +26,9 @@ export class SidebarRight {
   @Output() toggleProfileCard = new EventEmitter<boolean>();
 
 
-  getEmail(): string {
-    return this.authService.getEmail() || 'Chưa có email';
-  }
-
-  getName(): string {
-    return this.authService.getName() || 'Chưa có tên';
-  }
-
-  logout() {
-    this.authService.clearTokens();
-    this.router.navigate(['/login']);
-    this.messageService.success('Đăng xuất thành công');
-  }
-
   onToggleProfileCard(toggle: boolean) {
     this.isProfileCardOpen = toggle;
     this.toggleProfileCard.emit(this.isProfileCardOpen);
   }
 
-  onNavigate() {
-    localStorage.setItem('hideMobileMenuOnNewTab', 'true');
-  }
 }

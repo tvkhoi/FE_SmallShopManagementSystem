@@ -1,33 +1,3 @@
 <nz-sider nzTheme="dark" nzWidth="95" class="right-toolbar">
-    <!-- Toolbar Profile với Dropdown -->
-    <div nz-dropdown [nzDropdownMenu]="profileMenu" nzTrigger="click" [nzPlacement]="'bottomRight'"
-        class="toolbar-item admin-profile" [nzOverlayClassName]="'profile-dropdown'">
-        <div class="toolbar-item__icon">
-            <span nz-icon nzType="user"></span>
-        </div>
-        <div class="label">Quản trị viên</div>
-    </div>
-
-    <!-- Nội dung Profile Card -->
-    <nz-dropdown-menu #profileMenu="nzDropdownMenu">
-        <div class="profile-header">
-            <div class="avatar"><span nz-icon nzType="user"></span></div>
-            <div class="info">
-                <div class="name">{{ getName() }}</div>
-                <div class="email">{{ getEmail() }}</div>
-            </div>
-        </div>
-
-        <div class="profile-menu" *ngFor="let item of menuItems || []">
-            <div class="menu-item"><a [routerLink]="item.route" target="_blank" (click)="onNavigate()"><span nz-icon class="icon" [nzType]="item.icon"></span><span>{{ item.label }}</span></a></div>
-        </div>
-
-        <div class="profile-footer">
-            <div class="menu-item logout">
-                <span>
-                    <app-button type="primary" size="small" customClass="logout-button" (click)="logout()">Đăng xuất</app-button>
-                </span>
-            </div>
-        </div>
-    </nz-dropdown-menu>
+    <app-profile-dropdown [menuItems]="menuItems"></app-profile-dropdown>
 </nz-sider>

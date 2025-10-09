@@ -1,4 +1,5 @@
-@use '../../../styles/mixins' as m;
+@use '../../../styles/mixins'as m;
+
 .admin-header {
   width: 100%;
   background: #ffffff !important;
@@ -26,10 +27,14 @@
     }
   }
 
+  app-profile-dropdown {
+    display: none;
+  }
+
   /* Mobile menu mặc định ẩn */
   .mobile-menu {
     margin: 0 !important;
-    padding: 0 15px!important;
+    padding: 0 15px !important;
     width: 100% !important;
     display: none;
     position: fixed;
@@ -74,6 +79,7 @@
 
       &.ant-menu-item-selected {
         .menu-mobile-item {
+
           .anticon,
           .menu-text {
             color: #3b82f6 !important;
@@ -92,5 +98,21 @@
     .mobile-menu {
       display: flex;
     }
+
+    .left {
+      width: 100%;
+      justify-content: space-between !important;
+
+      .breadcrumb {
+        justify-content: flex-start;
+      }
+
+      app-profile-dropdown {
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+
+
   }
 }
