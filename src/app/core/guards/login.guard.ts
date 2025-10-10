@@ -22,10 +22,10 @@ export const loginGuard: CanActivateFn = () => {
       admin: getFirstAccessibleAdminRoute(perms),
       seller: getFirstAccessibleSellerRoute(perms),
       customer: getFirstAccessibleCustomerRoute(perms),
-      unknown: '/login',
+      unknown: '/',
     };
 
-    const target = redirectMap[ui] || '/login';
+    const target = redirectMap[ui] || '/';
     router.navigate([target]);
     return false; // chặn vào login/sign-up
   }

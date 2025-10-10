@@ -38,5 +38,5 @@ export function getFirstAccessibleSellerRoute(perms: string[]): string {
 // Trang đầu tiên có quyền cho Customer
 export function getFirstAccessibleCustomerRoute(perms: string[]): string {
   if (perms.includes(PERMISSIONS.ORDERS_VIEW)) return '/customer/orders';
-  return '/forbidden';
+  return '/';
 }

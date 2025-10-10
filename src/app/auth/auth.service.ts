@@ -192,7 +192,6 @@ export class AuthService {
         }),
         catchError((err) => {
           this.clearTokens();
-          this.router.navigate(['/login']);
           return throwError(() => err);
         })
       );
@@ -221,7 +220,7 @@ export class AuthService {
         this.loggedIn$.next(true);
       } catch {
         this.clearTokens();
-        this.router.navigate(['/login']);
+        this.loggedIn$.next(false);
       }
     } else {
       this.clearTokens();
