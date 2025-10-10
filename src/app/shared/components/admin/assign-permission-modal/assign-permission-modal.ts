@@ -132,10 +132,15 @@ export class AssignPermissionModalComponent implements OnChanges {
 
   // Lưu quyền đã chọn
   handleSave(): void {
-    const payload = this.groupedPermissions.flatMap((group) =>
-      group.permissions.map((perm) => ({ ...perm }))
-    );
-    this.save.emit(payload);
+    this.syncGrantedState();
+    // Lấy tất cả quyền có granted = true
+    const selectedPermissions = this.groupedPermissions
+      .flatMap((group) => group.permissions)
+      .filter((perm) => perm.granted);
+
+    // Phát ra danh sách quyền đã chọn
+    this.save.emit(selectedPermissions);
+    // Reset state modal
     this.resetState();
   }
 
