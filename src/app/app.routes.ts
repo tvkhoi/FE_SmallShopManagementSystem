@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 
 // Admin
-import { Dashboard } from './features/admin/dashboard/dashboard';
 import { Auditlog } from './features/admin/auditlog/auditlog';
 import { UsersComponent } from './features/admin/users/users';
 import { RolesComponent } from './features/admin/roles/roles';

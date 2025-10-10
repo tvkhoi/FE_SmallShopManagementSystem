@@ -1,5 +1,33 @@
 @use '_variables' as v;
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+// Override ng-zorro message styles
+.cdk-overlay-container {
+    z-index: 1500 !important;
+}
+
+nz-message-container {
+    z-index: 1500 !important;
+}
+
+.ant-message {
+    z-index: 1500 !important;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.ant-message-notice-content {
+    background: rgba(0, 0, 0, 0.85) !important;
+    color: white !important;
+    padding: 10px 16px !important;
+    border-radius: 4px !important;
+}
 // BUTTON 
 .ant-btn {
   all: unset;
