@@ -70,8 +70,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: {
       permissions: [
-        PERMISSIONS.USERS_VIEW,
-        PERMISSIONS.ROLES_VIEW,
         ...PERMISSION_GROUPS.ADMIN
       ],
     },
@@ -80,35 +78,30 @@ export const routes: Routes = [
         path: 'audit_log',
         component: Auditlog,
         canActivate: [authGuard],
-        data: { permissions: [...PERMISSION_GROUPS.ADMIN] },
       },
       {
         path: 'users',
         component: UsersComponent,
         canActivate: [authGuard],
-        data: { permissions: [PERMISSIONS.USERS_VIEW] },
       },
       {
         path: 'roles',
         component: RolesComponent,
         canActivate: [authGuard],
-        data: { permissions: [PERMISSIONS.ROLES_VIEW] },
       },
       {
         path: 'settings',
         component: Settings,
         canActivate: [authGuard],
-        data: { permissions: [PERMISSIONS.PERMISSIONS_VIEW] },
       },
       {
         path: 'account',
         component: Account,
         canActivate: [authGuard],
-        data: { permissions: [PERMISSIONS.USERS_VIEW] },
       },
       { path: '', redirectTo: 'users', pathMatch: 'full' },
     ],
   },
 
-  { path: '**', redirectTo: 'forbidden' },
+  { path: '**', redirectTo: '' },
 ];

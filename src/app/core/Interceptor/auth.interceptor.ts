@@ -47,7 +47,8 @@ function handle401Error(authService: AuthService, req: HttpRequest<any>, next: H
       }),
       catchError((err) => {
         isRefreshing = false;
-        authService.logout();
+        // Chỉ clear tokens, không redirect
+        authService.clearTokens();
         return throwError(() => err);
       })
     );
