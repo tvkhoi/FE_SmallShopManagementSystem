@@ -1,0 +1,111 @@
+.cart-page {
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    i {
+      color: #28a745;
+    }
+  }
+
+  .card {
+    border-radius: 12px;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-body {
+      padding: 1rem 1.25rem;
+    }
+  }
+
+  /* Ảnh sản phẩm */
+  img {
+    border: 1px solid #f1f1f1;
+    border-radius: 8px;
+    background: #fff;
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  /* Input số lượng */
+  input[type="number"] {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 4px;
+    transition: border 0.2s;
+
+    &:focus {
+      border-color: #28a745;
+      outline: none;
+      box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+  }
+
+  /* Nút tăng giảm */
+  .btn-outline-secondary {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: #28a745;
+      color: white;
+      border-color: #28a745;
+    }
+  }
+
+  /* Giá tiền */
+  .fw-bold.text-danger {
+    font-size: 1rem;
+  }
+
+  /* Sidebar tóm tắt đơn hàng */
+  .sticky-top {
+    border-radius: 12px;
+    background: #fefefe;
+    border: 1px solid #f1f1f1;
+     top: 50px; // cách dưới header 90px, tùy chiều cao header
+    z-index: 100; // nhỏ hơn header
+  }
+
+  .text-success.fs-5 {
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  button.btn-success {
+    border-radius: 10px;
+    font-size: 1.05rem;
+    transition: background 0.2s, transform 0.1s;
+
+    &:hover {
+      background: #218838;
+      transform: translateY(-2px);
+    }
+
+    i {
+      font-size: 1.1rem;
+    }
+  }
+
+  /* Alert giỏ hàng trống */
+  .alert-warning {
+    border-radius: 10px;
+    font-size: 1.1rem;
+    text-align: center;
+  }
+}

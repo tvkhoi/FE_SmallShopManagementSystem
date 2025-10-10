@@ -1,0 +1,24 @@
+.about-page {
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  img {
+    max-height: 350px;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  p {
+    line-height: 1.6;
+  }
+}
+.btn.btn-success.px-4{
+  border-radius: 15px;
+}

@@ -9,7 +9,7 @@ const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const accessToken = authService.getAccessToken();
-
+  
   // Gắn Authorization header nếu có token
   let cloned = req;
   if (accessToken) {

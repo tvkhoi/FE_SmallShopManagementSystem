@@ -1,22 +1,65 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './shared/components/login/login';
-import { SignUpComponent } from './shared/components/sign-up/sign-up';
-import { authGuard } from './core/guards/auth.guard';
-import { loginGuard } from './core/guards/login.guard';
-import { AdminLayout } from './shared/layouts/admin-layout/admin-layout';
+
+// Admin
+import { Dashboard } from './features/admin/dashboard/dashboard';
 import { Auditlog } from './features/admin/auditlog/auditlog';
 import { UsersComponent } from './features/admin/users/users';
 import { RolesComponent } from './features/admin/roles/roles';
-import { ForgotPassword } from './shared/components/forgot-password/forgot-password';
-import { ResetPassword } from './shared/components/reset-password/reset-password';
+
 import { Settings } from './features/admin/settings/settings';
+import { AdminLayout } from './shared/layouts/admin-layout/admin-layout';
 import { Account } from './features/admin/account/account';
 import { PERMISSIONS } from './core/constants/permission.constant';
-import { Forbidden } from './shared/components/forbidden/forbidden';
 import { PERMISSION_GROUPS } from './core/constants/permission-groups';
+import { Forbidden } from './shared/components/forbidden/forbidden';
+
+// Auth
+import { LoginComponent } from './shared/components/login/login';
+import { SignUpComponent } from './shared/components/sign-up/sign-up';
+import { ForgotPassword } from './shared/components/forgot-password/forgot-password';
+import { ResetPassword } from './shared/components/reset-password/reset-password';
+import { authGuard } from './core/guards/auth.guard';
+import { loginGuard } from './core/guards/login.guard';
+
+// Customer
+import { CustomerLayoutComponent } from './shared/layouts/customer-layout/customer-layout';
+import { HomeComponent } from './features/customer/home/home';
+import { AboutComponent } from './features/customer/about/about';
+import { ProductsComponent } from './features/customer/products/products';
+import { ContactComponent } from './features/customer/contact/contact';
+import { CartComponent } from './features/customer/cart/cart';
+import { WishlistComponent } from './features/customer/wishlist/wishlist';
+import { ProductItemComponent } from './features/customer/product-item/product-item';
+
+
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  // CUSTOMER - Public routes (no auth required)
+  {
+    path: '',
+    component: CustomerLayoutComponent,
+    children: [
+      { path: '', component: HomeComponent },
+      { path: 'about', component: AboutComponent },
+      { path: 'products', component: ProductsComponent },
+      { path: 'contact', component: ContactComponent },
+      { path: 'productItem', component: ProductItemComponent }
+    ]
+  },
+
+  // CUSTOMER - Protected routes (auth required)
+  {
+    path: 'customer',
+    component: CustomerLayoutComponent,
+    canActivate: [authGuard],
+    data: { roles: ['Customer'] },
+    children: [
+      { path: 'cart', component: CartComponent },
+      { path: 'wishlist', component: WishlistComponent }
+    ]
+  },
+
+  // AUTH
   { path: 'login', component: LoginComponent, canActivate: [loginGuard] },
   { path: 'sign-up', component: SignUpComponent, canActivate: [loginGuard] },
   { path: 'forgot-password', component: ForgotPassword, canActivate: [loginGuard] },

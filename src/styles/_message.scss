@@ -1,0 +1,9 @@
+.ant-message {
+  z-index: 1100 !important; // Đảm bảo nằm trên modal có z-index 1000
+}
+
+.ant-message-notice-content {
+  background: rgba(0, 0, 0, 0.85) !important;
+  color: white !important;
+  padding: center !important;
+}
