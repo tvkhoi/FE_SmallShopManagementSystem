@@ -14,8 +14,6 @@ import en from '@angular/common/locales/en';
 import { FormsModule } from '@angular/forms';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-
-import { routes } from './app.routes';
 import { authInterceptor } from './core/Interceptor/auth.interceptor';
 import { errorInterceptor } from './core/Interceptor/ErrorInterceptor.interceptor';
 import { AuthService } from './auth/auth.service';
