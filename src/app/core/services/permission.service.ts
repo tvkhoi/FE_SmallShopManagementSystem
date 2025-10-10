@@ -23,6 +23,7 @@ export class PermissionService {
     return this.userDataSource.getValue();
   }
 
+  // Cần quyền PERMISSIONS_VIEW
   getPermissions() {
     return this.http.get<ApiResponse<Permission[]>>(this.apiUrl).pipe(
       map((res) => res.data),
@@ -34,5 +35,14 @@ export class PermissionService {
         this.userDataSource.next(permissionsWithGranted);
       })
     );
+  }
+
+  // Cần quyền PERMISSIONS_VIEW
+  searchPermissions(keyword: string) {
+    return this.http
+      .get<ApiResponse<Permission[]>>(`${this.apiUrl}/search`, {
+        params: { keyword },
+      })
+      .pipe(map((res) => res.data));
   }
 }

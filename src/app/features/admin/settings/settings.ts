@@ -7,6 +7,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { Button } from "../../../shared/components/admin/button/button";
 
 @Component({
   selector: 'app-settings',
@@ -14,10 +15,11 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   imports: [
     CommonModule,
     FormsModule,
-    NzCheckboxModule,   
-    NzButtonModule,     
+    NzCheckboxModule,
+    NzButtonModule,
     NzInputModule,
-  ],
+    Button
+],
   templateUrl: './settings.html',
   styleUrls: ['./settings.scss'],
 })

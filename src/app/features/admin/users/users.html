@@ -3,36 +3,59 @@
     <div class="users-header">
         <h2>Người dùng</h2>
         <div class="user-header__actions">
-            <button nz-button nzType="primary" (click)="showModal()">Thêm người dùng</button>
+            <app-button type="primary" size="large" (click)="showModal()" [permissions]="[PERMISSIONS.USERS_CREATE]">Thêm người dùng</app-button>
         </div>
     </div>
+    <!--End Header-->
 
-    <!-- Modal: Gán quyền cho user mới -->
+    <!-- Modal: Thêm người dùng -->
     <nz-modal [(nzVisible)]="isVisible" [nzTitle]="isEditMode ? 'Sửa người dùng' : 'Thêm người dùng'"
         (nzOnCancel)="handleCancel()" [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooter"
         [nzBodyStyle]="{ 'max-height': '60vh', 'overflow-y': 'auto' }">
         <div *nzModalContent>
             <nz-tabs>
                 <nz-tab nzTitle="Thông tin người dùng">
-                    <form nz-form [nzLayout]="'vertical'" #userForm="ngForm">
+                    <form nz-form [nzLayout]="'vertical'" [formGroup]="userForm">
 
                         <!-- Username -->
                         <nz-form-item>
                             <nz-form-label [nzRequired]="true" nzFor="username">Tên đăng nhập</nz-form-label>
-                            <nz-form-control [nzErrorTip]="'Tên đăng nhập là bắt buộc'">
-                                <input nz-input id="username" name="username" [(ngModel)]="newUser.username" required
-                                    placeholder="Nhập tên đăng nhập" [disabled]="isEditMode" />
+                            <nz-form-control>
+                                <input nz-input id="username" name="username" formControlName="username"
+                                    [(ngModel)]="newUser.username" placeholder="Nhập tên đăng nhập" />
+                                @if(userForm.get('username')?.touched && userForm.get('username')?.hasError('required'))
+                                {
+                                <div class="text-red-500 text-xs mt-1 list-disc">
+                                    Tên đăng nhập là bắt buộc!
+                                </div>
+                                }
+                                @if(userForm.get('username')?.hasError('whitespace'))
+                                {
+                                <div class="text-red-500 text-xs mt-1 list-disc">
+                                    Tên đăng nhập không được chứa khoảng trắng!
+                                </div>
+                                }
                             </nz-form-control>
                         </nz-form-item>
 
                         <!-- Email -->
                         <nz-form-item>
                             <nz-form-label [nzRequired]="true" nzFor="email">Email</nz-form-label>
-                            <nz-form-control
-                                [nzErrorTip]="emailRef.errors?.['required'] ? 'Vui lòng nhập email': emailRef.errors?.['email'] ? 'Vui lòng nhập email hợp lệ': ''">
-                                <input nz-input type="email" id="email" name="email" [(ngModel)]="newUser.email"
-                                    required email #emailRef="ngModel" placeholder="Nhập email"
-                                    [disabled]="isEditMode" />
+                            <nz-form-control>
+                                <input nz-input type="email" id="email" name="email" formControlName="email"
+                                    [(ngModel)]="newUser.email" required email placeholder="Nhập email" />
+                                @if(userForm.get('email')?.touched && userForm.get('email')?.hasError('required'))
+                                {
+                                <div class="text-red-500 text-xs mt-1 list-disc">
+                                    Email là bắt buộc!
+                                </div>
+                                }
+                                @if(userForm.get('email')?.hasError('email'))
+                                {
+                                <div class="text-red-500 text-xs mt-1 list-disc">
+                                    Email không hợp lệ!
+                                </div>
+                                }
                             </nz-form-control>
                         </nz-form-item>
 
@@ -41,18 +64,24 @@
                         <nz-form-item>
                             <nz-form-label nzFor="fullName">Họ và tên</nz-form-label>
                             <nz-form-control>
-                                <input nz-input id="fullName" name="fullName" [(ngModel)]="newUser.fullName"
-                                    placeholder="Nhập họ và tên" />
+                                <input nz-input id="fullName" name="fullName" formControlName="fullName"
+                                    placeholder="Nhập họ và tên" [(ngModel)]="newUser.fullName" />
                             </nz-form-control>
                         </nz-form-item>
 
                         <!-- Số điện thoại -->
                         <nz-form-item>
                             <nz-form-label nzFor="phoneNumber">Số điện thoại</nz-form-label>
-                            <nz-form-control [nzErrorTip]="'Số điện thoại phải có 10 số và bắt đầu bằng 0'">
-                                <input nz-input type="text" id="phoneNumber" name="phoneNumber" required minlength="10"
-                                    maxlength="10" pattern="^0[0-9]{9}$" [(ngModel)]="newUser.phoneNumber"
-                                    placeholder="Nhập số điện thoại" />
+                            <nz-form-control>
+                                <input nz-input type="text" id="phoneNumber" name="phoneNumber" minlength="10"
+                                    maxlength="10" formControlName="phoneNumber" placeholder="Nhập số điện thoại"
+                                    [(ngModel)]="newUser.phoneNumber" />
+                                @if(userForm.get('phoneNumber')?.hasError('pattern'))
+                                {
+                                <div class="text-red-500 text-xs mt-1 list-disc">
+                                    Số điện thoại phải có 10 số và bắt đầu bằng 0!
+                                </div>
+                                }
                             </nz-form-control>
                         </nz-form-item>
 
@@ -60,8 +89,8 @@
                         <nz-form-item>
                             <nz-form-label nzFor="address">Địa chỉ</nz-form-label>
                             <nz-form-control>
-                                <input nz-input id="address" name="address" [(ngModel)]="newUser.address"
-                                    placeholder="Nhập địa chỉ" />
+                                <input nz-input id="address" name="address" formControlName="address"
+                                    placeholder="Nhập địa chỉ" [(ngModel)]="newUser.address" />
                             </nz-form-control>
                         </nz-form-item>
 
@@ -69,30 +98,65 @@
                         <nz-form-item>
                             <nz-form-label [nzRequired]="true" nzFor="password">Mật khẩu</nz-form-label>
                             <nz-form-control>
-                                <nz-input-group [nzSuffix]="suffixIcon">
+                                <div>
                                     <input nz-input [type]="passwordVisible ? 'text' : 'password'" id="password"
-                                        name="password" [(ngModel)]="newUser.password" placeholder="Nhập mật khẩu"
-                                        required [disabled]="isEditMode" />
-                                </nz-input-group>
-                                <ng-template #suffixIcon>
-                                    <span nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
-                                        (click)="passwordVisible = !passwordVisible" style="cursor: pointer;"></span>
-                                </ng-template>
+                                        name="password" formControlName="password" placeholder="Nhập mật khẩu" required
+                                        [ngModel]="newUser.password" />
+                                    <button nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
+                                        (click)="passwordVisible = !passwordVisible"
+                                        style="cursor: pointer; position: absolute; right: 10px; top: 8px; background-color: transparent; border: none; :hover { color: #1890ff;} ; font-size: 16px;"></button>
+                                </div>
+
+                                <div>
+                                    @if(userForm.get('password')?.touched &&
+                                    userForm.get('password')?.hasError('required'))
+                                    {
+                                    <div class="text-red-500 text-xs mt-1 list-disc">
+                                        Mật khẩu là bắt buộc!
+                                    </div>
+                                    }
+                                    @if(userForm.get('password')?.hasError('whitespace'))
+                                    {
+                                    <div class="text-red-500 text-xs mt-1 list-disc">
+                                        Mật khẩu không được chứa khoảng trắng!
+                                    </div>
+                                    }
+
+                                    <ul class="text-red-500 text-xs mt-1 list-disc">
+                                        <li *ngFor="let rule of pendingRules">{{ rule }}</li>
+                                    </ul>
+                                </div>
                             </nz-form-control>
                         </nz-form-item>
 
                         <!-- Xác nhận mật khẩu -->
                         <nz-form-item *ngIf="!isEditMode">
                             <nz-form-label [nzRequired]="true" nzFor="confirmPassword">Nhập lại mật khẩu</nz-form-label>
-                            <nz-form-control [nzErrorTip]="'Mật khẩu không khớp'">
-                                <input nz-input [type]="confirmPasswordVisible ? 'text' : 'password'"
-                                    id="confirmPassword" name="confirmPassword" [(ngModel)]="confirmPassword"
-                                    placeholder="Nhập lại mật khẩu" required
-                                    [ngClass]="{'input-error': confirmPassword && confirmPassword !== newUser.password}" />
-                                <span nz-icon [nzType]="confirmPasswordVisible ? 'eye-invisible' : 'eye'"
-                                    (click)="confirmPasswordVisible = !confirmPasswordVisible"
-                                    style="cursor: pointer; position: absolute; right: 10px; top: 8px;">
-                                </span>
+                            <nz-form-control>
+                                <div>
+                                    <input nz-input [type]="confirmPasswordVisible ? 'text' : 'password'"
+                                        id="confirmPassword" name="confirmPassword" formControlName="confirmPassword"
+                                        placeholder="Nhập lại mật khẩu" required />
+                                    <button nz-icon [nzType]="confirmPasswordVisible ? 'eye-invisible' : 'eye'"
+                                        (click)="confirmPasswordVisible = !confirmPasswordVisible"
+                                        style="cursor: pointer; position: absolute; right: 10px; top: 8px; background-color: transparent; border: none; :hover { color: #1890ff;} ; font-size: 16px;">
+                                    </button>
+                                </div>
+                                <div>
+                                    @if(userForm.get('confirmPassword')?.touched && userForm.hasError('notSame'))
+                                    {
+                                    <div class="text-red-500 text-xs mt-1 list-disc">
+                                        Mật khẩu không khớp!
+                                    </div>
+                                    }
+                                    @if(userForm.get('confirmPassword')?.touched &&
+                                    userForm.get('confirmPassword')?.hasError('required'))
+                                    {
+                                    <div class="text-red-500 text-xs mt-1 list-disc">
+                                        Vui lòng xác nhận mật khẩu!
+                                    </div>
+                                    }
+                                </div>
                             </nz-form-control>
                         </nz-form-item>
 
@@ -102,7 +166,7 @@
                         <nz-form-item>
                             <nz-form-label nzFor="isActive">Trạng thái</nz-form-label>
                             <nz-form-control>
-                                <nz-switch id="isActive" name="isActive" [(ngModel)]="newUser.isActive"
+                                <nz-switch id="isActive" name="isActive" formControlName="isActive"
                                     [nzCheckedChildren]="'Kích hoạt'" [nzUnCheckedChildren]="'Khóa'">
                                 </nz-switch>
                             </nz-form-control>
@@ -116,10 +180,13 @@
                             <nz-form-label>Chọn vai trò</nz-form-label>
                             <nz-form-control>
                                 <div *ngFor="let role of roles">
-                                    <nz-form-label nz-checkbox [(ngModel)]="role.checked" name="{{ role.name }}"
-                                        (ngModelChange)="onChangeRoleSelection()">
+                                    <label [for]="'role-' + role.name"
+                                        style="display: flex; align-items: center; gap: 8px;">
+                                        <input style="accent-color: #1890ff;" type="checkbox" id="role-{{ role.name }}"
+                                            [(ngModel)]="role.checked" [name]="role.name"
+                                            (ngModelChange)="onChangeRoleSelection()" />
                                         {{ role.name }}
-                                    </nz-form-label>
+                                    </label>
                                 </div>
                             </nz-form-control>
                         </nz-form-item>
@@ -129,11 +196,20 @@
         </div>
     </nz-modal>
 
-    <!-- Modal: Assign permissions -->
+    <ng-template #modalFooter>
+        <app-button type="cancel" (click)="handleCancel()" style="margin-right: 10px;">Hủy</app-button>
+        <app-button type="primary" (click)="handleOk()" [disabled]="userForm.invalid"
+            [isLoading]="isConfirmLoading">Lưu</app-button>
+    </ng-template>
+    <!-- End Modal: Thêm người dùng-->
+
+    <!-- Modal: Gán quyền -->
     <app-assign-permission-modal [visible]="isAssignVisible" [user]="selectedUser"
         [groupedPermissions]="groupedPermissions" (cancelModal)="handleAssignCancel()"
         (save)="handleAssignOk($event)"></app-assign-permission-modal>
+    <!-- End Modal: Gán quyền -->
 
+    <!-- Modal: Xem chi tiết -->
     <nz-modal [(nzVisible)]="isViewDetailsVisible" nzTitle="Xem chi tiết" (nzOnCancel)="handleViewDetailsCancel()"
         [nzOkLoading]="isConfirmLoading" [nzFooter]="modalFooterViewDetails">
         <div *nzModalContent>
@@ -186,25 +262,41 @@
         </div>
     </nz-modal>
 
+    <ng-template #modalFooterViewDetails>
+        <app-button type="primary" (click)="handleViewDetailsCancel()">Đóng</app-button>
+    </ng-template>
+    <!-- End Modal: Xem chi tiết -->
+
+    <!-- Modal: Đổi mật khẩu -->
     <nz-modal [(nzVisible)]="isChangePasswordVisible" nzTitle="Đặt lại mật khẩu"
         (nzOnCancel)="handleCancelChangePassword()" [nzFooter]="changePasswordFooter">
         <div *nzModalContent>
-            <form #changePasswordForm="ngForm" nz-form nzLayout="horizontal">
+            <form nz-form nzLayout="horizontal" [formGroup]="userForm">
 
                 <!-- Mật khẩu mới -->
                 <nz-form-item>
-                    <nz-form-label style="text-align: left;" [nzRequired]="true" nzFor="newPassword" [nzSpan]="7">
+                    <nz-form-label style="text-align: left;" [nzRequired]="true" nzFor="password" [nzSpan]="7">
                         Mật khẩu mới
                     </nz-form-label>
                     <nz-form-control [nzSpan]="18">
                         <nz-input-group [nzSuffix]="suffixNewPwdIcon">
-                            <input nz-input [type]="passwordVisible ? 'text' : 'password'" id="newPassword"
-                                name="newPassword" [(ngModel)]="changePassword.newPassword" required
-                                placeholder="Nhập mật khẩu mới" />
+                            <input nz-input [type]="passwordVisible ? 'text' : 'password'" id="password" name="password"
+                                [(ngModel)]="changePassword.newPassword" placeholder="Nhập mật khẩu mới"
+                                formControlName="password" />
                         </nz-input-group>
+                        @if(userForm.get('password')?.hasError('whitespace'))
+                        {
+                        <div class="text-red-500 text-xs mt-1 list-disc">
+                            Mật khẩu không được chứa khoảng trắng!
+                        </div>
+                        }
+                        <ul class="text-red-500 text-xs mt-1 list-disc">
+                            <li *ngFor="let rule of pendingRules">{{ rule }}</li>
+                        </ul>
                         <ng-template #suffixNewPwdIcon>
-                            <span nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
-                                (click)="passwordVisible = !passwordVisible" style="cursor: pointer;"></span>
+                            <button nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
+                                (click)="passwordVisible = !passwordVisible"
+                                style="cursor: pointer; background-color: transparent; border: none;"></button>
                         </ng-template>
                     </nz-form-control>
                 </nz-form-item>
@@ -214,16 +306,23 @@
                     <nz-form-label style="text-align: left;" [nzRequired]="true" nzFor="confirmPassword" [nzSpan]="7">
                         Nhập lại mật khẩu
                     </nz-form-label>
-                    <nz-form-control [nzSpan]="18" [nzErrorTip]="'Mật khẩu không khớp'">
+                    <nz-form-control [nzSpan]="18">
                         <nz-input-group [nzSuffix]="suffixConfirmPwdIcon">
                             <input nz-input [type]="confirmPasswordVisible ? 'text' : 'password'" id="confirmPassword"
-                                name="confirmPassword" [(ngModel)]="confirmPassword" required
-                                placeholder="Nhập lại mật khẩu" />
+                                name="confirmPassword" formControlName="confirmPassword" [(ngModel)]="confirmPassword"
+                                required placeholder="Nhập lại mật khẩu" />
+
                         </nz-input-group>
+                        @if(confirmPassword && confirmPassword !== changePassword.newPassword)
+                        {
+                        <div class="text-red-500 text-xs mt-1 list-disc">
+                            Mật khẩu không khớp!
+                        </div>
+                        }
                         <ng-template #suffixConfirmPwdIcon>
-                            <span nz-icon [nzType]="confirmPasswordVisible ? 'eye-invisible' : 'eye'"
+                            <button nz-icon [nzType]="confirmPasswordVisible ? 'eye-invisible' : 'eye'"
                                 (click)="confirmPasswordVisible = !confirmPasswordVisible"
-                                style="cursor: pointer;"></span>
+                                style="cursor: pointer; background-color: transparent; border: none;"></button>
                         </ng-template>
                     </nz-form-control>
                 </nz-form-item>
@@ -232,34 +331,21 @@
         </div>
     </nz-modal>
 
-    <!-- Footer -->
     <ng-template #changePasswordFooter>
-        <button nz-button nzType="default" (click)="handleCancelChangePassword()">Hủy</button>
-        <button nz-button nzType="primary" (click)="handleOkChangePassword()" [disabled]="!changePassword.newPassword">
-            Đặt lại mật khẩu
-        </button>
+        <app-button type="cancel" (click)="handleCancelChangePassword()" style="margin-right: 10px;">Hủy</app-button>
+        <app-button type="primary" (click)="handleOkChangePassword()" [isLoading]="isConfirmLoading"
+            [disabled]="!userForm.valid || confirmPassword !== changePassword.newPassword">Đặt lại mật khẩu</app-button>
     </ng-template>
-
-
-
-    <ng-template #modalFooter>
-        <button nz-button nzType="default" (click)="handleCancel()">Hủy</button>
-        <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">Lưu</button>
-    </ng-template>
-
-    <ng-template #modalFooterViewDetails>
-        <button style="width: 100%;" nz-button nzType="primary" (click)="handleViewDetailsCancel()">Đóng</button>
-    </ng-template>
+    <!-- End Modal: Đổi mật khẩu -->
 
     <!-- Search -->
     <div class="search-bar" style="display: flex; gap: 8px; align-items: center; margin-bottom: 16px;">
         <nz-input-group>
             <input type="text" nz-input placeholder="Tìm kiếm theo tên đăng nhập và email" [(ngModel)]="searchQuery" />
         </nz-input-group>
-        <button nz-button nzType="primary" (click)="filterUsers()">
-            <i nz-icon nzType="search"></i> Tìm kiếm
-        </button>
+        <app-button type="primary" size="large" (click)="filterUsers()"><i nz-icon nzType="search"></i>Tìm kiếm</app-button>
     </div>
+    <!-- End Search -->
 
     <!-- Bộ lọc -->
     <div class="filter-container">
@@ -325,12 +411,14 @@
             </nz-form-item>
 
             <!-- Buttons -->
-            <nz-form-item class="filter-buttons" style="grid-column: span 4;">
-                <button nz-button nzType="primary" (click)="applyFilter()" style="margin-right: 8px;">Lọc</button>
-                <button nz-button (click)="resetFilter()">Làm mới</button>
+            <nz-form-item class="filter-buttons"
+                style="grid-column: span 4; display: flex; justify-content: flex-end; align-items: flex-end; gap: 8px;">
+                <app-button type="primary" size="large" (click)="applyFilter()">Lọc</app-button>
+                <app-button type="cancel" size="large" (click)="resetFilter()">Làm mới</app-button>
             </nz-form-item>
         </form>
     </div>
+    <!-- End Bộ lọc -->
 
 
 
@@ -380,34 +468,22 @@
         <tbody>
             <tr *ngFor="let user of userTable.data">
                 <td>
-                    <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu">
-                        <nz-icon nzType="setting" nzTheme="outline"
-                            style="font-size: 16px; padding-right: 5px;"></nz-icon>
-                        Hành động
-                    </a>
-                    <nz-dropdown-menu #menu="nzDropdownMenu">
-                        <ul nz-menu>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="viewDetails(user)">Xem chi
-                                    tiết</button></li>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="editUser(user)"
-                                    [disabled]="user.id===1">Sửa</button></li>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="showAssignModal(user)"
-                                    [disabled]="user.id===1">Gán
-                                    quyền</button></li>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="deleteUser(user)"
-                                    [disabled]="user.id===1">Xóa</button>
-                            </li>
-                            <li nz-menu-item><button nz-button nzType="link" (click)="showChangePasswordModal(user)"
-                                    [disabled]="user.id===1">Đặt lại mật khẩu</button>
-                            </li>
-                            <li nz-menu-item>
-                                <button nz-button nzType="link" (click)="toggleLock(user)" [disabled]="user.id === 1">
-                                    {{ user.isActive ? 'Khóa' : 'Mở khóa' }}
-                                </button>
-                            </li>
-
-                        </ul>
-                    </nz-dropdown-menu>
+                    <app-action-dropdown [actions]="[
+    { label: 'Xem chi tiết', emitName: 'viewDetails', icon: 'eye', permissions: [PERMISSIONS.USERS_VIEW] },
+    { label: 'Sửa', emitName: 'editUser', icon: 'edit', disabled: user.email === 'admin@system.com', permissions: [PERMISSIONS.USERS_VIEW, PERMISSIONS.USERS_UPDATE] },
+    { label: 'Gán quyền', emitName: 'assignUser', icon: 'user-add', disabled: user.email === 'admin@system.com', permissions: [PERMISSION_GROUPS.ADMIN] },
+    { label: 'Xóa', emitName: 'deleteUser', icon: 'delete', type: 'danger', disabled: user.email === 'admin@system.com', permissions: [PERMISSIONS.USERS_DELETE] },
+    { label: 'Đặt lại mật khẩu', emitName: 'changePassword', icon: 'key', disabled: user.email === 'admin@system.com', permissions: [PERMISSIONS.USERS_UPDATE] },
+    {
+      label: user.isActive ? 'Khóa' : 'Mở khóa',
+      emitName: 'toggleLock',
+      icon: user.isActive ? 'lock' : 'unlock',
+      type: 'cancel',
+      disabled: user.email === 'admin@system.com',
+      permissions: [user.isActive ? PERMISSIONS.USERS_LOCK : PERMISSIONS.USERS_UNLOCK]
+    }
+  ]" dropdownLabel="Hành động" [dropdownIcon]="'setting'" [data]="user"
+                        (action)="handleUserAction($event)"></app-action-dropdown>
                 </td>
                 <td>{{ user.username }}</td>
                 <td>{{ user.fullName }}</td>
@@ -428,8 +504,21 @@
             </tr>
         </tbody>
     </nz-table>
+    <!-- End Table -->
+
+    <app-confirm-dialog [(isVisible)]="isDeleteModalVisible" title="Xóa người dùng"
+        message="Bạn có chắc muốn xóa người dùng này không?" confirmText="Xóa" confirmType="danger" cancelText="Hủy"
+        (confirm)="handleConfirmDelete()" (cancelModal)="handleCancelDelete()"></app-confirm-dialog>
+
+    <app-confirm-dialog [(isVisible)]="isDeleteModalVisible" title="Xác nhận hành động" message="Bạn có chắc muốn {{ selectedUser?.isActive ? 'khóa' : 'mở khóa' }} người dùng này không?"
+        [confirmText]="selectedUser?.isActive ? 'Khóa' : 'Mở khóa'" [cancelText]="'Hủy'"
+        (confirm)="handleConfirmLock()" (cancelModal)="handleCancelLock()"></app-confirm-dialog>
+
+
+
 
     <!-- Pagination -->
     <app-pagination [total]="totalItems" [pageSize]="pageSize" [pageIndex]="currentPage"
         (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)"></app-pagination>
+    <!-- End Pagination -->
 </div>

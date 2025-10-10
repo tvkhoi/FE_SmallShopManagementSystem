@@ -1,0 +1,121 @@
+@use '../../../styles/mixins'as m;
+@use '../../../styles/variables'as v;
+
+
+
+.toolbar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  text-align: center;
+  margin: 20px 0;
+  cursor: pointer;
+  font-size: 18px;
+  position: relative;
+
+  .label {
+    font-size: 11px;
+    margin-top: 4px;
+  }
+
+  &__icon {
+    width: 30px !important;
+    height: 30px !important;
+    background-color: #a8a4a4 !important;
+    border-radius: 20px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:hover {
+      border-radius: 8px !important;
+    }
+  }
+}
+
+/* Profile Dropdown */
+::ng-deep .ant-dropdown.profile-dropdown {
+  top: -35px !important;
+  left: -292px !important;
+  position: absolute !important;
+  width: 280px !important;
+  background: v.$secondary-color-admin !important;
+  border-radius: 10px !important;
+  color: #fff;
+  z-index: 2000;
+  height: max-content !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25) !important;
+
+  .profile-header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #ccc;
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      background-color: #a8a4a4 !important;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #ffffff;
+      margin-right: 15px;
+    }
+
+    .info {
+      .name {
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 14px;
+        color: #000000;
+      }
+
+      .email {
+        font-size: 12px;
+        color: #000000;
+      }
+    }
+  }
+
+  .profile-menu {
+    display: flex;
+    flex-direction: column;
+
+    .menu-item {
+      padding: 12px 15px;
+      cursor: pointer;
+      font-size: 16px;
+      color: #000000;
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      &:hover {
+        background-color: v.$secondary-color-admin;
+        opacity: 0.5;
+      }
+    }
+  }
+
+  .profile-footer {
+    padding: 10px 15px;
+    border-top: 1px solid #ccc;
+    text-align: left;
+
+    .logout-button {
+      width: 100%;
+      padding: 10px 0 !important;
+      color: #ffffff !important;
+      text-align: center !important;
+      font-size: 14px !important;
+      font-weight: 500 !important;
+    }
+  }
+}
+

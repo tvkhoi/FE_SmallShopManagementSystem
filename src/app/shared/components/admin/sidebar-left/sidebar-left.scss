@@ -1,5 +1,8 @@
+@use '../../../styles/variables' as v;
+@use '../../../styles/mixins' as m;
+
 :host ::ng-deep .ant-layout-sider {
-  background: #1f2937 !important; 
+  background: #ffffff !important; 
   transition: all 0.3s ease;
   z-index: 1000;
   height: 100vh; 
@@ -10,6 +13,21 @@
   max-width: 80px !important;
   min-width: 80px !important;
   width: 80px !important;
+
+  .logo span {
+    display: none;
+  }
+
+  // Căn giữa icon menu
+  .ant-menu-item {
+    justify-content: center !important;
+    padding-left: 0 !important;
+  }
+
+  // Chỉ ẩn phần text, không ẩn icon
+  .ant-menu-item span.menu-label {
+    display: none !important;
+  }
 }
 
 :host ::ng-deep .ant-layout-sider .logo {
@@ -18,10 +36,7 @@
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #374151;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: #000000;
 }
 
 :host ::ng-deep .ant-layout-sider .ant-menu {
@@ -31,17 +46,32 @@
 }
 
 :host ::ng-deep .ant-layout-sider .ant-menu-item {
-  font-size: 15px;
+  font-size: 18px;
   padding-left: 20px !important;
-  transition: background 0.3s ease;
+  color: #000000 !important;
+  transition: all 0.3s ease;
+  height: 60px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+:host ::ng-deep .ant-menu-item .anticon {
+  font-size: 20px !important;
 }
 
 :host ::ng-deep .ant-layout-sider .ant-menu-item-selected {
-  background: #2563eb !important;
-  color: #fff !important;
+  background: v.$primary-color-admin !important;
+  color: #5d5d5d !important;
 }
 
-@media (max-width: 768px) {
+:host ::ng-deep .ant-layout-sider-trigger {
+  background: #ffffff !important;
+  color: #000;
+}
+
+@include m.sm {
   :host ::ng-deep .ant-layout-sider {
     display: none;
   }

@@ -1,0 +1,19 @@
+<div class="account-container">
+    <h3>Tài khoản của tôi</h3>
+    <div class="account-content">
+        <div class="account-content__left">
+            <ul>
+                <li >
+                    <app-button nz-button type="primary" size="large" customClass="account-btn"  (click)="selectTab('personal-info')" [isActive]="selectedTab === 'personal-info'">Thông tin cá nhân</app-button>
+                </li>
+                <li>
+                    <app-button nz-button type="primary" size="large" customClass="account-btn" (click)="selectTab('change-password')" [isActive]="selectedTab === 'change-password'">Thay đổi mật khẩu</app-button>
+                </li>
+            </ul>
+        </div>
+        <div class="account-content__right">
+            <app-personal-info *ngIf="selectedTab === 'personal-info'"></app-personal-info>
+            <app-change-password *ngIf="selectedTab === 'change-password'"></app-change-password>
+        </div>
+    </div>
+</div>

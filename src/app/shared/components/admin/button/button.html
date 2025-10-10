@@ -1,0 +1,15 @@
+<button 
+  nz-button
+  [ngClass]="[
+    'app-btn',
+    'app-btn--' + type,
+    size ? 'app-btn--' + size : '',
+    isActive ? 'is-active' : '',
+    fullWidth ? 'app-btn--full' : '',
+    customClass
+  ]"
+  [disabled]="disabled || hasPermission === false"
+  [nzLoading]="isLoading"
+>
+  <ng-content></ng-content>
+</button>

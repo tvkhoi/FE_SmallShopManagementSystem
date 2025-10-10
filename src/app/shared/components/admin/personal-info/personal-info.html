@@ -1,0 +1,66 @@
+<div class="personal-info-container">
+    <h2>Thông tin cá nhân</h2>
+    <form nz-form [nzLayout]="'vertical'" [formGroup]="formUser!" class="personal-form">
+        <nz-row [nzGutter]="16">
+
+            <nz-col [nzXs]="24" [nzSm]="12">
+                <nz-form-item>
+                    <nz-form-label>Tên người dùng</nz-form-label>
+                    <nz-form-control>
+                        <input nz-input name="username" formControlName="username" placeholder="Nhập tên người dùng" />
+                    </nz-form-control>
+                </nz-form-item>
+            </nz-col>
+
+            <nz-col [nzXs]="24" [nzSm]="12">
+                <nz-form-item>
+                    <nz-form-label>Họ và tên</nz-form-label>
+                    <nz-form-control>
+                        <input nz-input name="fullname" formControlName="fullname" placeholder="Nhập họ và tên" />
+                    </nz-form-control>
+                </nz-form-item>
+            </nz-col>
+
+            <nz-col [nzXs]="24">
+                <nz-form-item>
+                    <nz-form-label>Email</nz-form-label>
+                    <nz-form-control>
+                        <input nz-input type="email" name="email" formControlName="email" placeholder="Nhập email" />
+                    </nz-form-control>
+                </nz-form-item>
+            </nz-col>
+
+            <nz-col [nzXs]="24" [nzSm]="12">
+                <nz-form-item>
+                    <nz-form-label>Số điện thoại</nz-form-label>
+                    <nz-form-control>
+                        <input nz-input maxlength="10" minlength="10" name="phoneNumber" formControlName="phoneNumber"
+                            placeholder="Nhập số điện thoại" />
+                        @if(formUser.get('phoneNumber')?.hasError('pattern'))
+                        {
+                        <div class="text-red-500 text-xs mt-1 list-disc">
+                            Số điện thoại phải có 10 số và bắt đầu bằng 0!
+                        </div>
+                        }
+                    </nz-form-control>
+                </nz-form-item>
+            </nz-col>
+
+            <nz-col [nzXs]="24" [nzSm]="12">
+                <nz-form-item>
+                    <nz-form-label>Địa chỉ</nz-form-label>
+                    <nz-form-control>
+                        <input nz-input name="address" formControlName="address" placeholder="Nhập địa chỉ" />
+                    </nz-form-control>
+                </nz-form-item>
+            </nz-col>
+
+            <nz-col [nzXs]="24" class="button-col">
+                <app-button (click)="onSubmit()" class="save-button" type="primary" size="large"
+                    [disabled]="formUser.invalid" [permissions]="[PERMISSIONS.USERS_UPDATE]">
+                    Lưu thay đổi
+                </app-button>
+            </nz-col>
+        </nz-row>
+    </form>
+</div>

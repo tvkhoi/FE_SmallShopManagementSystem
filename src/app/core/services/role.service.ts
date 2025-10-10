@@ -22,13 +22,14 @@ export class RoleService {
   } | null>(null);
   rolePermissions$ = this.rolePermissionsSource.asObservable();
 
-  // ===== HELPER =====
+  //  HELPER 
   private handleResponse<T>(res: ApiResponse<T>): T {
     if (res.success && res.data !== null && res.data !== undefined) return res.data;
     throw res;
   }
 
-  // ===== ROLES =====
+  // Cần quyền ROLES_VIEW 
+
   getAllRoles(): Observable<Role[]> {
     return this.http.get<ApiResponse<Role[]>>(this.apiUrl).pipe(
       map((res) => this.handleResponse(res)),
@@ -38,13 +39,14 @@ export class RoleService {
       })
     );
   }
-
+  // Cần quyền ROLES_VIEW
   getRoleById(id: number): Observable<Role> {
     return this.http
       .get<ApiResponse<Role>>(`${this.apiUrl}/${id}`)
       .pipe(map((res) => this.handleResponse(res)));
   }
-
+ 
+  // Cần quyền ROLES_CREATE
   createRole(role: { name: string }): Observable<{ id: number; name: string }> {
     return this.http.post<ApiResponse<{ id: number; name: string }>>(this.apiUrl, role).pipe(
       map((res) => {
@@ -56,6 +58,7 @@ export class RoleService {
     );
   }
 
+  // Cần quyền ROLES_CREATE
   updateRole(id: number, role: { name: string }): Observable<{ id: number; name: string }> {
     return this.http
       .put<ApiResponse<{ id: number; name: string }>>(`${this.apiUrl}/${id}`, role)
@@ -71,6 +74,7 @@ export class RoleService {
       );
   }
 
+  // Cần quyền ROLES_DELETE
   deleteRole(id: number): Observable<{ roleId: number }> {
     return this.http.delete<ApiResponse<{ roleId: number }>>(`${this.apiUrl}/${id}`).pipe(
       map((res) => {
@@ -82,7 +86,9 @@ export class RoleService {
     );
   }
 
-  // ===== PERMISSIONS =====
+  //  PERMISSIONS 
+
+  // Cần quyền PERMISSIONS_VIEW
   getPermissionsByRole(roleId: number): Observable<{ roleId: number; permissions: Permission[] }> {
     return this.http
       .get<ApiResponse<{ roleId: number; permissions: Permission[] }>>(
@@ -97,6 +103,7 @@ export class RoleService {
       );
   }
 
+  // Cần quyền PERMISSIONS_UPDATE
   assignPermissionsToRole(
     roleId: number,
     permissions: { id: number; granted: boolean }[]
@@ -115,7 +122,9 @@ export class RoleService {
       );
   }
 
-  // ===== SEARCH ROLES =====
+  //  SEARCH ROLES 
+
+  // Cần quyền ROLES_VIEW
   searchRoles(
     keyword: string,
     pageNumber: number,
@@ -137,7 +146,9 @@ export class RoleService {
     );
   }
 
-  // ===== PAGED ROLES =====
+  //  PAGED ROLES 
+
+  // Cần quyền ROLES_VIEW
   getPagedRoles(
     pageNumber: number = 1,
     pageSize: number = 7

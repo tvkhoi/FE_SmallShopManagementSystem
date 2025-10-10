@@ -1,0 +1,15 @@
+<div class="forbidden-container">
+  <div class="forbidden-card">
+    <h1 class="error-code">403</h1>
+    <h2 class="error-title">Bạn không có quyền truy cập</h2>
+    <p class="error-message">
+      Có vẻ như bạn đang cố gắng truy cập vào một trang mà bạn không có quyền.
+      Vui lòng liên hệ quản trị viên nếu bạn nghĩ đây là nhầm lẫn.
+    </p>
+
+    <div class="actions">
+      <app-button type="cancel" size="large" (click)="goBack()" class="btn-outline">Quay lại</app-button>
+      <app-button type="primary" size="large" (click)="goHome()" class="btn-primary">Về trang chủ</app-button>
+    </div>
+  </div>
+</div>

@@ -5,8 +5,13 @@ import { Dashboard } from './features/admin/dashboard/dashboard';
 import { Auditlog } from './features/admin/auditlog/auditlog';
 import { UsersComponent } from './features/admin/users/users';
 import { RolesComponent } from './features/admin/roles/roles';
+
 import { Settings } from './features/admin/settings/settings';
 import { AdminLayout } from './shared/layouts/admin-layout/admin-layout';
+import { Account } from './features/admin/account/account';
+import { PERMISSIONS } from './core/constants/permission.constant';
+import { PERMISSION_GROUPS } from './core/constants/permission-groups';
+import { Forbidden } from './shared/components/forbidden/forbidden';
 
 // Auth
 import { LoginComponent } from './shared/components/login/login';
@@ -59,23 +64,52 @@ export const routes: Routes = [
   { path: 'sign-up', component: SignUpComponent, canActivate: [loginGuard] },
   { path: 'forgot-password', component: ForgotPassword, canActivate: [loginGuard] },
   { path: 'reset-password', component: ResetPassword, pathMatch: 'full' },
-
-  // ADMIN
+  { path: 'forbidden', component: Forbidden },
   {
     path: 'admin',
     component: AdminLayout,
     canActivate: [authGuard],
-    data: { roles: ['Admin'] },
+    data: {
+      permissions: [
+        PERMISSIONS.USERS_VIEW,
+        PERMISSIONS.ROLES_VIEW,
+        ...PERMISSION_GROUPS.ADMIN
+      ],
+    },
     children: [
-      { path: 'dashboard', component: Dashboard },
-      { path: 'audit_log', component: Auditlog },
-      { path: 'users', component: UsersComponent },
-      { path: 'roles', component: RolesComponent },
-      { path: 'settings', component: Settings },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
-    ]
+      {
+        path: 'audit_log',
+        component: Auditlog,
+        canActivate: [authGuard],
+        data: { permissions: [...PERMISSION_GROUPS.ADMIN] },
+      },
+      {
+        path: 'users',
+        component: UsersComponent,
+        canActivate: [authGuard],
+        data: { permissions: [PERMISSIONS.USERS_VIEW] },
+      },
+      {
+        path: 'roles',
+        component: RolesComponent,
+        canActivate: [authGuard],
+        data: { permissions: [PERMISSIONS.ROLES_VIEW] },
+      },
+      {
+        path: 'settings',
+        component: Settings,
+        canActivate: [authGuard],
+        data: { permissions: [PERMISSIONS.PERMISSIONS_VIEW] },
+      },
+      {
+        path: 'account',
+        component: Account,
+        canActivate: [authGuard],
+        data: { permissions: [PERMISSIONS.USERS_VIEW] },
+      },
+      { path: '', redirectTo: 'users', pathMatch: 'full' },
+    ],
   },
 
-  // 404 fallback
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: 'forbidden' },
 ];

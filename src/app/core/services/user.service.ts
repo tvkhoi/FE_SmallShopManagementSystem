@@ -21,7 +21,7 @@ export class UserService {
     this.userDataSource.next(newUserData);
   }
 
-  // ========== AUTH ==========
+  //  AUTH
   signUp(userData: {
     fullname: string;
     phoneNumber: string;
@@ -66,7 +66,7 @@ export class UserService {
     );
   }
 
-  // ========== AUTH PASSWORD RESET ==========
+  //AUTH PASSWORD RESET
   forgotPassword(email: string): Observable<string> {
     return this.http
       .post<ApiResponse<{ email: string }>>(`${this.apiUrl}/User/forgot-password`, { email })
@@ -90,7 +90,8 @@ export class UserService {
     );
   }
 
-  // ========== USER ==========
+  //  USER
+  // Quyền: Users.View
   getAllUsers(): Observable<any> {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/User`).pipe(
       map((res) => {
@@ -100,6 +101,7 @@ export class UserService {
     );
   }
 
+  // Quyền: Users.View
   getUserById(id: number): Observable<any> {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/User/${id}`).pipe(
       map((res) => {
@@ -109,6 +111,7 @@ export class UserService {
     );
   }
 
+  // Quyền: Users.View
   getUsersPaged(params: any): Observable<PagedResult<User>> {
     return this.http
       .get<ApiResponse<PagedResult<User>>>(`${this.apiUrl}/User/paged`, { params })
@@ -120,6 +123,7 @@ export class UserService {
       );
   }
 
+  // Quyền: Users.View
   getUsersPagedWithFilter(params: {
     isActive?: boolean;
     email?: string;
@@ -134,6 +138,7 @@ export class UserService {
     return this.getUsersPaged(params);
   }
 
+  // Quyền: Users.View
   searchUsers(
     keyword: string,
     pageNumber: number = 1,
@@ -151,7 +156,8 @@ export class UserService {
       );
   }
 
-  createUser(userData : UserDTO):Observable<any> {
+  // Quyền: Users.Create
+  createUser(userData: UserDTO): Observable<any> {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/User`, userData).pipe(
       map((res) => {
         if (res.success) return res.data;
@@ -160,6 +166,7 @@ export class UserService {
     );
   }
 
+  // Quyền: Users.Update
   updateUser(id: number, userData: any): Observable<any> {
     return this.http.put<ApiResponse<any>>(`${this.apiUrl}/User/${id}`, userData).pipe(
       map((res) => {
@@ -169,6 +176,7 @@ export class UserService {
     );
   }
 
+  // Quyền: Users.Delete
   deleteUser(id: number): Observable<any> {
     return this.http.put<ApiResponse<any>>(`${this.apiUrl}/User/${id}/DeleteUser`, {}).pipe(
       map((res) => {
@@ -178,6 +186,7 @@ export class UserService {
     );
   }
 
+  // Quyền: Users.Lock (mở khóa
   activateUser(id: number): Observable<any> {
     return this.http.put<ApiResponse<any>>(`${this.apiUrl}/User/${id}/activate`, {}).pipe(
       map((res) => {
@@ -187,6 +196,7 @@ export class UserService {
     );
   }
 
+  // Quyền: Users.Lock (khóa)
   deactivateUser(id: number): Observable<any> {
     return this.http.put<ApiResponse<any>>(`${this.apiUrl}/User/${id}/deactivate`, {}).pipe(
       map((res) => {
@@ -196,7 +206,8 @@ export class UserService {
     );
   }
 
-  // ========== ROLE ==========
+  //  ROLE
+  // FULL quyền Admin
   assignRoles(userId: number, roleIds: number[]): Observable<any> {
     return this.http
       .post<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/assign-roles`, { roleIds })
@@ -208,6 +219,7 @@ export class UserService {
       );
   }
 
+  // FULL quyền Admin
   removeRole(userId: number, roleId: number): Observable<any> {
     return this.http
       .delete<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/remove-role/${roleId}`)
@@ -219,6 +231,7 @@ export class UserService {
       );
   }
 
+  // Quyền: Users.Update
   setPassword(
     userId: number,
     payload: { currentPassword?: string; newPassword: string }
@@ -233,7 +246,9 @@ export class UserService {
       );
   }
 
-  // ========== PERMISSION ==========
+  //  PERMISSION ==========
+  
+  // FULL quyền Admin
   getUserPermissions(userId: number): Observable<any> {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/permissions`).pipe(
       map((res) => {
@@ -243,6 +258,7 @@ export class UserService {
     );
   }
 
+  // FULL quyền Admin
   assignPermissions(userId: number, permissions: any[]): Observable<any> {
     return this.http
       .post<ApiResponse<any>>(`${this.apiUrl}/User/${userId}/assign-permissions`, { permissions })
