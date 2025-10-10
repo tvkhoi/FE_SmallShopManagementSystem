@@ -6,11 +6,13 @@ import { Product } from '../../../core/models/domain/product';
 import { ProductService } from '../../../core/services/product.service';
 import { FavoriteService } from '../../../core/services/favorite.service';
 import { AuthService } from '../../../auth/auth.service';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-product-item',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NzInputNumberModule, FormsModule],
   templateUrl: './product-item.html',
   styleUrls: ['./product-item.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -21,7 +23,9 @@ export class ProductItemComponent implements OnChanges {
 
   // Quản lý ảnh chính
   selectedImage: string | null = null;
-
+   // Số lượng muốn thêm vào giỏ  
+  quantity: number = 1;
+ 
   constructor(
     public productService: ProductService,
     private cartService: CartService,
@@ -57,34 +61,48 @@ export class ProductItemComponent implements OnChanges {
     this.cdr.markForCheck();
   }
 
-  addToCart() {
-    if (!this.product) {
-      this.message.error('Không tìm thấy thông tin sản phẩm');
-      return;
-    }
-
-    // Check if user is logged in
-    if (!this.authService.isLoggedIn()) {
-      this.message.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
-      return;
-    }
-
-    this.cartService.addOrUpdateCart(this.product.id, 1).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.message.success('Đã thêm sản phẩm vào giỏ hàng', { nzDuration: 2000 });
-        } else {
-          this.message.error('Thêm vào giỏ hàng thất bại');
-        }
-        this.cdr.markForCheck();
-      },
-      error: (error) => {
-        console.error('Lỗi khi thêm vào giỏ hàng:', error);
-        // this.message.error('Thêm vào giỏ hàng thất bại');
-        this.cdr.markForCheck();
-      }
-    });
+addToCart() {
+  if (!this.product) {
+    this.message.error('Không tìm thấy thông tin sản phẩm');
+    return;
   }
+
+  // Kiểm tra đăng nhập
+  if (!this.authService.isLoggedIn()) {
+    this.message.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+    return;
+  }
+
+  // Kiểm tra số lượng
+  if (this.quantity <= 0) {
+    this.message.warning('Số lượng phải lớn hơn 0');
+    return;
+  }
+
+  if (this.quantity > this.product.stock) {
+    this.message.warning(`Chỉ còn ${this.product.stock} sản phẩm trong kho`);
+    return;
+  }
+
+  // Gọi API thêm vào giỏ hàng
+  this.cartService.addOrUpdateCart(this.product.id, this.quantity).subscribe({
+    next: (response) => {
+      if (response.success) {
+        this.message.success('Đã thêm sản phẩm vào giỏ hàng', { nzDuration: 2000 });
+      } else {
+        this.message.error(response.message || 'Thêm vào giỏ hàng thất bại');
+      }
+      this.cdr.markForCheck();
+    },
+    error: (error) => {
+      console.error('Lỗi khi thêm vào giỏ hàng:', error);
+      const errMsg = error?.error?.message || 'Thêm vào giỏ hàng thất bại';
+      this.message.error(errMsg);
+      this.cdr.markForCheck();
+    }
+  });
+}
+
 
   addToWishlist(product: Product) {
     // Check if user is logged in

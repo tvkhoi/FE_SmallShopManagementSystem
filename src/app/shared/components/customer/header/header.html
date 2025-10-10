@@ -8,73 +8,86 @@
         </a>
 
         <!-- Toggle (mobile) -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
 
         <!-- Menu -->
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                Trang chủ
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" routerLink="/products" routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }">
-                Sản phẩm
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" routerLink="/about" routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }">
-                Giới thiệu
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" routerLink="/contact" routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }">
-                Liên hệ
-              </a>
-            </li>
+            <li class="nav-item"><a class="nav-link" routerLink="/" routerLinkActive="active"
+                [routerLinkActiveOptions]="{exact:true}">Trang chủ</a></li>
+            <li class="nav-item"><a class="nav-link" routerLink="/products" routerLinkActive="active">Sản phẩm</a></li>
+            <li class="nav-item"><a class="nav-link" routerLink="/about" routerLinkActive="active">Giới thiệu</a></li>
+            <li class="nav-item"><a class="nav-link" routerLink="/contact" routerLinkActive="active">Liên hệ</a></li>
           </ul>
         </div>
 
         <!-- Search + Icons -->
         <div class="d-flex align-items-center gap-3 flex-grow-1">
-          <!-- Form search -->
+          <!-- Search form -->
           <form (ngSubmit)="onSearch()" class="search-form">
             <input type="text" class="form-control" name="searchText" [(ngModel)]="searchText"
-              placeholder="Search..." />
-            <button class="btn btn-search" type="submit" title="Search">
+              placeholder="Tìm kiếm sản phẩm..." />
+            <button class="btn btn-search" type="submit">
               <i class="fa-solid fa-magnifying-glass"></i>
             </button>
           </form>
 
           <!-- Icons -->
           <ul class="navbar-nav flex-row gap-3 mb-0 align-items-center">
+
             <!-- Wishlist -->
-            <li class="nav-item">
-              <a routerLink="/customer/wishlist" class="nav-link icon-link" title="Wishlist">
+            <li nz-dropdown nzTrigger="hover" [nzDropdownMenu]="wishlistMenu" class="nav-item position-relative">
+              <a class="nav-link icon-link" (click)="goToWishlist()" title="Wishlist">
                 <i class="fa-regular fa-heart"></i>
+                <span class="wishlist-badge" *ngIf="wishlistCount > 0">{{ wishlistCount }}</span>
               </a>
             </li>
-
+            <nz-dropdown-menu #wishlistMenu="nzDropdownMenu">
+              <ul class="dropdown-list">
+                <li *ngFor="let item of wishlistPreview" class="dropdown-item">
+                  <img [src]="item.imageUrls?.[0] || 'assets/nen.jpg'" alt="{{ item.productName }}" />
+                  <span>{{ item.productName }}</span>
+                </li>
+                <li class="dropdown-footer">
+                  <a routerLink="/customer/wishlist">Xem tất cả</a>
+                </li>
+              </ul>
+            </nz-dropdown-menu>
             <!-- Cart -->
-            <li class="nav-item position-relative">
-              <a routerLink="/customer/cart" class="nav-link icon-link" title="Cart">
+            <li nz-dropdown nzTrigger="hover" [nzDropdownMenu]="cartMenu" class="nav-item position-relative">
+              <a class="nav-link icon-link" (click)="goToCart()" title="Giỏ hàng">
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span class="cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
               </a>
             </li>
+            <nz-dropdown-menu #cartMenu="nzDropdownMenu">
+              <ul class="dropdown-list">
+                <li *ngFor="let item of cartPreview" class="dropdown-item">
+                  <img [src]="item.imageUrls?.[0] || 'assets/default.jpg'" alt="{{ item.productName }}" />
+                  <span>{{ item.productName }} (x{{ item.quantity }})</span>
+                </li>
+                <li class="dropdown-footer">
+                  <a routerLink="/customer/cart">Xem giỏ hàng</a>
+                </li>
+              </ul>
+            </nz-dropdown-menu>
+
             <!-- User -->
-            <li class="nav-item">
-              <a routerLink="/login" class="nav-link icon-link" title="Login">
+            <li nz-dropdown nzTrigger="hover" [nzDropdownMenu]="userMenu" class="nav-item">
+              <a class="nav-link icon-link" title="Tài khoản">
                 <i class="fa-regular fa-user"></i>
               </a>
             </li>
+            <nz-dropdown-menu #userMenu="nzDropdownMenu">
+              <ul class="dropdown-list">
+                <li><a routerLink="/customer/profile">Thông tin cá nhân</a></li>
+                <li><a routerLink="/customer/orders">Đơn hàng của bạn</a></li>
+                <li><a (click)="logout()">Đăng xuất</a></li>
+              </ul>
+            </nz-dropdown-menu>
+
           </ul>
         </div>
       </div>
