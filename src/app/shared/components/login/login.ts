@@ -16,6 +16,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { Button } from "../admin/button/button";
 
 @Component({
   selector: 'app-login',
@@ -31,7 +32,8 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
     NzButtonModule,
     RouterModule,
     CommonModule,
-  ],
+    Button
+],
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
@@ -77,7 +79,7 @@ export class LoginComponent implements OnInit {
 
           if (res.token && res.refreshToken) {
             this.authService.saveTokens(res.token, res.refreshToken);
-            this.authService.redirectByRole();
+            this.authService.redirectByPermission();
             this.message.success('Đăng nhập thành công');
           } else {
             this.message.error('Không tìm thấy token trong phản hồi');

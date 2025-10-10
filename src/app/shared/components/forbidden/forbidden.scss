@@ -1,0 +1,43 @@
+@use '../../styles/variables' as v;
+.forbidden-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+
+.forbidden-card {
+  text-align: center;
+  padding: 40px 60px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+}
+
+.error-code {
+  font-size: 100px;
+  font-weight: 700;
+  color: #dc3545;
+  margin: 0;
+}
+
+.error-title {
+  font-size: 26px;
+  margin-bottom: 10px;
+  color: #343a40;
+}
+
+.error-message {
+  font-size: 16px;
+  color: #6c757d;
+  margin-bottom: 30px;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+

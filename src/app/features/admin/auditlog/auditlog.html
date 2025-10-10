@@ -91,11 +91,11 @@
 
         <!-- Buttons -->
         <div nz-col [nzSpan]="24" class="filter-buttons">
-          <button nz-button nzType="primary" type="button" (click)="resetFilters()" style="margin-right: 8px;">Làm
-            mới</button>
-          <button nz-button nzType="primary" type="button" (click)="exportLogs()" style="margin-right: 8px;">Xuất
-            Excel</button>
-          <button nz-button nzType="primary" type="button" (click)="filterLogs()">Lọc</button>
+          <app-button type="primary" size="large" (click)="resetFilters()" style="margin-right: 8px;">Làm
+            mới</app-button>
+          <app-button type="primary" size="large" (click)="exportLogs()" style="margin-right: 8px;">Xuất
+            Excel</app-button>
+          <app-button type="primary" size="large" (click)="filterLogs()">Lọc</app-button>
         </div>
       </div>
     </form>
@@ -166,7 +166,7 @@
   </nz-modal>
 
   <ng-template #auditDetailFooter>
-    <button style="width: 100%;" nz-button nzType="primary" (click)="handleViewAuditDetailCancel()">Đóng</button>
+    <app-button type="primary" (click)="handleViewAuditDetailCancel()">Đóng</app-button>
   </ng-template>
 
   <div class="audit-table-container">
@@ -189,11 +189,10 @@
       <tbody>
         <tr *ngFor="let log of table.data">
           <td>
-            <button nz-button nzType="primary" class="view-detail-button" nzType="primary"
-              (click)="viewAuditDetail(log)">
+            <app-button class="view-detail-button" type="primary" size="medium" (click)="viewAuditDetail(log)">
               <span nz-icon nzType="eye" nzTheme="outline"></span>
               Chi tiết
-            </button>
+            </app-button>
           </td>
 
           <td class="request-cell">

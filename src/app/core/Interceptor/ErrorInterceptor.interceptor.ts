@@ -30,8 +30,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         }
       } else {
         // Lỗi mạng hoặc BE không phản hồi
-        console.error('🌐 Network error or no response from server');
-        messageService.error('Không thể kết nối đến server');
+        // messageService.error('Không thể kết nối đến server');
+        console.error('HTTP Error:', error);
       }
 
       return throwError(() => error);

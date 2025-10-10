@@ -7,6 +7,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { UserService } from '../../../core/services/user.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { Button } from "../admin/button/button";
 
 @Component({
   selector: 'app-forgot-password',
@@ -18,7 +19,8 @@ import { NzMessageService } from 'ng-zorro-antd/message';
     NzInputModule,
     NzButtonModule,
     RouterLink,
-  ],
+    Button
+],
   templateUrl: './forgot-password.html',
   styleUrls: ['./forgot-password.scss'],
 })

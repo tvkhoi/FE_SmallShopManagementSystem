@@ -6,7 +6,7 @@
         <h2>Vai trò</h2>
       </nz-col>
       <nz-col nzSpan="12" style="text-align: right;">
-        <button nz-button nzType="primary" (click)="showCreateModal()">Tạo vai trò</button>
+        <app-button nz-button nzType="primary" size="large" (click)="showCreateModal()" [permissions]="[PERMISSIONS.ROLES_CREATE]">Tạo vai trò</app-button>
       </nz-col>
     </nz-row>
 
@@ -35,18 +35,18 @@
 
     <!-- Footer Modal -->
     <ng-template #createFooter>
-      <button nz-button nzType="default" (click)="handleCreateCancel()">Hủy</button>
-      <button nz-button nzType="primary" (click)="handleCreateOk()" [nzLoading]="isConfirmLoading"
+      <app-button nz-button type="cancel" (click)="handleCreateCancel()" style="margin-right: 8px;">Hủy</app-button>
+      <app-button nz-button type="primary" (click)="handleCreateOk()" [isLoading]="isConfirmLoading"
         [disabled]="!roleName || roleNameExists">
         Lưu
-      </button>
+      </app-button>
     </ng-template>
   </div>
 
   <!-- Search box -->
   <div class="roles-search">
     <input nz-input placeholder="Tìm kiếm tên vai trò" [(ngModel)]="searchQuery" />
-    <button class="search-button" nz-button nzType="default" (click)="filterRoles()">Tìm kiếm</button>
+    <app-button class="search-button" nz-button type="primary" size="large" (click)="filterRoles()">Tìm kiếm</app-button>
   </div>
 
   <!-- Table roles -->
@@ -66,30 +66,23 @@
     <tbody>
       <tr *ngFor="let role of table.data">
         <td>
-          <a class="action-dropdown" nz-dropdown [nzDropdownMenu]="menu">
-            <span><nz-icon nzType="setting" nzTheme="outline" style="font-size: 16px; padding-right: 5px;"/>Hành động</span>
-          </a>
-          <nz-dropdown-menu #menu="nzDropdownMenu">
-            <ul nz-menu>
-              <li nz-menu-item>
-                <button nz-button nzType="link" (click)="showAssignModal(role)" [disabled]="role.name === 'Admin'">Gán
-                  quyền</button>
-              </li>
-              <li nz-menu-item>
-                <button nz-button nzType="link" (click)="deleteRole(role)"
-                  [disabled]="role.name === 'Admin'">Xóa</button>
-              </li>
-              <li nz-menu-item>
-                <button nz-button nzType="link" (click)="editRole(role)" [disabled]="role.name === 'Admin'">Sửa</button>
-              </li>
-            </ul>
-          </nz-dropdown-menu>
+          <app-action-dropdown [actions]="[
+    { label: 'Gán quyền', icon: 'key', emitName: 'assign', disabled: role.name === 'Admin', permissions: [PERMISSIONS.PERMISSIONS_VIEW] },
+    { label: 'Sửa', icon: 'edit', emitName: 'edit', disabled: role.name === 'Admin' , permissions: [PERMISSIONS.ROLES_UPDATE] },
+    { label: 'Xóa', icon: 'delete', type: 'danger', emitName: 'delete', disabled: role.name === 'Admin', permissions: [PERMISSIONS.ROLES_DELETE] }
+  ]" [data]="role" (action)="onDropdownAction($event)"></app-action-dropdown>
+
         </td>
         <td>{{ role.name }}</td>
         <td>{{ role.userCount }}</td>
       </tr>
     </tbody>
   </nz-table>
+
+  <app-confirm-dialog [(isVisible)]="isDeleteModalVisible" title="Xóa vai trò"
+    message="Bạn chắc chắn muốn xóa vai trò này?" confirmText="Xóa" cancelText="Hủy" confirmType="danger"
+    (confirm)="handleConfirmDelete()" (cancelModal)="handleCancelDelete()"></app-confirm-dialog>
+
 
   <!-- Pagination -->
   <app-pagination [total]="totalItems" [pageSize]="pageSize" [pageIndex]="currentPage"

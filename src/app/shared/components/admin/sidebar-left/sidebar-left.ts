@@ -5,11 +5,12 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
 
 @Component({
   selector: 'app-sidebar-left',
   standalone: true,
-  imports: [CommonModule, NzLayoutModule, RouterModule, NzIconModule, NzMenuModule, NzFormModule],
+  imports: [CommonModule, NzLayoutModule, RouterModule, NzIconModule, NzMenuModule, NzFormModule, NzTooltipDirective],
   templateUrl: './sidebar-left.html',
   styleUrls: ['./sidebar-left.scss'],
 })

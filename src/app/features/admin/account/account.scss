@@ -1,0 +1,78 @@
+@use '../../../shared/styles/_variables.scss'as v;
+@use '../../../shared/styles/_mixins.scss'as m;
+
+.account-container {
+  .account-content {
+    width: 100%;
+    height: auto;
+    background-color: v.$secondary-color-admin;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+
+    &__left {
+      margin-top: 20px;
+      width: 30%;
+      text-align: left !important;
+
+      ul {
+        list-style: none;
+        padding: 0;
+
+        li {
+          white-space: nowrap;
+          margin-bottom: 50px;
+        }
+      }
+    }
+
+    &__right {
+      flex: 1;
+      padding-left: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  @include m.md {
+    .account-content {
+      flex-direction: column;
+
+      &__left {
+        width: 100%;
+        margin-bottom: 20px;
+
+        ul {
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+
+          li {
+            margin-bottom: 0;
+          }
+        }
+      }
+
+      &__right {
+        width: 100%;
+        justify-content: center !important;
+        align-items: center !important;
+        padding-left: 0;
+      }
+    }
+
+
+
+  }
+
+  @include m.xs {
+    ::ng-deep .account-btn {
+      font-size: 11px !important;
+    }
+  }
+
+}

@@ -1,5 +1,12 @@
+import { PERMISSION_GROUPS } from './../../../core/constants/permission-groups';
 import { Component, inject, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -32,6 +39,19 @@ import { RoleService } from '../../../core/services/role.service';
 import { UserDTO } from '../../../core/models/ui/user.dto';
 import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import {
+  createPasswordPolicyValidator,
+  getPendingPasswordRules,
+  noWhitespaceValidator,
+} from '../../../core/utils';
+import { PasswordPolicyService } from '../../../core/services/passwordPolicy.service';
+import { PasswordPolicy } from '../../../core/models/domain/PasswordPolicy';
+import { passwordMatchValidator } from '../../../core/utils/passwordMatchValidator.utils';
+import { Button } from '../../../shared/components/admin/button/button';
+import { ActionDropdown } from '../../../shared/components/admin/action-dropdown/action-dropdown';
+import { ConfirmDialog } from '../../../shared/components/admin/confirm-dialog/confirm-dialog';
+import { PERMISSIONS } from '../../../core/constants/permission.constant';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-users',
@@ -56,6 +76,10 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
     NzSwitchModule,
     NzTooltipModule,
     NzSelectModule,
+    ReactiveFormsModule,
+    Button,
+    ActionDropdown,
+    ConfirmDialog,
   ],
   templateUrl: './users.html',
   styleUrls: ['./users.scss'],
@@ -68,7 +92,12 @@ export class UsersComponent implements OnInit {
   private readonly zone = inject(NgZone);
   private readonly msg = inject(NzMessageService);
   private readonly modal = inject(NzModalService);
+  private readonly fb = inject(FormBuilder);
+  private readonly policyService = inject(PasswordPolicyService);
+  private readonly auth = inject(AuthService);
 
+  PERMISSIONS = PERMISSIONS;
+  PERMISSION_GROUPS = PERMISSION_GROUPS;
   searchQuery = '';
   users: User[] = [];
 
@@ -116,7 +145,10 @@ export class UsersComponent implements OnInit {
 
   userId: number | null = null;
   selectedUserId: number | null = null;
-  selectedUser: User | null = null;
+  selectedUser!: User | null;
+
+  isDeleteModalVisible: boolean = false;
+  
 
   // Permissions
   groupedPermissions: { module: string; permissions: Permission[] }[] = [];
@@ -127,12 +159,58 @@ export class UsersComponent implements OnInit {
   roles: Role[] = [];
   selectedNames: string[] = [];
 
-  private readonly destroy$ = new Subject<void>();
+  userForm!: FormGroup;
+  policy!: PasswordPolicy;
+  pendingRules: string[] = [];
 
   ngOnInit(): void {
-    this.loadUsers();
-    this.loadPermissions();
-    this.loadRoles();
+    this.userForm = this.fb.group(
+      {
+        username: ['', [Validators.required, noWhitespaceValidator]],
+        email: ['', [Validators.required, Validators.email]],
+        fullName: [''],
+        address: [''],
+        phoneNumber: ['', [Validators.pattern(/^0[0-9]{9}$/)]],
+        password: ['', [Validators.required, noWhitespaceValidator]],
+        confirmPassword: ['', [Validators.required]],
+        isActive: [true],
+      },
+      { validators: passwordMatchValidator }
+    );
+    this.policyService.getPolicy().subscribe({
+      next: (res) => {
+        this.policy = res;
+
+        const passwordCtrl = this.userForm.get('password');
+        if (passwordCtrl) {
+          passwordCtrl.addValidators(createPasswordPolicyValidator(this.policy));
+          passwordCtrl.updateValueAndValidity();
+        }
+
+        passwordCtrl?.valueChanges.subscribe((value) => {
+          this.pendingRules = getPendingPasswordRules(value || '', this.policy).map((r) => r.label);
+        });
+      },
+      error: () => console.error('Không thể lấy chính sách mật khẩu'),
+    });
+
+    if (this.auth.hasPermission(PERMISSIONS.USERS_VIEW)) {
+      this.loadUsers();
+    } else {
+      console.warn('Không có quyền xem người dùng (USERS_VIEW)');
+    }
+
+    if (this.auth.hasPermission(PERMISSIONS.PERMISSIONS_VIEW)) {
+      this.loadPermissions();
+    } else {
+      console.warn('Không có quyền xem quyền hạn (PERMISSIONS_VIEW)');
+    }
+
+    if (this.auth.hasPermission(PERMISSIONS.ROLES_VIEW)) {
+      this.loadRoles();
+    } else {
+      console.warn('Không có quyền xem vai trò (ROLES_VIEW)');
+    }
   }
 
   /** Load danh sách user */
@@ -178,6 +256,7 @@ export class UsersComponent implements OnInit {
             ...role,
             checked: false,
           }));
+          console.log('Roles loaded:', this.roles);
           this.cdr.detectChanges();
         });
       },
@@ -245,6 +324,11 @@ export class UsersComponent implements OnInit {
 
   /** Modal: tạo user + gán quyền */
   showModal(): void {
+    this.userForm.get('username')?.enable();
+    this.userForm.get('email')?.enable();
+    this.userForm.get('password')?.enable();
+    this.userForm.get('confirmPassword')?.enable();
+
     this.isVisible = true;
     this.submitted = false;
     this.isEditMode = false;
@@ -265,28 +349,18 @@ export class UsersComponent implements OnInit {
       RoleName: [],
     };
 
-    // Reset role selection
     this.roles = this.roles.map((r) => ({ ...r, checked: false }));
     this.selectedNames = [];
-    // reset check tree
-    // this.treeData = this.treeData.map((m) => ({
-    //   ...m,
-    //   checked: false,
-    //   children: m.children?.map((c: any) => ({ ...c, checked: false })),
-    // }));
   }
 
   handleCancel(): void {
     this.isVisible = false;
     this.submitted = false;
+    this.isEditMode = false;
+    this.userForm.reset();
   }
 
   handleOk(): void {
-    if (!this.isEditMode && this.newUser.password !== this.confirmPassword) {
-      this.msg.error('Mật khẩu và Nhập lại mật khẩu không khớp!');
-      return;
-    }
-
     this.submitted = true;
     this.isConfirmLoading = true;
 
@@ -417,6 +491,13 @@ export class UsersComponent implements OnInit {
     this.isEditMode = true;
     this.userId = user.id;
 
+    if (this.isEditMode === true) {
+      this.userForm.get('username')?.disable();
+      this.userForm.get('email')?.disable();
+      this.userForm.get('password')?.disable();
+      this.userForm.get('confirmPassword')?.disable();
+    }
+
     this.userService.getUserById(user.id).subscribe({
       next: (res) => {
         console.log('Chi tiết user từ API:', res);
@@ -452,23 +533,26 @@ export class UsersComponent implements OnInit {
   }
 
   deleteUser(user: User): void {
-    this.modal.confirm({
-      nzTitle: 'Bạn có chắc muốn xóa vai trò này?',
-      nzOkText: 'Xóa',
-      nzOkType: 'primary',
-      nzOkDanger: true,
-      nzOnOk: () => {
-        this.userService.deleteUser(user.id).subscribe({
-          next: () => {
-            this.msg.success('Đã xóa user');
-            this.loadUsers();
-          },
-          error: (e) => console.error('Lỗi khi xóa user:', e),
-        });
+    this.selectedUser = user;
+    this.openDeleteModal();
+  }
+
+  openDeleteModal(): void {
+    this.isDeleteModalVisible = true;
+  }
+
+  handleConfirmDelete(): void {
+    this.userService.deleteUser(this.selectedUser!.id).subscribe({
+      next: () => {
+        this.msg.success('Đã xóa user');
+        this.loadUsers();
       },
-      nzCancelText: 'Hủy',
-      nzOnCancel: () => this.msg.info('Hủy xóa vai trò'),
+      error: (err) => this.msg.error('Lỗi khi xóa user'),
     });
+  }
+
+  handleCancelDelete(): void {
+    this.msg.info('Đã hủy xóa');
   }
 
   viewDetails(user: User): void {
@@ -477,51 +561,30 @@ export class UsersComponent implements OnInit {
   }
 
   toggleLock(user: any) {
-    const action = user.isActive ? 'khóa' : 'mở khóa';
-    this.modal.confirm({
-      nzTitle: `Bạn có chắc muốn ${action} người dùng này?`,
-      nzOkText: action,
-      nzOkType: 'primary',
-      nzOkDanger: user.isActive, // chỉ cảnh báo đỏ khi khóa
-      nzOnOk: () => {
-        // Chọn API phù hợp
-        const request$ = user.isActive
-          ? this.userService.deactivateUser(user.id) // Lock user
-          : this.userService.activateUser(user.id); // Unlock user
+    this.selectedUser = user;
+    this.isDeleteModalVisible = true;
+  }
+  handleConfirmLock(): void {
+    if (!this.selectedUser) return;
+    const request$ = this.selectedUser.isActive
+      ? this.userService.deactivateUser(this.selectedUser.id) // Lock user
+      : this.userService.activateUser(this.selectedUser.id); // Unlock user
 
-        request$.subscribe({
-          next: (res: any) => {
-            user.isActive = !user.isActive; // Cập nhật UI ngay
-            this.msg.success(`Người dùng đã ${user.isActive ? 'mở khóa' : 'khóa'} thành công`);
+    request$.subscribe({
+      next: (res: any) => {
+        this.selectedUser!.isActive = !this.selectedUser!.isActive; // Cập nhật UI ngay
+        this.msg.success(`Người dùng đã ${this.selectedUser!.isActive ? 'mở khóa' : 'khóa'} thành công`);
             this.cdr.detectChanges();
           },
           error: (err) => {
-            this.msg.error(`Cập nhật trạng thái thất bại: ${err?.message || err}`);
             console.error(err);
           },
         });
-      },
-      nzCancelText: 'Hủy',
-      nzOnCancel: () => this.msg.info(`Hủy ${action} người dùng`),
-    });
+    this.isDeleteModalVisible = false;
   }
-
-  /** Tree helpers */
-  get selectedPermissions(): { id: number; name: string; module: string; description: string }[] {
-    const selected: any[] = [];
-    this.treeData.forEach((moduleNode) => {
-      moduleNode.children?.forEach((permNode: any) => {
-        if (permNode.checked) {
-          selected.push({
-            id: permNode.id!,
-            name: permNode.title!,
-            module: moduleNode.key,
-            description: permNode.title!,
-          });
-        }
-      });
-    });
-    return selected;
+  handleCancelLock(): void {
+    this.isDeleteModalVisible = false;
+    this.msg.info('Đã hủy');
   }
 
   onCheck(event: NzFormatEmitEvent): void {
@@ -554,6 +617,10 @@ export class UsersComponent implements OnInit {
   }
 
   showChangePasswordModal(user: User): void {
+    this.userForm.get('username')?.disable();
+    this.userForm.get('email')?.disable();
+    this.userForm.get('password')?.enable();
+    this.userForm.get('confirmPassword')?.enable();
     this.selectedUser = user;
     this.isChangePasswordVisible = true;
     this.changePassword = { newPassword: '' };
@@ -647,5 +714,27 @@ export class UsersComponent implements OnInit {
       if (valueA! > valueB!) return order === 'ascend' ? 1 : -1;
       return 0;
     });
+  }
+  handleUserAction(event: { action: string; data: any }) {
+    switch (event.action) {
+      case 'viewDetails':
+        this.viewDetails(event.data);
+        break;
+      case 'editUser':
+        this.editUser(event.data);
+        break;
+      case 'assignUser':
+        this.showAssignModal(event.data);
+        break;
+      case 'deleteUser':
+        this.deleteUser(event.data);
+        break;
+      case 'changePassword':
+        this.showChangePasswordModal(event.data);
+        break;
+      case 'toggleLock':
+        this.toggleLock(event.data);
+        break;
+    }
   }
 }

@@ -1,21 +1,17 @@
+@use '../../../shared/styles/mixins' as m;
 .users-container {
-  color: #000000;
   min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
   .users-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    height: auto;
     margin-bottom: 24px;
 
     h2 {
-      font-size: 24px;
-      font-weight: 600;
-      color: #000000;
-      margin: 0;
+      margin: 0 !important;
     }
-
     .user-header__actions {
       display: flex;
       gap: 8px;
@@ -34,6 +30,9 @@
       .ant-input {
         background: #ffffff;
         color: #000000;
+        padding: 11px 0;
+        border-radius: 8px !important;
+        padding-left: 15px;
       }
 
       .ant-input-suffix {
@@ -103,7 +102,7 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @include m.sm {
     padding: 16px;
 
     .search-bar {
@@ -215,7 +214,7 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@include m.sm {
   .filter-container {
     padding: 12px;
 
@@ -231,4 +230,8 @@
       }
     }
   }
+}
+
+.mr-2 {
+  margin-right: 8px !important;
 }

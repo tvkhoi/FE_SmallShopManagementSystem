@@ -1,15 +1,8 @@
+@use '../../../shared/styles/mixins' as m;
 :host ::ng-deep .audit-log-container {
   color: #000;
   width: 100%;
   min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-  h2 {
-    font-size: 24px;
-    font-weight: 600;
-    color: #000;
-    margin-bottom: 20px;
-  }
 
   .entity-changes-link {
     color: #007bff;
@@ -76,42 +69,10 @@
       margin-top: 12px;
       padding-top: 12px;
       border-top: 1px solid #e8e8e8;
-
-      button {
-        min-width: 100px;
-        height: 36px;
-        font-weight: 500;
-        border-radius: 4px;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.3s;
-
-        &[nzType="primary"] {
-          background-color: #1890ff;
-          border-color: #1890ff;
-          color: #fff;
-
-          &:hover {
-            background-color: #40a9ff;
-            border-color: #40a9ff;
-          }
-        }
-
-        &[nzType="default"] {
-          background-color: #fff;
-          border: 1px solid #d9d9d9;
-          color: rgba(0, 0, 0, 0.85);
-
-          &:hover {
-            color: #40a9ff;
-            border-color: #40a9ff;
-          }
-        }
-      }
     }
 
     /* Mobile chỉnh nút xuống dưới và full width */
-    @media (max-width: 576px) {
+    @include m.xs {
       .filter-buttons {
         flex-direction: column;
         align-items: stretch;
@@ -167,41 +128,6 @@
         text-align: left;
         word-break: break-word;
         overflow: hidden;
-
-        .view-detail-button {
-          color: #fff;
-          padding: 4px 8px;
-          border: none;
-          background-color: #1890ff;
-          font-weight: 500;
-          font-size: 14px;
-          line-height: 1.2;
-          transition: color 0.2s, transform 0.2s;
-        }
-
-
-        a {
-          color: #007bff;
-          text-decoration: none;
-          transition: color 0.2s;
-
-          &:hover {
-            color: #0056b3;
-            text-decoration: underline;
-          }
-        }
-
-        button {
-          background: transparent;
-          border: none;
-          color: #007bff;
-          padding: 0;
-          line-height: 1;
-
-          &:hover {
-            text-decoration: underline;
-          }
-        }
       }
 
       tr:last-child td {
@@ -211,7 +137,7 @@
   }
 
   /* Responsive */
-  @media (max-width: 768px) {
+  @include m.sm {
     padding: 16px;
 
     .filter-section {

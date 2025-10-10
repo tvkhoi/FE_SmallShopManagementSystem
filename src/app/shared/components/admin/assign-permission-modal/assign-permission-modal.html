@@ -1,8 +1,11 @@
-<nz-modal [(nzVisible)]="visible" nzTitle="Permissions" (nzOnCancel)="handleCancel()" (nzOnOk)="handleSave()"
+<nz-modal [(nzVisible)]="visible" nzTitle="Gán quyền" (nzOnCancel)="handleCancel()" (nzOnOk)="handleSave()"
   nzWidth="800px" nzWrapClassName="permissions-modal">
   <div *nzModalContent>
     <div class="permissions-header">
-      <input nz-input placeholder="Tìm kiếm quyền..." />
+      <div>
+        <input nz-input [(ngModel)]="searchKeyword" placeholder="Tìm kiếm quyền..." />
+        <app-button nz-button type="primary" size="medium" (click)="searchPermissions()">Tìm kiếm</app-button>
+      </div>
       <nz-form-label nz-checkbox [ngModel]="isAllSelected()" (ngModelChange)="toggleAllPermissions($event)">
         Chọn tất cả
       </nz-form-label>
@@ -36,5 +39,11 @@
 
       </div>
     </div>
+  </div>
+  <div *nzModalFooter>
+    <app-button nz-button type="cancel" size="medium" (click)="handleCancel()"
+      style="margin-right: 8px;">Hủy</app-button>
+    <app-button nz-button type="primary" size="medium" (click)="handleSave()"
+      [permissions]="PERMISSION_GROUPS.ADMIN">Lưu thay đổi</app-button>
   </div>
 </nz-modal>
