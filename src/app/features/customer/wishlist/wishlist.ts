@@ -88,7 +88,7 @@ export class WishlistComponent implements OnInit {
   }
 
   getProductImage(item: Favorite): string {
-    return item.imageUrls?.[0] || 'assets/default.jpg';
+    return item.imageUrls?.[0] || 'assets/nen.jpg';
   }
 
 viewDetails(p: Product) {

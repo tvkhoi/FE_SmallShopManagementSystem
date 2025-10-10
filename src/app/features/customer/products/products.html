@@ -2,13 +2,13 @@
   <!-- Title -->
   <h2  *ngIf="!isFeatured" class="title text-center mb-4">Danh sách sản phẩm</h2>
 
-  <!-- Bộ lọc -->
+  <!-- Bộ lọc
   <div class="filter-buttons d-flex flex-wrap justify-content-center mb-4">
     <button *ngFor="let cat of categories" class="btn" [class.active]="selectedCategory === cat"
       (click)="selectedCategory = cat; filterProducts()">
       {{ cat }}
     </button>
-  </div>
+  </div> -->
 
   <!-- Loading -->
   <div *ngIf="isLoading" class="text-center py-5">

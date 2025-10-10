@@ -4,33 +4,32 @@ import { Observable } from 'rxjs';
 import { Product, PagedResult } from '../models/domain/product';
 import { ApiResponse } from '../models/domain/ApiResponse';
 
-// Using shared ApiResponse from domain models
-
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
+  // 🔧 API gốc của Product Controller
   private productApiUrl = 'https://localhost:7277/api/Product';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  //  Xử lý ảnh sản phẩm (nếu null thì gán ảnh mặc định)
+  /** Xử lý ảnh sản phẩm (nếu null thì gán ảnh mặc định) */
   mapProductImage(product: any): Product {
     return {
       ...product,
       imageUrls: product.imageUrls && product.imageUrls.length > 0
         ? product.imageUrls
-        : ['assets/default.jpg'],
+        : ['assets/nen.jpg'],
       stock: product.stock ?? 0
     };
   }
 
-  // Lấy ảnh đại diện (ảnh đầu tiên)
+  /** Lấy ảnh đại diện (ảnh đầu tiên) */
   getProductMainImage(product: Product): string {
-    return product.imageUrls.length > 0 ? product.imageUrls[0] : 'assets/default.jpg';
+    return product.imageUrls.length > 0 ? product.imageUrls[0] : 'assets/nen.jpg';
   }
 
-  //  Lấy sản phẩm phân trang + filter
+  /** Lấy danh sách sản phẩm phân trang */
   getPagedProducts(
     pageNumber = 1,
     pageSize = 10,
@@ -39,39 +38,31 @@ export class ProductService {
     categoryId?: number
   ): Observable<ApiResponse<PagedResult<Product>>> {
     let params = new HttpParams()
-      .set('pageNumber', String(pageNumber))
-      .set('pageSize', String(pageSize));
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
 
-    if (minPrice !== undefined) params = params.set('minPrice', String(minPrice));
-    if (maxPrice !== undefined) params = params.set('maxPrice', String(maxPrice));
-    if (categoryId !== undefined && categoryId > 0) params = params.set('categoryId', String(categoryId));
+    if (minPrice != null) params = params.set('minPrice', String(minPrice));
+    if (maxPrice != null) params = params.set('maxPrice', String(maxPrice));
+    if (categoryId && categoryId > 0) params = params.set('categoryId', String(categoryId));
 
     const url = `${this.productApiUrl}/paged`;
-    console.log('🌐 ProductService - Making request:', {
-      url,
-      params: params.toString(),
-      fullUrl: `${url}?${params.toString()}`
-    });
-
     return this.http.get<ApiResponse<PagedResult<Product>>>(url, { params });
   }
-  // Tìm kiếm sản phẩm theo từ khóa + phân trang
-  searchProducts(
-    keyword: string,
-    pageNumber = 1,
-    pageSize = 10
-  ): Observable<ApiResponse<PagedResult<Product>>> {
+
+  /** ✅ Tìm kiếm sản phẩm theo từ khóa + phân trang */
+  searchProducts(keyword: string, pageNumber = 1, pageSize = 10): Observable<ApiResponse<PagedResult<Product>>> {
     let params = new HttpParams()
       .set('keyword', keyword)
-      .set('pageNumber', String(pageNumber))
-      .set('pageSize', String(pageSize));
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
 
-    return this.http.get<ApiResponse<PagedResult<Product>>>(`${this.productApiUrl}/search`, { params });
+    const url = `${this.productApiUrl}/search`;
+    return this.http.get<ApiResponse<PagedResult<Product>>>(url, { params });
   }
-// Lấy danh sách sản phẩm nổi bật
-getFeaturedProducts(): Observable<ApiResponse<Product[]>> {
-  const url = `${this.productApiUrl}/featured`;
-  return this.http.get<ApiResponse<Product[]>>(url);
-}
 
+  /** Lấy danh sách sản phẩm nổi bật */
+  getFeaturedProducts(): Observable<ApiResponse<Product[]>> {
+    const url = `${this.productApiUrl}/featured`;
+    return this.http.get<ApiResponse<Product[]>>(url);
+  }
 }

@@ -1,9 +1,15 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Input
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
 import { CartService } from '../../../core/services/cart.service';
 import { PagedResult, Product } from '../../../core/models/domain/product';
-import { FavoriteService } from '../../../core/services/favorite.service'
+import { FavoriteService } from '../../../core/services/favorite.service';
 import { AuthService } from '../../../auth/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -11,10 +17,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { ProductItemComponent } from '../product-item/product-item';
 import { PaginationComponent } from "../../../shared/components/admin/pagination-component/pagination-component";
-import { switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
 import { ApiResponse } from '../../../core/models/domain/ApiResponse';
-
 
 @Component({
   selector: 'app-product',
@@ -31,7 +34,8 @@ import { ApiResponse } from '../../../core/models/domain/ApiResponse';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductsComponent implements OnInit {
-    @Input() isFeatured: boolean = false;
+  @Input() isFeatured: boolean = false;
+
   products: Product[] = [];
   filteredProducts: Product[] = [];
 
@@ -47,9 +51,7 @@ export class ProductsComponent implements OnInit {
 
   isLoading = true;
   selectedProduct: Product | null = null;
-  searchTerm: string = '';
-
-  // Removed unnecessary ViewChild to avoid extra change detection work
+  keyword: string = ''; // ✅ đổi tên từ searchTerm → keyword cho khớp API
 
   constructor(
     public productService: ProductService,
@@ -59,128 +61,159 @@ export class ProductsComponent implements OnInit {
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    // Subscribe to query params
+    // Lắng nghe thay đổi query params
     this.route.queryParams.subscribe(params => {
-      this.searchTerm = params['search'] || '';
-      this.pageNumber = Number(params['page']) || 1;
+  this.keyword = params['search'] || ''; // ✅ phải trùng key với HeaderComponent
+  this.pageNumber = Number(params['page']) || 1;
 
-      if (this.searchTerm) {
-        // Nếu có search term thì gọi API search
-        this.searchProducts();
-      } else {
-        // Không có search term thì load tất cả sản phẩm
-        this.loadProducts();
-      }
-    });
+  if (this.keyword) {
+    this.searchProducts();
+  } else {
+    this.loadProducts();
+  }
+});
+
   }
 
-loadProducts(): void {
-  this.isLoading = true;
+  /** Load sản phẩm mặc định */
+  loadProducts(): void {
+    this.isLoading = true;
 
-  if (this.isFeatured) {
-    // Sản phẩm nổi bật
-    this.productService.getFeaturedProducts().subscribe({
-      next: (res) => {
-        this.products = (res.data || []).map(p => this.productService.mapProductImage(p));
-        this.filteredProducts = this.products;
-        this.totalPages = 1;
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      },
-      error: (err) => {
-        console.error('Lỗi khi load sản phẩm nổi bật:', err);
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      }
-    });
-
-  } else {
-    // Sản phẩm phân trang
-    this.productService.getPagedProducts(this.pageNumber, this.pageSize, this.minPrice, this.maxPrice)
-      .subscribe({
+    if (this.isFeatured) {
+      // Sản phẩm nổi bật
+      this.productService.getFeaturedProducts().subscribe({
         next: (res) => {
-          this.products = (res.data.items || []).map(p => this.productService.mapProductImage(p));
+          this.products = (res.data || []).map(p => this.productService.mapProductImage(p));
           this.filteredProducts = this.products;
-          this.totalPages = res.data.totalPages || 1;
+          this.totalPages = 1;
           this.isLoading = false;
           this.cdr.markForCheck();
         },
         error: (err) => {
-          console.error('Lỗi khi load sản phẩm phân trang:', err);
+          console.error('Lỗi khi load sản phẩm nổi bật:', err);
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        }
+      });
+    } else {
+      // Sản phẩm phân trang
+      this.productService.getPagedProducts(this.pageNumber, this.pageSize, this.minPrice, this.maxPrice)
+        .subscribe({
+          next: (res) => {
+            this.products = (res.data.items || []).map(p => this.productService.mapProductImage(p));
+            this.filteredProducts = this.products;
+            this.totalPages = res.data.totalPages || 1;
+            this.isLoading = false;
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            console.error('Lỗi khi load sản phẩm phân trang:', err);
+            this.isLoading = false;
+            this.cdr.markForCheck();
+          }
+        });
+    }
+  }
+
+  /** Gọi API tìm kiếm (chuẩn theo backend) */
+  searchProducts(): void {
+    this.isLoading = true;
+    this.productService.searchProducts(this.keyword, this.pageNumber, this.pageSize)
+      .subscribe({
+        next: (response: ApiResponse<PagedResult<Product>>) => {
+          if (response.success && response.data) {
+            this.products = (response.data.items || []).map((p: Product) =>
+              this.productService.mapProductImage(p)
+            );
+            this.filteredProducts = this.products;
+            this.totalPages = response.data.totalPages;
+
+            // Lấy danh mục từ sản phẩm tìm được
+            const categorySet = new Set(
+              this.products.map((p: Product) => (p.categoryName ?? '').trim() || 'Khác')
+            );
+            this.categories = ['Tất cả', ...Array.from(categorySet)];
+          } else {
+            this.products = [];
+          }
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        },
+        error: (error: any) => {
+          console.error('Lỗi khi tìm kiếm sản phẩm:', error);
+          if (error.status === 403) {
+            console.warn('API yêu cầu đăng nhập. Vui lòng đăng nhập để tìm kiếm sản phẩm.');
+          }
           this.isLoading = false;
           this.cdr.markForCheck();
         }
       });
   }
-}
 
+//  filterProducts() {
+//   this.isLoading = true;
 
-searchProducts(): void {
-  this.isLoading = true;
-  this.productService
-    .searchProducts(this.searchTerm, this.pageNumber, this.pageSize)
-    .subscribe({
-      next: (response: ApiResponse<PagedResult<Product>>) => {
-        if (response.success) {
-          this.products = (response.data.items || []).map((p: Product) =>
-            this.productService.mapProductImage(p)
-          );
-          this.filteredProducts = this.products;
-          this.totalPages = response.data.totalPages;
+//   this.productService
+//     .searchProducts(
+//       this.keyword,
+//       this.selectedCategory,
+//       this.minPrice,
+//       this.maxPrice,
+//       this.pageNumber,
+//       this.pageSize
+    
+//     )
+//     .subscribe({
+//       next: (res) => {
+//         if (res.success && res.data) {
+//           this.products = (res.data.items || []).map(p =>
+//             this.productService.mapProductImage(p)
+//           );
+//           this.filteredProducts = this.products;
+//           this.totalPages = res.data.totalPages || 1;
+//         } else {
+//           this.products = [];
+//           this.filteredProducts = [];
+//         }
+//         this.isLoading = false;
+//         this.cdr.markForCheck();
+//       },
+//       error: (err) => {
+//         console.error('Lỗi khi lọc sản phẩm:', err);
+//         this.isLoading = false;
+//         this.cdr.markForCheck();
+//       }
+//     });
+// }
 
-          const categorySet = new Set(
-            this.products.map((p: Product) => (p.categoryName ?? '').trim() || 'Khác')
-          );
-          this.categories = ['Tất cả', ...Array.from(categorySet)];
-        }
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      },
-      error: (error: any) => {
-        console.error('Lỗi khi tìm kiếm sản phẩm:', error);
-        if (error.status === 403) {
-          console.warn('API yêu cầu đăng nhập. Vui lòng đăng nhập để tìm kiếm sản phẩm.');
-        }
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      }
-    });
-}
-
-
-
-  filterProducts() {
-    const normalize = (name?: string) => {
-      const n = (name ?? '').trim();
-      return n.length > 0 ? n : 'Khác';
-    };
-
-    this.filteredProducts = this.products.filter(p => {
-      const productCat = normalize(p.categoryName);
-      const matchCategory = this.selectedCategory === 'Tất cả' || productCat === this.selectedCategory;
-      const matchPrice = p.price >= this.minPrice && p.price <= this.maxPrice;
-      return matchCategory && matchPrice;
-    });
-  }
 
   changePage(page: number) {
     if (page < 1 || page > this.totalPages) return;
     this.pageNumber = page;
-    this.loadProducts();
+
+    if (this.keyword) {
+      this.searchProducts(); // ✅ nếu đang search, gọi lại search
+    } else {
+      this.loadProducts();
+    }
   }
 
   changePageSize(size: number) {
     if (!size || size <= 0) return;
     this.pageSize = size;
     this.pageNumber = 1;
-    this.loadProducts();
+
+    if (this.keyword) {
+      this.searchProducts(); // ✅ cập nhật luôn tìm kiếm theo size mới
+    } else {
+      this.loadProducts();
+    }
   }
 
   addToCart(product: Product) {
-    // Check if user is logged in
     if (!this.authService.isLoggedIn()) {
       this.message.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
       return;
@@ -196,13 +229,11 @@ searchProducts(): void {
       },
       error: (error) => {
         console.error('Lỗi khi thêm vào giỏ hàng:', error);
-        // this.message.error('Thêm vào giỏ hàng thất bại');
       }
     });
   }
 
   addToWishlist(product: Product) {
-    // Check if user is logged in
     if (!this.authService.isLoggedIn()) {
       this.message.warning('Vui lòng đăng nhập để thêm sản phẩm vào yêu thích');
       return;
@@ -215,14 +246,9 @@ searchProducts(): void {
         } else {
           this.message.warning(res.message || 'Sản phẩm đã có trong danh sách yêu thích');
         }
-      },
-      // error: (error) => {
-      //   console.error('Lỗi khi thêm vào yêu thích:', error);
-      //   this.message.error('Không thể thêm sản phẩm vào yêu thích');
-      // }
+      }
     });
   }
-
 
   viewDetails(p: Product) {
     this.selectedProduct = p;

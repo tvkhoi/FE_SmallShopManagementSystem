@@ -5,7 +5,7 @@ export interface Favorite {
   productName: string;
   imageUrls: string[];
   createdAt: string;
-    product: Product; 
+  product: Product; 
 }
 interface ApiResponse<T> {
   statusCode: number;
