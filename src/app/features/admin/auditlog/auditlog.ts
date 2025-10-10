@@ -108,7 +108,7 @@ export class Auditlog implements OnInit, OnDestroy {
     if (hasAdminPermission) {
       this.loadLogs();
     } else {
-       this.router.navigate(['/forbidden']);
+       console.warn('Không có quyền truy cập trang này');
     }
   }
 
