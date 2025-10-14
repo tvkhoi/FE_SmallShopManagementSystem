@@ -4,3 +4,4 @@ export * from './password.utils';
 export * from './noWhitespaceValidator.utils';
 export * from './createPasswordPolicyValidator.utils';
 export * from './permission.utils';
+export * from './time-greeting.util';

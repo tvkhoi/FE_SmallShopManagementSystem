@@ -1,6 +1,5 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { LoginComponent } from "./shared/components/login/login";
 import { LoadingComponent } from "./shared/components/loading/loading";
 import { CommonModule } from '@angular/common';
 

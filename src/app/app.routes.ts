@@ -29,6 +29,9 @@ import { ContactComponent } from './features/customer/contact/contact';
 import { CartComponent } from './features/customer/cart/cart';
 import { WishlistComponent } from './features/customer/wishlist/wishlist';
 import { ProductItemComponent } from './features/customer/product-item/product-item';
+import { SellerLayout } from './shared/layouts/seller-layout/seller-layout';
+import { Dashboard } from './features/seller/dashboard/dashboard';
+import { Products } from './features/seller/products/products';
 
 
 
@@ -55,6 +58,16 @@ export const routes: Routes = [
     children: [
       { path: 'cart', component: CartComponent },
       { path: 'wishlist', component: WishlistComponent }
+    ]
+  },
+
+  // SELLER - Protected routes (auth required)
+  {
+    path: 'seller',
+    component: SellerLayout,
+    children: [
+      { path: 'dashboard', component: Dashboard },
+      { path: 'products', component: Products }
     ]
   },
 
