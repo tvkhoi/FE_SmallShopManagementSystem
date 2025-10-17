@@ -6,6 +6,8 @@ export interface Product {
   stock: number;
   imageUrls: string[];
   categoryName?: string;
+  isActive: boolean; 
+  isFeatured: boolean;
 }
 
 export interface PagedResult<T> {

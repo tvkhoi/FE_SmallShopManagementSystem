@@ -1,1 +1,31 @@
-<p>products works!</p>
+<div class="content-page">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card card-block card-stretch card-height">
+          <div class="card-body">
+            <h2 class="mb-4 fw-semibold text-primary d-flex align-items-center">
+              <i nz-icon nzType="appstore" class="me-2"></i> Quản lý sản phẩm
+            </h2>
+
+            <app-product-tabs [activeTab]="activeTab()" (tabChange)="switchTab($event)"></app-product-tabs>
+
+            <app-product-filter [filters]="{ searchName, minPrice, maxPrice }" (filter)="onFilter($event)"
+              (resetFilters)="resetFilters()" (addProduct)="openAddProduct()"></app-product-filter>
+
+            <app-product-table [products]="products()" [loading]="loading()"
+              (action)="handleAction($event)"></app-product-table>
+
+            <app-add-product-modal [(isVisible)]="isAddModalVisible"
+              (productAdded)="filterProducts(1)"></app-add-product-modal>
+
+            <div class="d-flex justify-content-end mt-3">
+              <app-pagination [total]="totalItems()" [pageSize]="pageSize" [pageIndex]="currentPage"
+                (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)"></app-pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

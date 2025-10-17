@@ -7,7 +7,7 @@ import { TopNavbar } from "../../components/seller/top-navbar/top-navbar";
 
 @Component({
   selector: 'app-seller-layout',
-  imports: [Sidebar, Footer, RouterOutlet, Header, TopNavbar],
+  imports: [Sidebar, Footer, RouterOutlet, Header],
   templateUrl: './seller-layout.html',
   styleUrl: './seller-layout.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

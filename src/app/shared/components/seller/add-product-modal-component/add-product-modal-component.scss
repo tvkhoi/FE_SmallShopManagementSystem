@@ -1,0 +1,96 @@
+:host ::ng-deep {
+  .ant-modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+  .ant-form-item-label {
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .ant-input-number {
+    width: 100% !important;
+  }
+
+  .ant-upload-select-picture-card {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    background-color: #fafafa;
+    cursor: pointer;
+    transition: border-color 0.3s;
+
+    &:hover {
+      border-color: #40a9ff;
+    }
+  }
+
+  .ant-upload-list-picture-card .ant-upload-list-item {
+    border-radius: 6px;
+  }
+
+  // Custom Footer Styling
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    background: #fafafa;
+    border-top: 1px solid #f0f0f0;
+    margin: 0 -24px -16px -24px;
+    padding: 16px 24px;
+    border-radius: 0 0 8px 8px;
+
+    .footer-btn {
+      min-width: 100px;
+      height: 36px;
+      font-weight: 500;
+      border-radius: 6px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      &:not(.footer-btn-primary) {
+        border-color: #d9d9d9;
+        color: #666;
+        background: #fff;
+        
+        &:hover {
+          border-color: #40a9ff;
+          color: #40a9ff;
+          background: #f6fbff;
+        }
+      }
+      
+      &.footer-btn-primary {
+        background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+        border-color: #1890ff;
+        box-shadow: 0 2px 4px rgba(24, 144, 255, 0.2);
+        
+        &:hover:not(:disabled) {
+          background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(24, 144, 255, 0.3);
+        }
+        
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+      
+      i {
+        margin-right: 6px;
+        font-size: 14px;
+      }
+    }
+  }
+
+  // Override default modal footer if any
+  .ant-modal-footer {
+    display: none !important;
+  }
+}

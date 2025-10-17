@@ -2,6 +2,7 @@
   display: flex;
   min-height: 100vh;
   background-color: #f8f9fa;
+  overflow: hidden; /* Ngăn wrapper tràn ra ngoài body */
 }
 
 .main-content {
@@ -9,6 +10,8 @@
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease;
+  overflow-x: auto; /* Cho phép scroll ngang cho main content */
+  min-width: 0; /* Cho phép flex item co nhỏ hơn content */
 }
 
 app-seller-header {

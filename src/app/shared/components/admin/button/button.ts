@@ -13,7 +13,7 @@ import { AuthService } from '../../../../auth/auth.service';
 export class Button {
   private readonly authService = inject(AuthService);
 
-  @Input() type: 'primary' | 'cancel' | 'secondary' | 'danger' | 'ghost' | 'link' = 'primary';
+  @Input() type: 'primary' | 'cancel' | 'secondary' | 'danger' | 'ghost' | 'link' | 'default' | 'success' = 'primary';
   @Input() size: 'small' | 'medium' | 'large' = 'medium';
   @Input() disabled: boolean = false;
   @Input() isActive: boolean = false;
