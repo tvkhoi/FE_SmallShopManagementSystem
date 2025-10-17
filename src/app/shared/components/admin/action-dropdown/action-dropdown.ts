@@ -9,7 +9,7 @@ import { AuthService } from '../../../../auth/auth.service';
 export interface DropdownAction {
   label: string;
   icon?: string;
-  type?: 'primary' | 'cancel' | 'secondary' | 'danger' | 'ghost' | 'link';
+  type?: 'primary' | 'cancel' | 'secondary' | 'danger' | 'ghost' | 'link' | 'default' | 'success';
   size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
   emitName: string;
