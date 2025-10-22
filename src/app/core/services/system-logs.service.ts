@@ -53,7 +53,7 @@ export class SystemLogsService {
   getPaged(
     filters: SystemLogFilterRequest = {},
     pageNumber = 1,
-    pageSize = 10
+    pageSize = 20
   ): Observable<PagedResult<SystemLogDto>> {
     let params = new HttpParams()
       .set('pageNumber', pageNumber.toString())

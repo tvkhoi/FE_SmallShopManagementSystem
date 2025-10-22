@@ -25,11 +25,13 @@ import { Product } from '../../../../core/models/domain/product';
           <tr>
             <th scope="col" nzWidth="80px">Ảnh</th>
             <th scope="col" nzWidth="200px">Tên sản phẩm</th>
+            <th scope="col" nzWidth="200px">Mô tả sản phẩm</th>
             <th scope="col" nzWidth="150px">Danh mục</th>
             <th scope="col" nzWidth="150px">Giá</th>
             <th scope="col" nzWidth="120px">Tồn kho</th>
             <th scope="col" nzWidth="120px">Trạng thái</th>
-            <th scope="col" nzWidth="150px" class="text-center">Hành động</th>
+            <th scope="col" nzWidth="120px">Nổi bật</th>
+            <th scope="col" nzWidth="250px" class="text-center">Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -45,12 +47,18 @@ import { Product } from '../../../../core/models/domain/product';
               />
             </td>
             <td class="fw-semibold">{{ p.name }}</td>
+            <td>{{ p.description }}</td>
             <td>{{ p.categoryName }}</td>
             <td>{{ p.price | currency : 'VND' : 'symbol' : '1.0-0' }}</td>
             <td>{{ p.stock }}</td>
             <td>
               <nz-tag [nzColor]="p.isActive ? 'green' : 'red'">{{
                 p.isActive ? 'Đang bán' : 'Ngừng bán'
+              }}</nz-tag>
+            </td>
+            <td>
+              <nz-tag [nzColor]="p.isFeatured ? 'blue' : 'red'">{{
+                p.isFeatured ? 'Nổi bật' : 'Không nổi bật'
               }}</nz-tag>
             </td>
             <td class="text-center">
@@ -65,6 +73,7 @@ import { Product } from '../../../../core/models/domain/product';
       </nz-table>
     </div>
   `,
+  styleUrl: './product-table-component.scss',
 })
 export class ProductTableComponent {
   @Input() products: Product[] = [];
@@ -80,6 +89,7 @@ export class ProductTableComponent {
         type: p.isActive ? ('default' as const) : ('success' as const),
         emitName: 'toggle',
       },
+
     ];
   }
 }

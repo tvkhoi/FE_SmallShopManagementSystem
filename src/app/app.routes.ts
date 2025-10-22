@@ -32,6 +32,8 @@ import { ProductItemComponent } from './features/customer/product-item/product-i
 import { SellerLayout } from './shared/layouts/seller-layout/seller-layout';
 import { Dashboard } from './features/seller/dashboard/dashboard';
 import { Products } from './features/seller/products/products';
+import { SellerOrderManagement } from './features/seller/seller-order-management/seller-order-management';
+import { SellerInventoryManagement } from './features/seller/seller-inventory-management/seller-inventory-management';
 
 
 
@@ -67,7 +69,9 @@ export const routes: Routes = [
     component: SellerLayout,
     children: [
       { path: 'dashboard', component: Dashboard },
-      { path: 'products', component: Products }
+      { path: 'products', component: Products },
+      { path: 'orders', component: SellerOrderManagement },
+      { path: 'inventory-management', component: SellerInventoryManagement }
     ]
   },
 

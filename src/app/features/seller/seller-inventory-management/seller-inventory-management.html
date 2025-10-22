@@ -1,0 +1,217 @@
+<div class="content-page">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card card-block card-stretch card-height">
+          <div class="card-body">
+            <!-- Tiêu đề -->
+            <h2 class="mb-4 fw-semibold text-primary d-flex align-items-center">
+              <i nz-icon nzType="database" class="me-2"></i>
+              Quản lý kho hàng
+            </h2>
+
+            <!-- Thanh hành động -->
+            <div class="action-bar row g-2 align-items-start border mb-3 rounded bg-light p-3">
+              <!-- Nhóm tìm kiếm + làm mới -->
+              <div class="col-12 col-md-7 d-flex flex-wrap gap-2">
+                <input type="text" class="form-control flex-grow-1" placeholder="Tìm theo tên sản phẩm..."
+                  [(ngModel)]="searchTerm" (input)="applyFilter()" />
+                <app-button type="primary" (click)="resetFilter()" customClass="btn-fullwidth-sm" size="large">
+                  <i nz-icon nzType="reload" class="me-1"></i> Làm mới
+                </app-button>
+              </div>
+
+              <!-- Nhóm hành động: Nhập hàng + Thêm sản phẩm -->
+              <div class="col-12 col-md-5 d-flex flex-wrap gap-2 justify-content-md-end">
+                <app-button type="primary" size="large" [customClass]="'btn-fullwidth-sm'"
+                  (click)="openImportModal(false)">
+                  <i nz-icon nzType="plus" class="me-1"></i> Nhập hàng
+                </app-button>
+                <app-button type="primary" size="large" [customClass]="'btn-fullwidth-sm'"
+                  (click)="openAddProductModal()">
+                  <i nz-icon nzType="file-add" class="me-1"></i> Thêm sản phẩm mới
+                </app-button>
+                <app-button type="primary" size="large" [customClass]="'btn-fullwidth-sm'" (click)="exportExcel()">
+                  <i nz-icon nzType="file-excel" class="me-1"></i> Xuất Excel
+                </app-button>
+              </div>
+            </div>
+
+            <!-- Bảng -->
+            <nz-table [nzData]="histories" [nzLoading]="loading" nzBordered nzSize="middle" [nzFrontPagination]="false"
+              style="white-space: nowrap; overflow-x: auto;">
+              <thead>
+                <tr>
+                  <th scope="col">Mã</th>
+                  <th scope="col">Sản phẩm</th>
+                  <th scope="col">Số lượng</th>
+                  <th scope="col">Hành động</th>
+                  <th scope="col">Thời gian</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let h of histories">
+                  <td>{{ h.id }}</td>
+                  <td>
+                    {{ h.product?.name || h.productId }}
+                    <i nz-icon nzType="info-circle" nzTheme="outline" class="ms-2 text-primary cursor-pointer"
+                      (click)="openProductDetail(h.product)" title="Xem chi tiết sản phẩm"></i>
+                  </td>
+                  <td>
+                    <span [ngClass]="{
+            'text-success fw-semibold': h.quantityChanged > 0,
+            'text-danger fw-semibold': h.quantityChanged < 0
+          }">
+                      {{ h.quantityChanged > 0 ? '+' : '' }}{{ h.quantityChanged }}
+                    </span>
+                  </td>
+                  <td>
+                    <nz-tag [nzColor]="
+            h.action === 'Import'
+              ? 'green'
+              : h.action === 'Export'
+              ? 'red'
+              : 'blue'
+          ">
+                      {{ h.action }}
+                    </nz-tag>
+                  </td>
+                  <td>{{ h.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+                </tr>
+              </tbody>
+            </nz-table>
+
+            <!-- Phân trang -->
+            <div class="d-flex justify-content-end mt-3">
+              <app-pagination [total]="totalItems" [pageSize]="pageSize" [pageIndex]="pageIndex"
+                (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)"></app-pagination>
+            </div>
+
+            <!-- Modal nhập hàng -->
+            <nz-modal [(nzVisible)]="isModalVisible" [nzTitle]="isNewProduct ? 'Thêm sản phẩm mới' : 'Nhập hàng'"
+              nzOkText="Xác nhận" nzCancelText="Hủy" [nzFooter]="customFooter" (nzOnCancel)="handleCancel()">
+              <div *nzModalContent>
+                <form [formGroup]="importForm" class="p-2 d-flex flex-column gap-3">
+                  <ng-container *ngIf="!isNewProduct; else newProductFields">
+                    <div>
+                      <nz-form-label class="form-label fw-semibold">Mã sản phẩm</nz-form-label>
+                      <input nz-input placeholder="Nhập mã sản phẩm" formControlName="productId" />
+                    </div>
+                  </ng-container>
+
+                  <ng-template #newProductFields>
+                    <div>
+                      <nz-form-label class="form-label fw-semibold">Tên sản phẩm</nz-form-label>
+                      <input nz-input placeholder="Tên sản phẩm" formControlName="productName" />
+                    </div>
+                  </ng-template>
+
+                  <div>
+                    <nz-form-label class="form-label fw-semibold">Số lượng nhập</nz-form-label>
+                    <nz-input-number formControlName="quantityChanged" [nzMin]="1" [nzStep]="1"
+                      class="w-100"></nz-input-number>
+                  </div>
+                </form>
+              </div>
+              <ng-template #customFooter>
+                <div class="modal-footer">
+                  <app-button type="cancel" size="medium" (click)="handleCancel()" class="mr-2">
+                    <i nz-icon nzType="close"></i> Hủy bỏ
+                  </app-button>
+
+                  <app-button type="primary" size="medium" [disabled]="importForm.invalid || loading"
+                    [isLoading]="loading" (click)="submitImport()">
+                    <span *ngIf="!loading">Xác nhận nhập hàng</span>
+                  </app-button>
+                </div>
+              </ng-template>
+            </nz-modal>
+
+            <!-- Modal thêm sản phẩm -->
+            <app-add-product-modal [(isVisible)]="isAddModalVisible" (productSaved)="handleProductSaved()">
+            </app-add-product-modal>
+
+            <!-- Modal chi tiết sản phẩm -->
+            <nz-modal [(nzVisible)]="isProductDetailVisible" nzTitle="Chi tiết sản phẩm" [nzWidth]="600"
+              (nzOnCancel)="closeProductDetail()" [nzFooter]="null" nzCentered>
+              <div *nzModalContent class="p-2">
+
+                <!-- Thông tin sản phẩm -->
+                <div class="mb-3">
+                  <div class="row g-2 align-items-center mb-2">
+                    <div class="col-4 text-muted fw-semibold">Tên sản phẩm:</div>
+                    <div class="col-8">{{ selectedProduct?.name }}</div>
+                  </div>
+
+                  <div class="row g-2 align-items-center mb-2">
+                    <div class="col-4 text-muted fw-semibold">Mã sản phẩm:</div>
+                    <div class="col-8 text-secondary">#{{ selectedProduct?.id }}</div>
+                  </div>
+
+                  <div class="row g-2 align-items-center mb-2">
+                    <div class="col-4 text-muted fw-semibold">Giá bán:</div>
+                    <div class="col-8 text-success fw-bold">
+                      {{ selectedProduct?.price | currency:'VND':'symbol':'1.0-0' }}
+                    </div>
+                  </div>
+
+                  <div class="row g-2 align-items-center mb-2">
+                    <div class="col-4 text-muted fw-semibold">Tồn kho:</div>
+                    <div class="col-8">
+                      <nz-tag [nzColor]="(selectedProduct?.stock || 0) > 0 ? 'green' : 'red'">
+                        {{ selectedProduct?.stock || 0 }} sản phẩm
+                      </nz-tag>
+                    </div>
+                  </div>
+
+                  <div class="row g-2 align-items-center mb-2">
+                    <div class="col-4 text-muted fw-semibold">Danh mục:</div>
+                    <div class="col-8">
+                      <nz-tag nzColor="blue">
+                        {{ selectedProduct?.categoryName || 'Chưa phân loại' }}
+                      </nz-tag>
+                    </div>
+                  </div>
+
+                  <div class="row g-2 align-items-center mb-2">
+                    <div class="col-4 text-muted fw-semibold">Trạng thái:</div>
+                    <div class="col-8">
+                      <nz-tag [nzColor]="selectedProduct?.isActive ? 'green' : 'red'">
+                        {{ selectedProduct?.isActive ? 'Đang hoạt động' : 'Tạm ngừng' }}
+                      </nz-tag>
+                    </div>
+                  </div>
+
+                  <div class="row g-2 mb-2" *ngIf="selectedProduct?.description">
+                    <div class="col-4 text-muted fw-semibold">Mô tả:</div>
+                    <div class="col-8">{{ selectedProduct?.description }}</div>
+                  </div>
+                </div>
+
+                <!-- Hình ảnh -->
+                <div class="mt-4">
+                  <h6 class="fw-semibold mb-2">
+                    <i nz-icon nzType="picture" class="me-1"></i> Hình ảnh sản phẩm
+                  </h6>
+
+                  <div *ngIf="selectedProduct?.imageUrls?.length; else noImages" class="d-flex flex-wrap gap-2">
+                    <img *ngFor="let img of selectedProduct?.imageUrls" nz-image
+                      [nzSrc]="'https://localhost:7277' + img" class="border rounded shadow-sm" width="90" height="90"
+                      style="object-fit: cover;" alt="{{ selectedProduct?.name || 'Not available' }}" />
+                  </div>
+
+                  <ng-template #noImages>
+                    <div class="text-muted fst-italic d-flex align-items-center">
+                      <i nz-icon nzType="picture" class="me-2"></i>
+                      Không có hình ảnh
+                    </div>
+                  </ng-template>
+                </div>
+              </div>
+            </nz-modal>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
