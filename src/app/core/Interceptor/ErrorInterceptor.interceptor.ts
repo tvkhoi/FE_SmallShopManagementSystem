@@ -8,7 +8,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      console.error('🚨 Error Interceptor caught error:', {
+      console.error('Error Interceptor caught error:', {
         status: error.status,
         statusText: error.statusText,
         url: error.url,
@@ -19,14 +19,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       if (error.error) {
         // Nếu BE trả về ApiResponse
         if (error.error.message) {
-          console.error('📝 Backend message:', error.error.message);
           messageService.error(error.error.message);
         }
         if (error.error.errors && Array.isArray(error.error.errors)) {
-          error.error.errors.forEach((e: any) => {
-            console.error('📝 Backend error:', e);
+          for (const e of error.error.errors) {
             messageService.error(JSON.stringify(e));
-          });
+          }
         }
       } else {
         // Lỗi mạng hoặc BE không phản hồi

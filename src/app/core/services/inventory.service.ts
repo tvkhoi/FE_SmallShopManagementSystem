@@ -12,7 +12,7 @@ export class InventoryService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = 'https://localhost:7277/api/InventoryHistory';
 
-  // ================== GET PAGED ==================
+  // GET PAGED
   getHistories(
     pageNumber = 1,
     pageSize = 10,
@@ -29,12 +29,12 @@ export class InventoryService {
     return this.http.get<ApiResponse<PagedResult<InventoryHistory>>>(this.apiUrl, { params });
   }
 
-  // ================== GET BY PRODUCT ==================
+  // GET BY PRODUCT 
   getHistoriesByProduct(productId: number): Observable<ApiResponse<InventoryHistory[]>> {
     return this.http.get<ApiResponse<InventoryHistory[]>>(`${this.apiUrl}/product/${productId}`);
   }
 
-  // ================== IMPORT / NHẬP HÀNG ==================
+  // IMPORT / NHẬP HÀNG
   importStock(data: {
     productId?: number;
     productName?: string;

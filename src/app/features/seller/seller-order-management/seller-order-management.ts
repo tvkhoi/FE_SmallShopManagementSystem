@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { PERMISSIONS } from './../../../core/constants/permission.constant';
+import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NzTableModule } from 'ng-zorro-antd/table';
@@ -20,6 +21,8 @@ import { Button } from '../../../shared/components/admin/button/button';
 import { take } from 'rxjs/operators';
 import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 import { ConfirmDialog } from "../../../shared/components/admin/confirm-dialog/confirm-dialog";
+import { AuthService } from '../../../auth/auth.service';
+import e from 'express';
 
 @Component({
   selector: 'app-seller-order-management',
@@ -48,15 +51,16 @@ import { ConfirmDialog } from "../../../shared/components/admin/confirm-dialog/c
 })
 export class SellerOrderManagement implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly modal = inject(NzModalService);
   private readonly orderService = inject(OrderService);
   private readonly message = inject(NzMessageService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly auth = inject(AuthService);
 
   filterForm!: FormGroup;
   allOrders: Order[] = [];
   filteredOrders: Order[] = [];
-  loading = false;
+  loading = signal(false);
+  PERMISSIONS = PERMISSIONS;
 
   totalItems = 0;
   pageSize = 10;
@@ -87,7 +91,12 @@ export class SellerOrderManagement implements OnInit {
       this.cdr.detectChanges();
     });
 
-    this.fetchOrders();
+    if(this.auth.hasPermission(PERMISSIONS.ORDERS_VIEW)) {
+      this.fetchOrders();
+    }
+    else {
+      console.log('Bạn không có quyền truy cập trang này.');
+    }
   }
 
   private initForm() {
@@ -100,18 +109,18 @@ export class SellerOrderManagement implements OnInit {
   }
 
   fetchOrders() {
-    this.loading = true;
+    this.loading.set(true);
     this.orderService
       .getOrders()
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          this.loading = false;
+          this.loading.set(false);
           this.applyFilters();
         },
         error: (error) => {
           console.error('API Error:', error);
-          this.loading = false;
+          this.loading.set(false);
         },
       });
   }
@@ -189,7 +198,7 @@ export class SellerOrderManagement implements OnInit {
   }
 
   changeStatus(order: Order, newStatus: string) {
-    this.loading = true;
+    this.loading.set(true);
     this.orderService
       .updateStatus(order.id, newStatus)
       .pipe(take(1))
@@ -201,16 +210,20 @@ export class SellerOrderManagement implements OnInit {
             this.orderService.getOrders().pipe(take(1)).subscribe(); // refresh
             this.message.success(`Đơn hàng #${order.id} → "${newStatus}"`);
           } else this.message.error('Không thể cập nhật trạng thái.');
-          this.loading = false;
+          this.loading.set(false);
         },
         error: () => {
           this.message.error('Cập nhật thất bại!');
-          this.loading = false;
+          this.loading.set(false);
         },
       });
   }
 
   exportCsv() {
+    if (!this.filteredOrders || this.filteredOrders.length === 0) {
+      this.message.warning('Không có đơn hàng nào để xuất.');
+      return;
+    }
     const headers = ['Mã đơn', 'Khách hàng', 'Tổng tiền', 'Trạng thái', 'Ngày tạo'];
     const rows = this.filteredOrders.map((o) => [
       o.id,
@@ -240,7 +253,7 @@ export class SellerOrderManagement implements OnInit {
     }
 
     // Lọc ra các đơn không bị hủy
-    const ordersToPrint = this.filteredOrders.filter((o) => o.status !== 'Cancelled');
+    const ordersToPrint = this.filteredOrders.filter((o) => o.status !== 'Cancelled' && o.status !== 'Completed' && o.items.length > 0);
 
     if (ordersToPrint.length === 0) {
       this.message.warning('Không có đơn hàng hợp lệ để in.');
@@ -294,7 +307,7 @@ export class SellerOrderManagement implements OnInit {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
-    printWindow.document.write(`
+    printWindow.document.writeln(`
     <html>
       <head>
         <title>In đơn hàng</title>

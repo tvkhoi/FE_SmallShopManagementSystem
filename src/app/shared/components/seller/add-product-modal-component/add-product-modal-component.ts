@@ -1,3 +1,4 @@
+import { PERMISSIONS } from './../../../../core/constants/permission.constant';
 import {
   Component,
   Output,
@@ -26,6 +27,8 @@ import { Button } from '../../admin/button/button';
 import { Product } from '../../../../core/models/domain/product';
 import { NzSwitchComponent } from 'ng-zorro-antd/switch';
 import { InventoryService } from '../../../../core/services/inventory.service';
+import { AuthService } from '../../../../auth/auth.service';
+import e from 'express';
 
 @Component({
   selector: 'app-add-product-modal',
@@ -66,6 +69,8 @@ export class AddProductModalComponent implements OnInit, OnChanges {
   private readonly categoryService = inject(CategoryService);
   private readonly inventoryService = inject(InventoryService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly auth = inject(AuthService);
+  PERMISSIONS = PERMISSIONS;
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -82,7 +87,12 @@ export class AddProductModalComponent implements OnInit, OnChanges {
       name: ['', [Validators.required, Validators.minLength(2)]],
     });
 
-    this.loadCategories();
+    if (this.auth.hasPermission(PERMISSIONS.CATEGORIES_VIEW)) {
+      this.loadCategories();
+    }
+    else {
+      console.log('User does not have permission to view categories.');
+    }
   }
 
   ngOnChanges() {
@@ -110,15 +120,14 @@ export class AddProductModalComponent implements OnInit, OnChanges {
   }
 
   loadCategories() {
-  // Dùng observable trực tiếp từ service
-  this.categoryService.getAllCategories().subscribe({
-    next: (categories) => {
-      this.categories = categories; // luôn được cập nhật mới nhất
-    },
-    error: (err) => console.error(err),
-  });
-}
-
+    // Dùng observable trực tiếp từ service
+    this.categoryService.getAllCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories; // luôn được cập nhật mới nhất
+      },
+      error: (err) => console.error(err),
+    });
+  }
 
   openCategoryModal() {
     this.categoryForm.reset();

@@ -1,3 +1,4 @@
+import { PERMISSIONS } from './../../../core/constants/permission.constant';
 import { ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../auth/auth.service';
@@ -18,6 +19,8 @@ export class Dashboard implements OnInit {
   private readonly dashboardService = inject(DashboardService);
   private readonly authService = inject(AuthService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly auth = inject(AuthService);
+  readonly PERMISSIONS = PERMISSIONS;
 
   greeting = signal('');
   summaryCards: any[] = [];
@@ -32,11 +35,18 @@ export class Dashboard implements OnInit {
 
   ngOnInit(): void {
     this.greeting.set(getGreetingByTime());
-    this.dashboardService.refreshAll();
-    this.loadSummary();
-    this.loadTopProducts();
-    this.loadOrderSummary();
-    this.loadCharts();
+    if(this.auth.hasPermission(this.PERMISSIONS.DASHBOARD_VIEW) && this.auth.hasPermission(this.PERMISSIONS.DASHBOARD_ANALYZE)) {
+      this.dashboardService.refreshAll();
+    }
+
+    if (this.auth.hasPermission(this.PERMISSIONS.DASHBOARD_VIEW)) {
+      this.loadSummary();
+      this.loadCharts();
+    }
+    if (this.auth.hasPermission(this.PERMISSIONS.DASHBOARD_ANALYZE)) {
+      this.loadTopProducts();
+      this.loadOrderSummary();
+    }
   }
 
   get userName(): string | null {

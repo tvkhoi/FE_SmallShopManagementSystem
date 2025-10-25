@@ -8,6 +8,7 @@ import {
   UpdateCategoryDto,
   MoveProductsDto,
 } from '../models/request/category.dto';
+import { AuthService } from '../../auth/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +16,7 @@ import {
 export class CategoryService {
   private readonly apiUrl = 'https://localhost:7277/api/Category';
   private readonly http = inject(HttpClient);
+  private readonly auth = inject(AuthService);
 
   // BehaviorSubject giữ danh sách category hiện tại
   readonly categoriesSubject = new BehaviorSubject<Category[]>([]);
@@ -22,7 +24,9 @@ export class CategoryService {
 
   constructor() {
     // Khi service khởi tạo, load dữ liệu
-    this.loadCategories();
+    if(this.auth.hasPermission('CATEGORIES_VIEW')) {
+      this.loadCategories();
+    }
   }
 
   // Load category mới nhất từ server và cập nhật BehaviorSubject

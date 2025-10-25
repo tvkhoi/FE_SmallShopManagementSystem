@@ -1,15 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap } from 'rxjs';
-
-// 🟢 Import interface ApiResponse
-export interface ApiResponse<T> {
-  statusCode: number;
-  success: boolean;
-  message: string;
-  data: T;
-  errors?: any[];
-}
+import { ApiResponse } from '../models/domain/ApiResponse';
+import { AuthService } from '../../auth/auth.service';
+import { PERMISSIONS } from '../constants/permission.constant';
 
 @Injectable({
   providedIn: 'root',
@@ -23,6 +17,7 @@ export class DashboardService {
   private readonly revenueVsCostSubject = new BehaviorSubject<any>(null);
   private readonly topProductsSubject = new BehaviorSubject<any[]>([]);
   private readonly orderSummarySubject = new BehaviorSubject<any[]>([]);
+  private readonly auth = inject(AuthService);
 
   summary$ = this.summarySubject.asObservable();
   overview$ = this.overviewSubject.asObservable();
@@ -31,7 +26,9 @@ export class DashboardService {
   orderSummary$ = this.orderSummarySubject.asObservable();
 
   constructor() {
-    this.refreshAll();
+    if (this.auth.hasPermission(PERMISSIONS.DASHBOARD_VIEW) && this.auth.hasPermission(PERMISSIONS.DASHBOARD_ANALYZE)) {
+      this.refreshAll();
+    }
   }
 
   // Tổng quan
@@ -39,7 +36,6 @@ export class DashboardService {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/summary`).pipe(
       tap({
         next: (res) => {
-          console.log('✅ Summary:', res.data);
           this.summarySubject.next(res.data);
         },
         error: (err) => console.error('Lỗi summary:', err),
@@ -72,7 +68,6 @@ export class DashboardService {
     return this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/top-products`).pipe(
       tap({
         next: (res) => {
-          console.log('📦 Top products:', res.data);
           this.topProductsSubject.next(res.data || []);
         },
         error: (err) => console.error('Lỗi top-products:', err),

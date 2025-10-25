@@ -8,7 +8,6 @@ import { RolesComponent } from './features/admin/roles/roles';
 import { Settings } from './features/admin/settings/settings';
 import { AdminLayout } from './shared/layouts/admin-layout/admin-layout';
 import { Account } from './features/admin/account/account';
-import { PERMISSIONS } from './core/constants/permission.constant';
 import { PERMISSION_GROUPS } from './core/constants/permission-groups';
 import { Forbidden } from './shared/components/forbidden/forbidden';
 
@@ -35,8 +34,6 @@ import { Products } from './features/seller/products/products';
 import { SellerOrderManagement } from './features/seller/seller-order-management/seller-order-management';
 import { SellerInventoryManagement } from './features/seller/seller-inventory-management/seller-inventory-management';
 
-
-
 export const routes: Routes = [
   // CUSTOMER - Public routes (no auth required)
   {
@@ -47,8 +44,8 @@ export const routes: Routes = [
       { path: 'about', component: AboutComponent },
       { path: 'products', component: ProductsComponent },
       { path: 'contact', component: ContactComponent },
-      { path: 'productItem', component: ProductItemComponent }
-    ]
+      { path: 'productItem', component: ProductItemComponent },
+    ],
   },
 
   // CUSTOMER - Protected routes (auth required)
@@ -56,23 +53,33 @@ export const routes: Routes = [
     path: 'customer',
     component: CustomerLayoutComponent,
     canActivate: [authGuard],
-    data: { roles: ['Customer'] },
+    data: {
+      permissions: [...PERMISSION_GROUPS.CUSTOMER],
+    },
     children: [
       { path: 'cart', component: CartComponent },
-      { path: 'wishlist', component: WishlistComponent }
-    ]
+      { path: 'wishlist', component: WishlistComponent },
+    ],
   },
 
   // SELLER - Protected routes (auth required)
   {
     path: 'seller',
     component: SellerLayout,
+    canActivate: [authGuard],
+    data: {
+      permissions: [...PERMISSION_GROUPS.SELLER],
+    },
     children: [
-      { path: 'dashboard', component: Dashboard },
-      { path: 'products', component: Products },
-      { path: 'orders', component: SellerOrderManagement },
-      { path: 'inventory-management', component: SellerInventoryManagement }
-    ]
+      { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
+      { path: 'products', component: Products, canActivate: [authGuard] },
+      { path: 'orders', component: SellerOrderManagement, canActivate: [authGuard] },
+      {
+        path: 'inventory-management',
+        component: SellerInventoryManagement,
+        canActivate: [authGuard],
+      },
+    ],
   },
 
   // AUTH
@@ -86,9 +93,7 @@ export const routes: Routes = [
     component: AdminLayout,
     canActivate: [authGuard],
     data: {
-      permissions: [
-        ...PERMISSION_GROUPS.ADMIN
-      ],
+      permissions: [...PERMISSION_GROUPS.ADMIN],
     },
     children: [
       {

@@ -1,3 +1,4 @@
+import { PERMISSIONS } from './../../../../core/constants/permission.constant';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -56,19 +57,19 @@ import { CategoryModalComponent } from '../category-modal-component/category-mod
           <div
             class="d-flex flex-wrap gap-2 justify-content-start justify-content-lg-end align-items-end"
           >
-            <app-button type="primary" size="large" (click)="reset()">
+            <app-button type="primary" size="large" (click)="reset()" [permissions]="[PERMISSIONS.PRODUCTS_VIEW]">
               <i class="bi bi-arrow-clockwise me-1"></i> Làm mới
             </app-button>
 
-            <app-button type="primary" size="large" (click)="applyFilter()">
+            <app-button type="primary" size="large" (click)="applyFilter()" [permissions]="[PERMISSIONS.PRODUCTS_VIEW]">
               <i class="bi bi-search me-1"></i> Lọc
             </app-button>
 
-            <app-button type="primary" size="large" (click)="add()">
+            <app-button type="primary" size="large" (click)="add()" [permissions]="[PERMISSIONS.PRODUCTS_CREATE]">
               <i class="bi bi-plus me-1"></i> Thêm sản phẩm
             </app-button>
 
-            <app-button type="primary" size="large" (click)="openDeleteCategory()">
+            <app-button type="primary" size="large" (click)="openDeleteCategory()" [permissions]="[PERMISSIONS.CATEGORIES_DELETE]">
               <i class="bi bi-trash me-1"></i> Xóa danh mục
             </app-button>
 
@@ -96,6 +97,7 @@ export class ProductFilterComponent {
   isCategoryModalVisible = false;
   selectedCategoryId: number = 0; // Gán category cần xóa từ dropdown hoặc danh sách
   selectedCategoryName: string = ''; // Gán tên tương ứng
+  PERMISSIONS = PERMISSIONS;
 
   applyFilter() {
     this.filter.emit(this.filters);

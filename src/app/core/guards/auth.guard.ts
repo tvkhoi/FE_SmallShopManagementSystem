@@ -4,7 +4,13 @@ import { AuthService } from '../../auth/auth.service';
 import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 
-export const authGuard: CanActivateFn = async (route: ActivatedRouteSnapshot) => {
+const routeRequiresAuth = (route: ActivatedRouteSnapshot) =>
+  !!(route.data?.['permissions'] || route.data?.['roles']);
+
+const publicOrLogin = (router: Router, route: ActivatedRouteSnapshot) =>
+  routeRequiresAuth(route) ? router.parseUrl('/login') : true;
+
+export const authGuard: CanActivateFn = async (route: ActivatedRouteSnapshot) =>  {
   const auth = inject(AuthService);
   const router = inject(Router);
   const platformId = inject(PLATFORM_ID);
@@ -20,11 +26,7 @@ export const authGuard: CanActivateFn = async (route: ActivatedRouteSnapshot) =>
   // Không có token => chưa đăng nhập
   if (!accessToken && !refreshToken) {
     auth.clearTokens();
-    // Chỉ redirect đến login nếu route yêu cầu authentication
-    if (route.data?.['permissions'] || route.data?.['roles']) {
-      return router.parseUrl('/login');
-    }
-    return true; // Cho phép truy cập public routes
+    return publicOrLogin(router, route);
   }
 
   // Token hết hạn → thử refresh trước khi logout
@@ -36,19 +38,11 @@ export const authGuard: CanActivateFn = async (route: ActivatedRouteSnapshot) =>
       } catch (err) {
         console.warn('[AuthGuard] Refresh token failed:', err);
         auth.clearTokens();
-        // Chỉ redirect đến login nếu route yêu cầu authentication
-        if (route.data?.['permissions'] || route.data?.['roles']) {
-          return router.parseUrl('/login');
-        }
-        return true; // Cho phép truy cập public routes
+        return publicOrLogin(router, route);
       }
     } else {
       auth.clearTokens();
-      // Chỉ redirect đến login nếu route yêu cầu authentication
-      if (route.data?.['permissions'] || route.data?.['roles']) {
-        return router.parseUrl('/login');
-      }
-      return true; // Cho phép truy cập public routes
+      return publicOrLogin(router, route);
     }
   }
 

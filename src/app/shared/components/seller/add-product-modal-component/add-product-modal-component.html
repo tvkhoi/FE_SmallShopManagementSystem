@@ -123,7 +123,7 @@
       </app-button>
 
       <app-button type="primary" size="medium" [disabled]="form.invalid || loading()" [isLoading]="loading()"
-        (click)="saveProduct()">
+        (click)="saveProduct()" [permissions]="[PERMISSIONS.PRODUCTS_CREATE]">
         <span *ngIf="!loading()">{{ selectedProduct ? 'Lưu thay đổi' : 'Thêm sản phẩm' }}</span>
         <span *ngIf="loading()">Đang lưu...</span>
       </app-button>

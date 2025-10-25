@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { PERMISSIONS } from './../../../core/constants/permission.constant';
+import { ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -26,6 +27,8 @@ import { Product } from '../../../core/models/domain/product';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { AuthService } from '../../../auth/auth.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-seller-inventory-management',
@@ -56,9 +59,10 @@ export class SellerInventoryManagement implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly message = inject(NzMessageService);
   private readonly cdr = inject(ChangeDetectorRef);
+  readonly auth = inject(AuthService);
 
   histories: InventoryHistory[] = [];
-  loading = false;
+  loading = signal(false);
   totalItems = 0;
   pageSize = 10;
   pageIndex = 1;
@@ -69,6 +73,7 @@ export class SellerInventoryManagement implements OnInit {
   isAddModalVisible = false;
   isProductDetailVisible = false;
   selectedProduct: Product | null = null;
+  PERMISSIONS = PERMISSIONS;
 
   importForm!: FormGroup;
 
@@ -82,23 +87,38 @@ export class SellerInventoryManagement implements OnInit {
       quantityChanged: [null, [Validators.required, Validators.min(1)]],
     });
 
-    this.loadHistory();
+    if (this.auth.hasPermission(PERMISSIONS.INVENTORYHISTORY_VIEW)) {
+      this.loadHistory();
+    } else {
+      console.log('User does not have permission to view inventory histories.');
+      this.cdr.detectChanges();
+    }
   }
 
   loadHistory() {
-    this.loading = true;
-    this.inventoryService.getHistories(this.pageIndex, this.pageSize, this.searchTerm).subscribe({
-      next: (res) => {
-        if (res.success && res.data) {
-          console.log('Inventory histories loaded:', res.data.items);
-          this.histories = res.data.items;
-          this.totalItems = res.data.totalItems;
-          this.cdr.markForCheck();
-        }
-        this.loading = false;
-      },
-      error: () => (this.loading = false),
-    });
+    this.loading.set(true);
+    this.inventoryService
+      .getHistories(this.pageIndex, this.pageSize, this.searchTerm)
+      .pipe(
+        finalize(() => {
+          this.loading.set(false);
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          if (res.success && res.data) {
+            console.log('Inventory histories loaded:', res.data.items);
+            this.histories = res.data.items;
+            this.totalItems = res.data.totalItems;
+          } else {
+            this.histories = [];
+          }
+        },
+        error: () => {
+          this.message.error('Không thể tải dữ liệu kho hàng!');
+        },
+      });
   }
 
   applyFilter() {

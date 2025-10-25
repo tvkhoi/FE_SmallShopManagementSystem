@@ -6,7 +6,7 @@
                     <div class="card-body">
 
                         <!-- Tiêu đề -->
-                        <h2 class="mb-4 fw-semibold text-primary d-flex align-items-center">
+                        <h2 class="mb-4 fw-semibold d-flex align-items-center text-primary">
                             <i nz-icon nzType="shopping" class="me-2"></i>
                             Quản lý đơn hàng
                         </h2>
@@ -63,7 +63,7 @@
 
 
                         <!-- Bảng đơn hàng -->
-                        <nz-table #table [nzData]="filteredOrders" [nzLoading]="loading" nzSize="middle"
+                        <nz-table #table [nzData]="filteredOrders" [nzLoading]="loading()" nzSize="middle"
                             [nzShowPagination]="false" class="mb-2" style="white-space: nowrap; overflow-x: auto;">
                             <thead>
                                 <tr>

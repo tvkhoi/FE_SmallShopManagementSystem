@@ -15,8 +15,8 @@
               <!-- Nhóm tìm kiếm + làm mới -->
               <div class="col-12 col-md-7 d-flex flex-wrap gap-2">
                 <input type="text" class="form-control flex-grow-1" placeholder="Tìm theo tên sản phẩm..."
-                  [(ngModel)]="searchTerm" (input)="applyFilter()" />
-                <app-button type="primary" (click)="resetFilter()" customClass="btn-fullwidth-sm" size="large">
+                  [(ngModel)]="searchTerm" (input)="applyFilter()" [disabled]="!this.auth.hasPermission(PERMISSIONS.INVENTORYHISTORY_VIEW)" />
+                <app-button type="primary" (click)="resetFilter()" customClass="btn-fullwidth-sm" size="large" [permissions]="[PERMISSIONS.INVENTORYHISTORY_VIEW]">
                   <i nz-icon nzType="reload" class="me-1"></i> Làm mới
                 </app-button>
               </div>
@@ -38,7 +38,7 @@
             </div>
 
             <!-- Bảng -->
-            <nz-table [nzData]="histories" [nzLoading]="loading" nzBordered nzSize="middle" [nzFrontPagination]="false"
+            <nz-table [nzData]="histories" [nzLoading]="loading()" nzBordered nzSize="middle" [nzFrontPagination]="false"
               style="white-space: nowrap; overflow-x: auto;">
               <thead>
                 <tr>
@@ -119,9 +119,9 @@
                     <i nz-icon nzType="close"></i> Hủy bỏ
                   </app-button>
 
-                  <app-button type="primary" size="medium" [disabled]="importForm.invalid || loading"
-                    [isLoading]="loading" (click)="submitImport()">
-                    <span *ngIf="!loading">Xác nhận nhập hàng</span>
+                  <app-button type="primary" size="medium" [disabled]="importForm.invalid || loading()"
+                    [isLoading]="loading()" (click)="submitImport()" [permissions]="[PERMISSIONS.INVENTORYHISTORY_IMPORT]">
+                    <span>Xác nhận nhập hàng</span>
                   </app-button>
                 </div>
               </ng-template>

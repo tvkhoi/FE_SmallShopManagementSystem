@@ -18,7 +18,6 @@ export class OrderService {
   getOrders(): Observable<ApiResponse<Order[]>> {
     return this.http.get<ApiResponse<Order[]>>(this.apiUrl).pipe(
       tap((res) => {
-        console.log('📦 OrderService API response:', res);
         if (res.success && res.data) {
           this.ordersSubject.next(res.data);
         } else {

@@ -1,18 +1,11 @@
-<div class="settings-container">
+<div class="settings-container" *ngIf="auth.hasPermission('PasswordPolicy.View')">
   <h2>Cài đặt quản trị</h2>
 
   <!-- Cấu hình độ dài mật khẩu -->
   <div class="settings-item">
     <h3>Độ dài mật khẩu</h3>
-    <input
-      nz-input
-      type="number"
-      [(ngModel)]="policy.requiredLength"
-      placeholder="Số ký tự tối thiểu"
-      min="4"
-      max="50"
-      style="width: 150px"
-    />
+    <input nz-input type="number" [(ngModel)]="policy.requiredLength" placeholder="Số ký tự tối thiểu" min="4" max="50"
+      style="width: 150px" />
   </div>
 
   <!-- Quy tắc mật khẩu -->
@@ -40,6 +33,7 @@
   </div>
 
   <div class="settings-actions">
-    <app-button type="primary" (click)="savePolicy()">Lưu</app-button>
+    <app-button type="primary" (click)="savePolicy()"
+      [permissions]="[PERMISSIONS.PASSWORDPOLICY_UPDATE]">Lưu</app-button>
   </div>
 </div>

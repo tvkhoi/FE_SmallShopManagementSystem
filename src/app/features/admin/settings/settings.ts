@@ -1,3 +1,4 @@
+import { PERMISSIONS } from './../../../core/constants/permission.constant';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { PasswordPolicy } from '../../../core/models/domain/PasswordPolicy';
 import { PasswordPolicyService } from '../../../core/services/passwordPolicy.service';
@@ -8,6 +9,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Button } from "../../../shared/components/admin/button/button";
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-settings',
@@ -25,7 +27,7 @@ import { Button } from "../../../shared/components/admin/button/button";
 })
 export class Settings implements OnInit {
   policy: PasswordPolicy = {
-    requiredLength: 8,
+    requiredLength: 0,
     requireUppercase: false,
     requireLowercase: false,
     requireDigit: false,
@@ -35,12 +37,19 @@ export class Settings implements OnInit {
   private readonly passwordPolicyService = inject(PasswordPolicyService);
   private readonly ms = inject(NzMessageService);
   private readonly cdj = inject(ChangeDetectorRef);
+  readonly auth = inject(AuthService);
+  readonly PERMISSIONS = PERMISSIONS;
 
   ngOnInit(): void {
-    this.passwordPolicyService.getPolicy().subscribe((data) => {
-      this.policy = data;
-      this.cdj.detectChanges();
-    });
+    if (this.auth.hasPermission(PERMISSIONS.PASSWORDPOLICY_VIEW)) {
+      this.passwordPolicyService.getPolicy().subscribe((data) => {
+        this.policy = data;
+        this.cdj.detectChanges();
+      });
+    }
+    else {
+      console.log('Bạn không có quyền xem chính sách mật khẩu');
+    }
   }
 
   savePolicy() {

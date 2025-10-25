@@ -21,6 +21,7 @@ import { NzColDirective } from 'ng-zorro-antd/grid';
 import { Observable } from 'rxjs';
 import { Category } from '../../../../core/models/domain/category';
 import { MoveProductsDto } from '../../../../core/models/request/category.dto';
+import { PERMISSIONS } from '../../../../core/constants/permission.constant';
 
 @Component({
   selector: 'app-category-modal',
@@ -114,6 +115,7 @@ import { MoveProductsDto } from '../../../../core/models/request/category.dto';
             size="medium"
             [disabled]="needsMove && !form.get('targetCategoryId')?.value"
             (click)="confirm()"
+            [permissions]="[PERMISSIONS.CATEGORIES_DELETE]"
           >
             Xác nhận
           </app-button>
@@ -140,6 +142,7 @@ export class CategoryModalComponent implements OnChanges {
   private readonly categoryService = inject(CategoryService);
   private readonly message = inject(NzMessageService);
   private readonly cdr = inject(ChangeDetectorRef);
+  readonly PERMISSIONS = PERMISSIONS;
 
   // Observable categories từ service (BehaviorSubject)
   categories$: Observable<Category[]> = this.categoryService.categories$;
