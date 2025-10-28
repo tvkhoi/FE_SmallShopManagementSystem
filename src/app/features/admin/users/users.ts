@@ -20,7 +20,6 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTreeModule, NzFormatEmitEvent } from 'ng-zorro-antd/tree';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzTagModule } from 'ng-zorro-antd/tag';
-import { Subject } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 
@@ -170,7 +169,7 @@ export class UsersComponent implements OnInit {
         email: ['', [Validators.required, Validators.email]],
         fullName: [''],
         address: [''],
-        phoneNumber: ['', [Validators.pattern(/^0[0-9]{9}$/)]],
+        phoneNumber: ['', [Validators.pattern(/^0\d{9}$/)]],
         password: ['', [Validators.required, noWhitespaceValidator]],
         confirmPassword: ['', [Validators.required]],
         isActive: [true],
@@ -418,8 +417,10 @@ export class UsersComponent implements OnInit {
     this.permissionService.getPermissions().subscribe((allPerms) => {
       this.userService.getUserPermissions(user.id).subscribe((resp: UserPermissionsResponse) => {
         const userPermMap = new Map<number, boolean>();
-        resp.permissions.forEach((p) => userPermMap.set(p.id, p.granted ?? false));
-
+        for (const p of resp.permissions) {
+          userPermMap.set(p.id, p.granted ?? false);
+        }
+    
         const modules = [...new Set(allPerms.map((p) => p.module))];
         this.groupedPermissions = modules.map((module) => ({
           module,
@@ -427,7 +428,7 @@ export class UsersComponent implements OnInit {
             .filter((p) => p.module === module)
             .map((p) => ({ ...p, granted: userPermMap.get(p.id) ?? false })),
         }));
-
+    
         this.cdr.detectChanges(); // bắt buộc cập nhật UI
       });
     });

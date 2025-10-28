@@ -3,6 +3,8 @@ import { PERMISSIONS } from '../constants/permission.constant';
 
 export type UserInterfaceType = 'admin' | 'seller' | 'customer' | 'unknown';
 
+// Xác định giao diện người dùng dựa trên quyền
+
 export function getUserInterface(perms: string[]): UserInterfaceType {
   if (!perms?.length) return 'unknown';
 
@@ -10,7 +12,12 @@ export function getUserInterface(perms: string[]): UserInterfaceType {
   const hasAllSeller = PERMISSION_GROUPS.SELLER.every((p) => perms.includes(p));
   const hasAllCustomer = PERMISSION_GROUPS.CUSTOMER.every((p) => perms.includes(p));
 
-  if (hasAllAdmin && hasAllSeller && hasAllCustomer) return 'admin';
+  // Ưu tiên cấp cao nhất
+  if (hasAllAdmin) return 'admin';
+  if (hasAllSeller) return 'seller';
+  if (hasAllCustomer) return 'customer';
+
+  // Kiểm tra quyền riêng lẻ
   if (perms.some((p) => PERMISSION_GROUPS.ADMIN.includes(p))) return 'admin';
   if (perms.some((p) => PERMISSION_GROUPS.SELLER.includes(p))) return 'seller';
   if (perms.some((p) => PERMISSION_GROUPS.CUSTOMER.includes(p))) return 'customer';
@@ -18,25 +25,23 @@ export function getUserInterface(perms: string[]): UserInterfaceType {
   return 'unknown';
 }
 
-// Trang đầu tiên có quyền cho Admin
 export function getFirstAccessibleAdminRoute(perms: string[]): string {
-  if (perms.includes(PERMISSIONS.USERS_VIEW)) return '/admin/users';
-  if (perms.includes(PERMISSIONS.ROLES_VIEW)) return '/admin/roles';
-  if (perms.includes(PERMISSIONS.REPORTS_VIEW_DASHBOARD)) return '/admin/audit_log';
-  if (perms.includes(PERMISSIONS.PERMISSIONS_VIEW)) return '/admin/settings';
+  if (perms.some((p) => PERMISSION_GROUPS.ADMIN.includes(p))) {
+    return '/admin/users';
+  }
   return '/forbidden';
 }
 
-// Trang đầu tiên có quyền cho Seller
 export function getFirstAccessibleSellerRoute(perms: string[]): string {
-  if (perms.includes(PERMISSIONS.PRODUCTS_VIEW)) return '/seller/products';
-  if (perms.includes(PERMISSIONS.ORDERS_VIEW)) return '/seller/orders';
-  if (perms.includes(PERMISSIONS.INVENTORY_VIEW)) return '/seller/inventory';
+  if (perms.some((p) => PERMISSION_GROUPS.SELLER.includes(p))) {
+    return '/seller/dashboard';
+  }
   return '/forbidden';
 }
 
-// Trang đầu tiên có quyền cho Customer
 export function getFirstAccessibleCustomerRoute(perms: string[]): string {
-  if (perms.includes(PERMISSIONS.ORDERS_VIEW)) return '/customer/orders';
-  return '/';
+  if (perms.some((p) => PERMISSION_GROUPS.CUSTOMER.includes(p))) {
+    return '/';
+  }
+  return '/forbidden';
 }

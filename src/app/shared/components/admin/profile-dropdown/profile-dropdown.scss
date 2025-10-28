@@ -101,6 +101,10 @@
         opacity: 0.5;
       }
     }
+    .hover-effect:hover {
+      background-color: transparent!important;
+      opacity: 1;
+    }
   }
 
   .profile-footer {

@@ -1,0 +1,203 @@
+<div class="content-page">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-block card-stretch card-height">
+                    <div class="card-body">
+
+                        <!-- Tiêu đề -->
+                        <h2 class="mb-4 fw-semibold d-flex align-items-center text-primary">
+                            <i nz-icon nzType="shopping" class="me-2"></i>
+                            Quản lý đơn hàng
+                        </h2>
+
+                        <!-- Wrapper bộ lọc và công cụ -->
+                        <div class="mb-4 p-3 bg-light border rounded">
+                            <!-- Bộ lọc -->
+                            <form [formGroup]="filterForm" class="row g-3 align-items-end mb-3">
+                                <div class="col-12 col-md-4">
+                                    <input type="text" class="form-control" formControlName="q"
+                                        placeholder="Tìm mã đơn / khách hàng / sản phẩm" />
+                                </div>
+
+                                <div class="col-6 col-md-2">
+                                    <select class="form-control" formControlName="status">
+                                        <option value="" selected>Trạng thái</option>
+                                        <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-6 col-md-2">
+                                    <input type="date" class="form-control" formControlName="fromDate"
+                                        placeholder="Từ ngày" />
+                                </div>
+
+                                <div class="col-6 col-md-2">
+                                    <input type="date" class="form-control" formControlName="toDate"
+                                        placeholder="Đến ngày" />
+                                </div>
+
+                                <div class="col-6 col-md-2 d-grid">
+                                    <app-button type="primary" size="medium" (click)="applyFilters()">
+                                        <i class="bi bi-filter me-1"></i> Lọc
+                                    </app-button>
+                                </div>
+                            </form>
+
+                            <!-- Nút công cụ -->
+                            <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                <app-button type="primary" size="medium" (click)="resetFilters()">
+                                    <i class="bi bi-arrow-clockwise me-1"></i> Reset
+                                </app-button>
+
+                                <app-button type="primary" size="medium" (click)="exportCsv()">
+                                    <i class="bi bi-download me-1"></i> Export CSV
+                                </app-button>
+
+                                <app-button type="default" size="medium" (click)="printOrders()">
+                                    <i class="bi bi-printer me-1"></i> In đơn hàng
+                                </app-button>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Bảng đơn hàng -->
+                        <nz-table #table [nzData]="filteredOrders" [nzLoading]="loading()" nzSize="middle"
+                            [nzShowPagination]="false" class="mb-2" style="white-space: nowrap; overflow-x: auto;">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Mã</th>
+                                    <th scope="col">Khách hàng</th>
+                                    <th scope="col">Sản phẩm</th>
+                                    <th scope="col">Tổng tiền</th>
+                                    <th scope="col">Trạng thái</th>
+                                    <th scope="col">Ngày đặt</th>
+                                    <th scope="col" class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr *ngFor="let o of filteredOrders">
+                                    <td>{{ o.id }}</td>
+                                    <td>{{ o.userName }}</td>
+                                    <td>{{ o.items.length }}</td>
+                                    <td>{{ o.totalAmount | currency: 'VND':'symbol':'1.0-0' }}</td>
+
+                                    <td>
+                                        <nz-tag [nzColor]="
+                        o.status === 'Pending'
+                          ? 'blue'
+                          : o.status === 'Processing'
+                          ? 'orange'
+                          : o.status === 'Completed'
+                          ? 'green'
+                          : 'red'
+                      ">
+                                            {{
+                                            o.status === 'Pending'
+                                            ? 'Mới'
+                                            : o.status === 'Processing'
+                                            ? 'Đang xử lý'
+                                            : o.status === 'Completed'
+                                            ? 'Hoàn tất'
+                                            : 'Đã hủy'
+                                            }}
+                                        </nz-tag>
+                                    </td>
+
+                                    <td>{{ o.orderDate | date: 'dd/MM/yyyy HH:mm' }}</td>
+
+                                    <td class="text-center">
+                                        <!-- Nút xem chi tiết -->
+                                        <button nz-button nzType="default" nzSize="small" nz-tooltip
+                                            nzTooltipTitle="Chi tiết đơn hàng" (click)="showDetail(o)" class="me-1">
+                                            <i nz-icon nzType="eye"></i>
+                                        </button>
+
+                                        <!-- Dropdown xử lý trạng thái -->
+
+                                        <app-button type="primary" size="small" nz-tooltip nz-dropdown
+                                            [nzDropdownMenu]="statusMenu" nzTooltipTitle="Thay đổi trạng thái">
+                                            <i nz-icon nzType="swap" nzTheme="outline"
+                                                style="font-size: 16px; padding-right: 5px;"></i>
+                                            Xử lý
+                                        </app-button>
+
+                                        <!-- Menu trạng thái -->
+                                        <nz-dropdown-menu #statusMenu="nzDropdownMenu">
+                                            <ul nz-menu>
+                                                <li *ngFor="let s of nextStatusOptions(o.status)" nz-menu-item
+                                                    (click)="confirmChangeStatus(o, s.value)">
+                                                    <i nz-icon nzType="check-circle" nzTheme="outline"
+                                                        style="margin-right: 5px;"></i>
+                                                    Chuyển sang {{ s.label }}
+                                                </li>
+                                                <li *ngIf="nextStatusOptions(o.status).length === 0" nz-menu-item
+                                                    disabled>
+                                                    Không còn trạng thái nào khác
+                                                </li>
+                                            </ul>
+                                        </nz-dropdown-menu>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </nz-table>
+
+                        <!-- Phân trang -->
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <app-pagination [total]="totalItems" [pageIndex]="pageIndex" [pageSize]="pageSize"
+                                (pageSizeChange)="onPageSizeChange($event)">
+                            </app-pagination>
+                        </div>
+
+                        <!-- Modal chi tiết đơn hàng -->
+                        <nz-modal [(nzVisible)]="isDetailVisible" nzTitle="Chi tiết đơn hàng"
+                            (nzOnCancel)="closeDetail()" [nzFooter]="null">
+                            <ng-container *nzModalContent>
+                                <div *ngIf="selectedOrder">
+                                    <p><strong>Mã đơn:</strong> {{ selectedOrder.id }}</p>
+                                    <p><strong>Khách hàng:</strong> {{ selectedOrder.userName }}</p>
+                                    <p><strong>Tổng tiền:</strong> {{ selectedOrder.totalAmount |
+                                        currency:'VND':'symbol':'1.0-0' }}</p>
+                                    <p><strong>Ngày đặt:</strong> {{ selectedOrder.orderDate | date: 'dd/MM/yyyy HH:mm'
+                                        }}</p>
+
+                                    <h6 class="mt-3">Chi tiết sản phẩm</h6>
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Sản phẩm</th>
+                                                <th>SL</th>
+                                                <th>Giá</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let it of selectedOrder.items">
+                                                <td>{{ it.productName }}</td>
+                                                <td>{{ it.quantity }}</td>
+                                                <td>{{ it.price | currency:'VND':'symbol':'1.0-0' }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <div class="text-end mt-2">
+                                        <button nz-button nzType="primary" (click)="closeDetail()">Đóng</button>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </nz-modal>
+
+                        <!-- Confirm Dialog -->
+                        <app-confirm-dialog [(isVisible)]="confirmVisible" [title]="confirmTitle"
+                            [message]="confirmMessage" [confirmType]="confirmType" confirmText="Xác nhận"
+                            cancelText="Hủy" (confirm)="confirmAction?.()" (cancelModal)="confirmVisible = false">
+                        </app-confirm-dialog>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

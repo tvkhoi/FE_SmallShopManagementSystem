@@ -8,11 +8,12 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { Button } from '../button/button';
 import { ProfileDropdown } from "../profile-dropdown/profile-dropdown";
+import { LayoutSwitcherComponent } from "../../layout-switcher-component/layout-switcher-component";
 
 @Component({
   selector: 'app-sidebar-right',
   standalone: true,
-  imports: [NzLayoutModule, CommonModule, NzDropDownModule, NzIconModule, RouterModule, ProfileDropdown],
+  imports: [NzLayoutModule, CommonModule, NzDropDownModule, NzIconModule, RouterModule, ProfileDropdown, LayoutSwitcherComponent],
   templateUrl: './sidebar-right.html',
   styleUrls: ['./sidebar-right.scss'],
 })

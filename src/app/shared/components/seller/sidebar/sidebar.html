@@ -1,17 +1,17 @@
-<div class="iq-sidebar  sidebar-default ">
+<div class="iq-sidebar  sidebar-default " >
     <div class="iq-sidebar-logo d-flex align-items-center justify-content-between">
         <a routerLink="/seller/dashboard" class="header-logo">
             <img src="assets/images/logo.png" class="img-fluid rounded-normal light-logo" alt="logo">
             <h5 class="logo-title light-logo ml-3">Người bán</h5>
         </a>
-        <div class="iq-menu-bt-sidebar ml-0">
+        <div class="iq-menu-bt-sidebar ml-0" >
             <i class="las la-bars wrapper-menu"></i>
         </div>
     </div>
     <div class="data-scrollbar" data-scroll="1">
         <nav class="iq-sidebar-menu">
             <ul id="iq-sidebar-toggle" class="iq-menu">
-                <li class="active">
+                <li [class.active]="isActive('/seller/dashboard')">
                     <a [routerLink]="['/seller/dashboard']" class="svg-icon">
                         <svg class="svg-icon" id="p-dash1" width="20" height="20" xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -25,7 +25,7 @@
                         <span class="ml-4">Trang chủ</span>
                     </a>
                 </li>
-                <li class=" ">
+                <li [class.active]="isActive('/seller/products')">
                     <a routerLink="/seller/products" class="collapsed" data-toggle="collapse" aria-expanded="false">
                         <svg class="svg-icon" id="p-dash2" width="20" height="20" xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -37,7 +37,7 @@
                         <span class="ml-4">Quản lí Sản phẩm</span>
                     </a>
                 </li>
-                <li class=" ">
+                <li [class.active]="isActive('/seller/orders')" routerLink="/seller/orders">
                     <a href="#category" class="collapsed" data-toggle="collapse" aria-expanded="false">
                         <svg class="svg-icon" id="p-dash3" width="20" height="20" xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -46,27 +46,9 @@
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                         </svg>
                         <span class="ml-4">Quản lí đơn hàng</span>
-                        <svg class="svg-icon iq-arrow-right arrow-active" width="20" height="20"
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="10 15 15 20 20 15"></polyline>
-                            <path d="M4 4h7a4 4 0 0 1 4 4v12"></path>
-                        </svg>
                     </a>
-                    <ul id="category" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle">
-                        <li class="">
-                            <a href="page-list-category.html">
-                                <i class="las la-minus"></i><span>List Category</span>
-                            </a>
-                        </li>
-                        <li class="">
-                            <a href="page-add-category.html">
-                                <i class="las la-minus"></i><span>Add Category</span>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
-                <li class=" ">
+                <li [class.active]="isActive('/seller/inventory-management')" routerLink="/seller/inventory-management">
                     <a href="#sale" class="collapsed" data-toggle="collapse" aria-expanded="false">
                         <svg class="svg-icon" id="p-dash4" width="20" height="20" xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -75,25 +57,7 @@
                             <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
                         </svg>
                         <span class="ml-4">Quản lí kho hàng</span>
-                        <svg class="svg-icon iq-arrow-right arrow-active" width="20" height="20"
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="10 15 15 20 20 15"></polyline>
-                            <path d="M4 4h7a4 4 0 0 1 4 4v12"></path>
-                        </svg>
                     </a>
-                    <ul id="sale" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle">
-                        <li class="">
-                            <a href="page-list-sale.html">
-                                <i class="las la-minus"></i><span>List Sale</span>
-                            </a>
-                        </li>
-                        <li class="">
-                            <a href="page-add-sale.html">
-                                <i class="las la-minus"></i><span>Add Sale</span>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
             </ul>
         </nav>
@@ -110,4 +74,7 @@
         </div>
         <div class="p-3"></div>
     </div>
+
 </div>
+
+

@@ -16,7 +16,7 @@
             <app-product-table [products]="products()" [loading]="loading()"
               (action)="handleAction($event)"></app-product-table>
 
-            <app-add-product-modal [(isVisible)]="isAddModalVisible"
+            <app-add-product-modal [(isVisible)]="isAddModalVisible" [selectedProduct]="selectedProduct" (productSaved)="handleProductSaved()"
               (productAdded)="filterProducts(1)"></app-add-product-modal>
 
             <div class="d-flex justify-content-end mt-3">

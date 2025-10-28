@@ -1,0 +1,8 @@
+// Responsive buttons
+:host ::ng-deep .btn-fullwidth-sm, app-button {
+  @media (max-width: 575.98px) {
+    display: block !important;
+    width: 100% !important;
+  }
+}
+

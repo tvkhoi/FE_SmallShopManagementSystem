@@ -1,3 +1,4 @@
+@use './variables' as v;
 // Error passwrord validator
 .text-red-500 {
   color: #ff4d4f !important;
@@ -13,3 +14,8 @@
   padding-left: 5px;
 }
 // End Error passwrord validator
+
+// h1 text-color-primary
+.text-primary {
+  color: v.$primary-color-seller !important;
+}

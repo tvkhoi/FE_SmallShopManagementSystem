@@ -13,13 +13,11 @@ import { NzImageModule } from 'ng-zorro-antd/image';
 import { Product } from '../../../core/models/domain/product';
 import { ProductService } from '../../../core/services/product.service';
 import { PaginationComponent } from '../../../shared/components/admin/pagination-component/pagination-component';
-import { CategoryService } from '../../../core/services/category.service';
-import { ActionDropdown } from '../../../shared/components/admin/action-dropdown/action-dropdown';
 import { ProductFilterComponent } from '../../../shared/components/seller/product-filter-component/product-filter-component';
 import { ProductTabsComponent } from '../../../shared/components/seller/product-tabs-component/product-tabs-component';
 import { ProductTableComponent } from '../../../shared/components/seller/product-table-component/product-table-component';
 import { AddProductModalComponent } from '../../../shared/components/seller/add-product-modal-component/add-product-modal-component';
-import { NzCardModule } from "ng-zorro-antd/card";
+import { NzCardModule } from 'ng-zorro-antd/card';
 
 @Component({
   selector: 'app-products',
@@ -41,8 +39,8 @@ import { NzCardModule } from "ng-zorro-antd/card";
     ProductTabsComponent,
     ProductTableComponent,
     AddProductModalComponent,
-    NzCardModule
-],
+    NzCardModule,
+  ],
   templateUrl: './products.html',
   styleUrls: ['./products.scss'],
 })
@@ -58,6 +56,7 @@ export class Products implements OnInit {
   pageSize = 10;
   currentPage = 1;
   isAddModalVisible = false;
+  selectedProduct?: Product;
 
   private readonly productService = inject(ProductService);
 
@@ -169,9 +168,15 @@ export class Products implements OnInit {
 
   openAddProduct() {
     this.isAddModalVisible = true;
+    this.selectedProduct = undefined;
   }
   editProduct(p: Product) {
-    console.log('Edit product', p);
+    this.selectedProduct = p;
+    this.isAddModalVisible = true;
+  }
+
+  handleProductSaved() {
+    this.filterProducts(this.currentPage);
   }
 
   handleAction(event: { action: string; data: Product }) {
@@ -183,9 +188,5 @@ export class Products implements OnInit {
         this.toggleActive(event.data);
         break;
     }
-  }
-
-  showAddModal() {
-    this.isAddModalVisible = true;
   }
 }

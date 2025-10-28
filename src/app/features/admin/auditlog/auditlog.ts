@@ -29,6 +29,7 @@ import { getMethodColor, getStatusColor } from '../../../core/utils/index';
 import { Button } from '../../../shared/components/admin/button/button';
 import { AuthService } from '../../../auth/auth.service';
 import { Router } from '@angular/router';
+import { PERMISSIONS } from '../../../core/constants/permission.constant';
 
 @Component({
   selector: 'app-auditlog',
@@ -62,7 +63,6 @@ export class Auditlog implements OnInit, OnDestroy {
   private readonly modal: NzModalService = inject(NzModalService);
   private readonly excelExportService = inject(ExcelExportService);
   private readonly auth = inject(AuthService);
-  private readonly router = inject(Router);
 
   getStatusColor = getStatusColor;
   getMethodColor = getMethodColor;
@@ -102,10 +102,8 @@ export class Auditlog implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   ngOnInit(): void {
-    // Kiểm tra nếu user có quyền ADMIN
-    const hasAdminPermission = PERMISSION_GROUPS.ADMIN.every(p => this.auth.hasPermission(p));
-
-    if (hasAdminPermission) {
+    // Kiểm tra nếu user có quyền VIEW Audit Logs
+    if (this.auth.hasPermission(PERMISSIONS.SYSTEMLOGS_VIEW)) {
       this.loadLogs();
     } else {
        console.warn('Không có quyền truy cập trang này');

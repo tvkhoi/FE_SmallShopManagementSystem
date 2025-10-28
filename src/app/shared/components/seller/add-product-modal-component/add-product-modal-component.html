@@ -1,77 +1,132 @@
-<nz-modal [(nzVisible)]="isVisible" [nzWidth]="600" nzTitle="Thêm sản phẩm mới" (nzOnCancel)="close()"
-    [nzFooter]="customFooter">
-    <div *nzModalContent>
-        <form nz-form nzLayout="vertical">
-            <nz-form-item>
-                <nz-form-label nzRequired>Tên sản phẩm</nz-form-label>
-                <nz-form-control>
-                    <input nz-input [(ngModel)]="productName" name="productName" placeholder="Nhập tên sản phẩm"
-                        required [ngModelOptions]="{ standalone: true }" />
-                </nz-form-control>
-            </nz-form-item>
+<nz-modal [(nzVisible)]="isVisible" [nzWidth]="600"
+  [nzTitle]="selectedProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'" (nzOnCancel)="close()"
+  [nzFooter]="customFooter">
+  <div *nzModalContent style="max-height: calc(100vh - 300px); overflow-y: auto;">
+    <form nz-form nzLayout="vertical" [formGroup]="form">
+      <!-- Tên sản phẩm -->
+      <nz-form-item>
+        <nz-form-label nzRequired>Tên sản phẩm</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng nhập tên sản phẩm">
+          <input nz-input formControlName="productName" />
+        </nz-form-control>
+      </nz-form-item>
 
-            <nz-form-item>
-                <nz-form-label nzRequired>Danh mục</nz-form-label>
-                <nz-form-control>
-                    <nz-select [(ngModel)]="categoryName" name="categoryName" placeholder="Chọn danh mục" required
-                        [ngModelOptions]="{ standalone: true }">
-                        <nz-option *ngFor="let c of categories" [nzLabel]="c.name" [nzValue]="c.name"></nz-option>
-                    </nz-select>
-                </nz-form-control>
-            </nz-form-item>
+      <!-- Mô tả -->
+      <nz-form-item>
+        <nz-form-label>Mô tả</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="description" />
+        </nz-form-control>
+      </nz-form-item>
 
-            <nz-form-item>
-                <nz-form-label nzRequired>Giá</nz-form-label>
-                <nz-form-control>
-                    <nz-input-number [(ngModel)]="price" name="price" [nzMin]="0" nzPlaceHolder="Nhập giá sản phẩm"
-                        style="width: 100%;" required [ngModelOptions]="{ standalone: true }" />
-                </nz-form-control>
-            </nz-form-item>
+      <!-- Danh mục -->
+      <nz-form-item>
+        <nz-form-label nzRequired>Danh mục</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng chọn danh mục">
+          <div class="d-flex align-items-center gap-2">
+            <nz-select formControlName="categoryName" nzPlaceHolder="Chọn danh mục" class="w-100">
+              <nz-option *ngFor="let c of categories" [nzLabel]="c.name" [nzValue]="c.name"></nz-option>
+            </nz-select>
 
-            <nz-form-item>
-                <nz-form-label nzRequired>Tồn kho</nz-form-label>
-                <nz-form-control>
-                    <nz-input-number [(ngModel)]="stock" name="stock" [nzMin]="0" style="width: 100%;" required
-                        [ngModelOptions]="{ standalone: true }" />
-                </nz-form-control>
-            </nz-form-item>
-
-            <nz-form-item>
-                <nz-form-label>Trạng thái</nz-form-label>
-                <nz-form-control>
-                    <nz-select [(ngModel)]="isActive" name="isActive" [ngModelOptions]="{ standalone: true }">
-                        <nz-option [nzLabel]="'Đang bán'" [nzValue]="true"></nz-option>
-                        <nz-option [nzLabel]="'Ngừng bán'" [nzValue]="false"></nz-option>
-                    </nz-select>
-                </nz-form-control>
-            </nz-form-item>
-
-            <nz-form-item>
-                <nz-form-label>Hình ảnh</nz-form-label>
-                <nz-form-control>
-                    <nz-upload [nzFileList]="fileList" nzListType="picture-card" [nzBeforeUpload]="beforeUpload"
-                        [nzMultiple]="true" (nzChange)="onUploadChange($event)" nzAccept="image/*"
-                        [nzShowUploadList]="{ showRemoveIcon: true }">
-                        <button nz-button type="button">
-                            <i nz-icon nzType="upload"></i>
-                            <div>Tải lên</div>
-                        </button>
-                    </nz-upload>
-                </nz-form-control>
-            </nz-form-item>
-        </form>
-    </div>
-
-    <ng-template #customFooter>
-        <div class="modal-footer">
-            <app-button type="cancel" size="medium" (click)="close()">
-                <i nz-icon nzType="close"></i> Hủy bỏ
+            <!-- Nút thêm danh mục -->
+            <app-button type="primary" size="small" (click)="openCategoryModal()">
+              <i nz-icon nzType="plus"></i>
             </app-button>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
 
-            <app-button type="primary" size="medium" [isLoading]="loading()" (click)="saveProduct()">
-                <span *ngIf="!loading()">Lưu sản phẩm</span>
-                <span *ngIf="loading()">Đang lưu...</span>
-            </app-button>
+      <!-- Modal thêm danh mục -->
+      <nz-modal [(nzVisible)]="isCategoryModalVisible" nzTitle="Thêm danh mục mới" [nzFooter]="categoryFooter"
+        (nzOnCancel)="handleCancelCategory()">
+        <div *nzModalContent>
+          <form [formGroup]="categoryForm" class="p-2">
+            <nz-form-item>
+              <nz-form-label>Tên danh mục</nz-form-label>
+              <nz-form-control>
+                <input nz-input formControlName="name" placeholder="Nhập tên danh mục" />
+              </nz-form-control>
+            </nz-form-item>
+          </form>
         </div>
-    </ng-template>
+
+        <ng-template #categoryFooter>
+          <div class="modal-footer">
+            <app-button type="cancel" size="medium" (click)="handleCancelCategory()" class="mr-2">
+              <i nz-icon nzType="close"></i> Hủy bỏ
+            </app-button>
+
+            <app-button type="primary" size="medium" [disabled]="categoryForm.invalid || loading()"
+              [isLoading]="loading()" (click)="submitCategory()">
+              <span *ngIf="!loading()">Thêm danh mục</span>
+            </app-button>
+          </div>
+        </ng-template>
+      </nz-modal>
+
+      <!-- Giá -->
+      <nz-form-item>
+        <nz-form-label nzRequired>Giá</nz-form-label>
+        <nz-form-control nzErrorTip="Giá phải >= 0">
+          <nz-input-number formControlName="price" [nzMin]="0" style="width: 100%;" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Tồn kho -->
+      <nz-form-item>
+        <nz-form-label nzRequired>Tồn kho</nz-form-label>
+        <nz-form-control nzErrorTip="Tồn kho phải >= 0">
+          <nz-input-number formControlName="stock" [nzMin]="0" style="width: 100%;" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Trạng thái -->
+      <nz-form-item>
+        <nz-form-label>Trạng thái</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName="isActive">
+            <nz-option [nzLabel]="'Đang bán'" [nzValue]="true"></nz-option>
+            <nz-option [nzLabel]="'Ngừng bán'" [nzValue]="false"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Nổi bật -->
+      <nz-form-item>
+        <nz-form-label>Nổi bật</nz-form-label>
+        <nz-form-control>
+          <nz-switch formControlName="isFeatured"></nz-switch>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Upload hình ảnh -->
+      <nz-form-item>
+        <nz-form-label>Hình ảnh</nz-form-label>
+        <nz-form-control>
+          <nz-upload [nzFileList]="fileList" nzListType="picture-card" [nzBeforeUpload]="beforeUpload"
+            [nzMultiple]="true" (nzChange)="onUploadChange($event)" nzAccept="image/*"
+            [nzShowUploadList]="{ showRemoveIcon: true }">
+            <button nz-button type="button">
+              <i nz-icon nzType="upload"></i>
+              <div>Tải lên</div>
+            </button>
+          </nz-upload>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </div>
+
+  <ng-template #customFooter>
+    <div class="modal-footer">
+      <app-button type="cancel" size="medium" (click)="close()" class="mr-2">
+        <i nz-icon nzType="close"></i> Hủy bỏ
+      </app-button>
+
+      <app-button type="primary" size="medium" [disabled]="form.invalid || loading()" [isLoading]="loading()"
+        (click)="saveProduct()" [permissions]="[PERMISSIONS.PRODUCTS_CREATE]">
+        <span *ngIf="!loading()">{{ selectedProduct ? 'Lưu thay đổi' : 'Thêm sản phẩm' }}</span>
+        <span *ngIf="loading()">Đang lưu...</span>
+      </app-button>
+    </div>
+  </ng-template>
 </nz-modal>
