@@ -6,11 +6,12 @@ import { Router, RouterLink } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { AuthService } from '../../../../auth/auth.service';
 import { Button } from '../button/button';
+import { LayoutSwitcherComponent } from "../../layout-switcher-component/layout-switcher-component";
 
 @Component({
   selector: 'app-profile-dropdown',
   standalone: true,
-  imports: [CommonModule, NzDropDownModule, NzIconModule, Button, RouterLink],
+  imports: [CommonModule, NzDropDownModule, NzIconModule, Button, RouterLink, LayoutSwitcherComponent],
   templateUrl: './profile-dropdown.html',
   styleUrls: ['./profile-dropdown.scss']
 })

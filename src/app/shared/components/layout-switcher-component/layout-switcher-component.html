@@ -1,0 +1,9 @@
+<div class="layout-switcher" *ngIf="availableRoles.length > 1">
+  <span>Giao diện:</span>
+  <app-button
+    *ngFor="let role of availableRoles"
+    (click)="navigateTo(role)"
+    [class.active]="role === currentRole" style="padding-left: 5px;">
+    {{ role | titlecase }}
+  </app-button>
+</div>

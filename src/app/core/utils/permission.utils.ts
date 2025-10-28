@@ -3,7 +3,6 @@ import { PERMISSIONS } from '../constants/permission.constant';
 
 export type UserInterfaceType = 'admin' | 'seller' | 'customer' | 'unknown';
 
-
 // Xác định giao diện người dùng dựa trên quyền
 
 export function getUserInterface(perms: string[]): UserInterfaceType {
@@ -27,25 +26,22 @@ export function getUserInterface(perms: string[]): UserInterfaceType {
 }
 
 export function getFirstAccessibleAdminRoute(perms: string[]): string {
-  if (perms.includes(PERMISSIONS.USERS_VIEW)) return '/admin/users';
-  if (perms.includes(PERMISSIONS.ROLES_VIEW)) return '/admin/roles';
-  if (perms.includes(PERMISSIONS.REPORTS_VIEW)) return '/admin/audit_log';
-  if (perms.includes(PERMISSIONS.PERMISSIONS_VIEW)) return '/admin/settings';
-  if (perms.includes(PERMISSIONS.DASHBOARD_VIEW)) return '/admin/account';
+  if (perms.some((p) => PERMISSION_GROUPS.ADMIN.includes(p))) {
+    return '/admin/users';
+  }
   return '/forbidden';
 }
 
 export function getFirstAccessibleSellerRoute(perms: string[]): string {
-  if (perms.includes(PERMISSIONS.DASHBOARD_VIEW)) return '/seller/dashboard';
-  if (perms.includes(PERMISSIONS.PRODUCTS_VIEW)) return '/seller/products';
-  if (perms.includes(PERMISSIONS.ORDERS_VIEW)) return '/seller/orders';
-  if (perms.includes(PERMISSIONS.INVENTORY_VIEW)) return '/seller/inventory-management';
+  if (perms.some((p) => PERMISSION_GROUPS.SELLER.includes(p))) {
+    return '/seller/dashboard';
+  }
   return '/forbidden';
 }
 
 export function getFirstAccessibleCustomerRoute(perms: string[]): string {
-  if (perms.includes(PERMISSIONS.CART_VIEW)) return '/customer/cart';
-  if (perms.includes(PERMISSIONS.FAVORITES_VIEW)) return '/customer/wishlist';
-  if (perms.includes(PERMISSIONS.PRODUCTS_VIEW)) return '/products';
-  return '/';
+  if (perms.some((p) => PERMISSION_GROUPS.CUSTOMER.includes(p))) {
+    return '/';
+  }
+  return '/forbidden';
 }

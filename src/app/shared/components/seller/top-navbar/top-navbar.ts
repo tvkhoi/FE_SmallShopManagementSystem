@@ -1,9 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../../auth/auth.service';
+import { LayoutSwitcherComponent } from "../../layout-switcher-component/layout-switcher-component";
 
 @Component({
   selector: 'app-top-navbar',
-  imports: [],
+  imports: [LayoutSwitcherComponent],
   templateUrl: './top-navbar.html',
   styleUrl: './top-navbar.scss',
   standalone: true

@@ -10,11 +10,12 @@ import { CommonModule } from '@angular/common';
 import { CartItem } from '../../../../core/models/domain/cartItem';
 import { Product } from '../../../../core/models/domain/product';
 import { Favorite } from '../../../../core/models/domain/favorite';
+import { LayoutSwitcherComponent } from "../../layout-switcher-component/layout-switcher-component";
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, FormsModule, CommonModule, NzIconModule, NzDropDownModule],
+  imports: [RouterLink, RouterLinkActive, FormsModule, CommonModule, NzIconModule, NzDropDownModule, LayoutSwitcherComponent],
   templateUrl: './header.html',
   styleUrls: ['./header.scss']
 })
